@@ -61,7 +61,7 @@ echo "  ${BIN_NAME} --gui"
 if ! echo "$PATH" | tr ':' '\n' | grep -qx "$TARGET_DIR"; then
   echo
   echo "ℹ️ PATH içinde '$TARGET_DIR' yok gibi görünüyor."
-  echo "   Aşağıdakini ~/.bashrc veya ~/.zshrc içine ekleyebilirsin:"
+  echo "   ~/.bashrc veya ~/.zshrc içine şunu ekleyebilirsin:"
   echo "   export PATH=\"$TARGET_DIR:\$PATH\""
 fi
 
