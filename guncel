@@ -1,361 +1,451 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# =========================
-# ARCB Wider Updater
-# "Tembel ama takıntılı adminin en yakın dostu"
-#
-# Usage:
-#   guncel          -> terminal mode
-#   guncel --gui    -> GUI dialogs + log viewer (requires zenity)
-# =========================
+# ==============================================================================
+# ARCB Wider Updater - v2.97
+# Tembel ama takıntılı adminin en yakın dostu
+# ==============================================================================
+VERSION="2.97"
+APPNAME="ARCB Wider Updater"
+TZ="${TZ:-Europe/Istanbul}"
 
-# ---------- tool identity ----------
-APP_NAME="ARCB Wider Updater"
-APP_DESC="Tembel ama takıntılı adminin en yakın dostu"
-APP_VERSION="v2.5"
+# Defaults (ENV can override)
+SHOW_OUTPUT="${SHOW_OUTPUT:-0}"   # 0: only log, 1: show output on screen too
+NO_GUI="${NO_GUI:-0}"             # 1: never prompt zenity/interactive log view
 
-# ---------- args ----------
-GUI=0
-for arg in "${@:-}"; do
-  case "$arg" in
-    --gui) GUI=1 ;;
+usage() {
+  cat <<'EOF'
+Usage: ./guncel [--show-output] [--no-gui] [--help]
+
+  --show-output   Also show command outputs in terminal (still logs to file)
+  --no-gui        Disable zenity prompts and log viewer
+  --help          Show this help
+
+Environment overrides:
+  SHOW_OUTPUT=1   Same as --show-output
+  NO_GUI=1        Same as --no-gui
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --show-output) SHOW_OUTPUT=1; shift ;;
+    --no-gui) NO_GUI=1; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "ERR: Unknown argument: $1" >&2; usage; exit 2 ;;
   esac
 done
 
-# ---------- paths/log ----------
-TS="$(date '+%Y-%m-%d_%H-%M-%S')"
+# ==============================================================================
+# Paths
+# ==============================================================================
 LOGDIR="${HOME}/Logs"
-LOGFILE="${LOGDIR}/arcb_wider_updater_${TS}.log"
 mkdir -p "$LOGDIR"
+NOW="$(date '+%Y-%m-%d_%H-%M-%S')"
+LOGFILE="${LOGDIR}/arcb_wider_updater_${NOW}.log"
 
-# ---------- helpers ----------
-hr(){ printf '%*s\n' 110 '' | tr ' ' '='; }
-sec(){
-  echo
-  echo "-------------------------------------------------------------------------------------------------------------------"
-  echo "[$(date '+%Y-%m-%d %H:%M:%S %z')] ▶ $1"
-  echo "-------------------------------------------------------------------------------------------------------------------"
+# ==============================================================================
+# Helpers
+# ==============================================================================
+ts() { date '+[%Y-%m-%d %H:%M:%S %z]'; }
+
+log() {
+  printf '%s %s\n' "$(ts)" "$*" | tee -a "$LOGFILE"
 }
 
-run(){
-  echo "+ $*" | tee -a "$LOGFILE"
-  "$@" 2>&1 | tee -a "$LOGFILE"
+hr() {
+  printf '%*s\n' 94 '' | tr ' ' '-' | tee -a "$LOGFILE"
 }
 
-has(){ command -v "$1" >/dev/null 2>&1; }
-
-disk_line(){
-  df -h / 2>/dev/null | awk 'NR==2{print $2" total, "$3" used, "$4" free ("$5" used)"}'
-}
-
-# ---------- GUI helpers ----------
-ZENITY_OK=0
-if [[ "$GUI" -eq 1 ]] && has zenity; then
-  ZENITY_OK=1
-fi
-
-gui_info(){
-  local text="$1"
-  [[ "$ZENITY_OK" -eq 1 ]] || return 0
-  zenity --info --title="${APP_NAME}" --text="$text" --width=560 >/dev/null 2>&1 || true
-}
-
-gui_warn(){
-  local text="$1"
-  [[ "$ZENITY_OK" -eq 1 ]] || return 0
-  zenity --warning --title="${APP_NAME}" --text="$text" --width=560 >/dev/null 2>&1 || true
-}
-
-gui_question(){
-  local text="$1"
-  if [[ "$ZENITY_OK" -eq 1 ]]; then
-    zenity --question --title="${APP_NAME}" --text="$text" --width=620 >/dev/null 2>&1
-  else
-    read -rp "$text [y/N]: " ans
-    [[ "$ans" =~ ^[Yy]$ ]]
-  fi
-}
-
-gui_log(){
-  [[ "$ZENITY_OK" -eq 1 ]] || return 0
-  zenity --text-info \
-    --title="${APP_NAME}" \
-    --filename="$LOGFILE" \
-    --width=1100 --height=720 --tail >/dev/null 2>&1 || true
-}
-
-gui_tools(){
-  local tool_text="$1"
-  [[ "$ZENITY_OK" -eq 1 ]] || return 0
-  {
-    printf "%s %s\n%s\n\n" "$APP_NAME" "$APP_VERSION" "$APP_DESC"
-    printf "%s\n" "$tool_text"
-  } | zenity --text-info \
-      --title="${APP_NAME}" \
-      --width=560 --height=420 \
-      --font="Monospace 11" >/dev/null 2>&1 || true
-}
-
-# ---------- detect package manager ----------
-PM=""
-INSTALL_CMD=()   # <-- array, SC2086 fix
-
-if has apt-get; then
-  PM="apt"
-  INSTALL_CMD=(apt-get install -y)
-elif has dnf; then
-  PM="dnf"
-  INSTALL_CMD=(dnf install -y)
-else
-  echo "Desteklenen paket yöneticisi bulunamadı (apt-get/dnf)." | tee -a "$LOGFILE"
-  exit 1
-fi
-
-# ---------- optional install mapping ----------
-declare -A PKG=(
-  [flatpak]="flatpak"
-  [snap]="snapd"
-  [fwupdmgr]="fwupd"
-  [zenity]="zenity"
-)
-
-install_if_missing(){
-  local cmd="$1"
-  local pkg="${PKG[$cmd]:-}"
-  [[ -z "$pkg" ]] && return 0
-
-  if ! has "$cmd"; then
-    if gui_question "'$cmd' yüklü değil. Kurulsun mu?\n\nPaket: $pkg"; then
-      run sudo "${INSTALL_CMD[@]}" "$pkg"   # <-- array expansion, SC2086 fixed
-    else
-      echo "⏭ $cmd atlandı" | tee -a "$LOGFILE"
-    fi
-  fi
-}
-
-# If GUI requested but zenity missing, offer install (then enable GUI)
-if [[ "$GUI" -eq 1 ]] && ! has zenity; then
-  install_if_missing "zenity"
-  if has zenity; then ZENITY_OK=1; fi
-fi
-
-# ---------- snapshot ----------
-HOST="$(hostname)"
-USERX="$(whoami)"
-KERNEL_BEFORE="$(uname -r)"
-UPTIME="$(uptime -p 2>/dev/null || uptime)"
-DATE="$(date '+%Y-%m-%d %H:%M:%S %z')"
-DISK_BEFORE="$(disk_line || echo 'n/a')"
-
-# ---------- header ----------
-{
+sec() {
   hr
-  echo "[$DATE] ${APP_NAME} ${APP_VERSION} - ${APP_DESC}"
+  log "▶ $*"
   hr
-  echo
-  echo "HOST   : $HOST"
-  echo "USER   : $USERX"
-  echo "KERNEL : $KERNEL_BEFORE"
-  echo "UPTIME : $UPTIME"
-  echo "DISK   : $DISK_BEFORE"
-  echo "LOG    : $LOGFILE"
-  echo
-} | tee -a "$LOGFILE"
+}
 
-# ---------- system summary ----------
-sec "Sistem özeti"
-{
-# shellcheck disable=SC1091
-  echo "OS     : $(. /etc/os-release 2>/dev/null; echo "${PRETTY_NAME:-Unknown}")"
-  echo "CPU    : $(lscpu 2>/dev/null | awk -F: '/Model name/ {gsub(/^[ \t]+/,"",$2); print $2; exit}' || true)"
-  echo "RAM    : $(free -h 2>/dev/null | awk '/Mem:/ {print $2 " total, " $3 " used, " $7 " available"}' || true)"
-  echo "ROOTFS : $(disk_line || true)"
-  echo "DISK   :"
-  df -h -x tmpfs -x devtmpfs 2>/dev/null || true
-} | tee -a "$LOGFILE"
+has() { command -v "$1" >/dev/null 2>&1; }
 
-# ---------- tool status ----------
-sec "Araç durumu"
-TOOL_STATUS_TEXT="$(
-  for c in apt-get dnf flatpak snap fwupdmgr zenity; do
-    if has "$c"; then
-      printf "✔ %s\n" "$c"
-    else
-      printf "✖ %s\n" "$c"
-    fi
+LC_C() { LC_ALL=C "$@"; }
+
+# ==============================================================================
+# Trap manager (NO login shell! avoids "Agent pid ..." side effects)
+# ==============================================================================
+TRAP_CMDS=()
+add_trap() { TRAP_CMDS+=("$*"); }
+
+run_traps() {
+  local i cmd
+  for (( i=${#TRAP_CMDS[@]}-1; i>=0; i-- )); do
+    cmd="${TRAP_CMDS[i]}"
+    # execute in current shell; no .bashrc/.profile noise
+    eval "$cmd" || true
   done
-)"
-echo "$TOOL_STATUS_TEXT" | tee -a "$LOGFILE"
+}
+trap run_traps EXIT
 
-# show tools GUI (with proper content) if enabled
-gui_tools "$TOOL_STATUS_TEXT"
+# ==============================================================================
+# Concurrency lock
+# ==============================================================================
+LOCKFILE="/tmp/arcb_wider_updater.lock"
 
-# ---------- offer installs for optional tools ----------
-install_if_missing "flatpak"
-install_if_missing "snap"
-install_if_missing "fwupdmgr"
-
-# ---------- APT kernel prune ----------
-apt_kernel_prune(){
-  local running="$1"
-  local running_base="${running%-generic}"
-
-  sec "Kernel budama (APT) - aktif + bir önceki kalacak"
-  echo "Running kernel : $running_base" | tee -a "$LOGFILE"
-
-  mapfile -t imgs < <(dpkg -l 2>/dev/null \
-    | awk '$1=="ii" {print $2}' \
-    | grep -E '^linux-image-[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-generic$' \
-    | sed 's/^linux-image-//; s/-generic$//' \
-    | sort -V)
-
-  if ((${#imgs[@]} < 3)); then
-    echo "Kurulu kernel sayısı az (${#imgs[@]}). Budama yok." | tee -a "$LOGFILE"
-    return 0
+lock_init() {
+  if [[ -e "$LOCKFILE" ]]; then
+    local oldpid=""
+    oldpid="$(cat "$LOCKFILE" 2>/dev/null || true)"
+    if [[ -n "$oldpid" ]] && kill -0 "$oldpid" 2>/dev/null; then
+      echo "ERR: ${APPNAME} zaten çalışıyor! (PID: $oldpid)" >&2
+      exit 1
+    fi
   fi
+  echo "$$" >"$LOCKFILE"
+  add_trap "rm -f \"$LOCKFILE\" 2>/dev/null || true"
+}
 
-  local keep=()
-  keep+=("$running_base")
+# ==============================================================================
+# Runner: soft run (never stops script), logs always, optional screen output
+# ==============================================================================
+soft_run() {
+  local rc=0
+  log "+ $*"
 
-  local prev=""
-  for ((i=${#imgs[@]}-1; i>=0; i--)); do
-    if [[ "${imgs[$i]}" == "$running_base" ]]; then
-      if ((i-1>=0)); then prev="${imgs[$((i-1))]}"; fi
-      break
-    fi
-  done
-
-  if [[ -n "$prev" ]]; then
-    keep+=("$prev")
+  if [[ "$SHOW_OUTPUT" == "1" ]]; then
+    "$@" 2>&1 | tee -a "$LOGFILE"
+    rc=${PIPESTATUS[0]}
   else
-    keep=()
-    keep+=("${imgs[$(( ${#imgs[@]}-1 ))]}")
-    keep+=("${imgs[$(( ${#imgs[@]}-2 ))]}")
+    "$@" >>"$LOGFILE" 2>&1 || rc=$?
   fi
 
-  echo "Keep kernels   : ${keep[*]}" | tee -a "$LOGFILE"
+  if (( rc != 0 )); then
+    log "⏭ Komut hata verdi ama devam ediyorum (rc=${rc}): $*"
+  fi
+  return 0
+}
 
-  local purge_pkgs=()
-  for v in "${imgs[@]}"; do
-    local is_keep=0
-    for k in "${keep[@]}"; do
-      [[ "$v" == "$k" ]] && is_keep=1 && break
-    done
-    if [[ "$is_keep" -eq 0 ]]; then
-      purge_pkgs+=("linux-image-${v}-generic")
-      if dpkg -l "linux-headers-${v}-generic" >/dev/null 2>&1; then
-        purge_pkgs+=("linux-headers-${v}-generic")
+soft_run_allow_rcs() {
+  local allow="$1"; shift
+  local rc=0
+  log "+ $*"
+
+  if [[ "$SHOW_OUTPUT" == "1" ]]; then
+    "$@" 2>&1 | tee -a "$LOGFILE"
+    rc=${PIPESTATUS[0]}
+  else
+    "$@" >>"$LOGFILE" 2>&1 || rc=$?
+  fi
+
+  local ok
+  for ok in $allow; do
+    if [[ "$rc" == "$ok" ]]; then
+      if (( rc != 0 )); then
+        log "ℹ Komut rc=${rc} döndü ama izinli kabul edildi: $*"
       fi
+      return 0
     fi
   done
 
-  if ((${#purge_pkgs[@]}==0)); then
-    echo "Purge edilecek eski kernel yok." | tee -a "$LOGFILE"
-    return 0
-  fi
-
-  echo "Purge listesi  : ${purge_pkgs[*]}" | tee -a "$LOGFILE"
-  run sudo apt-get -y purge "${purge_pkgs[@]}"
-  run sudo apt-get -y autoremove --purge
+  log "⏭ Komut rc=${rc} (izinli değil) ama devam ediyorum: $*"
+  return 0
 }
 
-# ---------- updates ----------
-FLATPAK_EOL_SUMMARY=""
+# ==============================================================================
+# System info helpers
+# ==============================================================================
+os_pretty() {
+  local v=""
+  v="$(grep -E '^PRETTY_NAME=' /etc/os-release 2>/dev/null | head -n1 | cut -d= -f2- | tr -d '"')" || true
+  echo "${v:-Unknown}"
+}
 
-if [[ "$PM" == "apt" ]]; then
-  sec "APT: update"
-  run sudo apt-get update
+disk_line_root() {
+  LC_C df -Ph / 2>/dev/null | awk 'NR==2{print $2" total, "$3" used, "$4" free ("$5" used)"}' || echo "Unknown"
+}
 
-  sec "APT: upgrade"
-  run sudo apt-get -y upgrade
+uptime_line() {
+  uptime -p 2>/dev/null | sed 's/^up //' || echo "Unknown"
+}
 
-  sec "APT: full-upgrade (dependency changes allowed)"
-  run sudo apt-get -y full-upgrade
+disk_all_partitions_warn() {
+  local out=""
+  out="$(LC_C df -h -x tmpfs -x devtmpfs 2>/dev/null | awk 'NR>1{
+    gsub(/%/,"",$5);
+    if($5+0>85) print "⚠ " $6 " partition %" $5 " dolu!";
+  }')" || true
+  if [[ -n "$out" ]]; then
+    log "$out"
+  fi
+}
 
-  sec "APT: cleanup (autoremove, autoclean)"
-  run sudo apt-get -y autoremove --purge
-  run sudo apt-get -y autoclean
+# ==============================================================================
+# Interactive / GUI
+# ==============================================================================
+gui_question() {
+  local prompt="$1"
+  if [[ "$NO_GUI" == "1" ]]; then
+    return 1
+  fi
+  if has zenity; then
+    zenity --question --width=520 --text="$prompt" >/dev/null 2>&1
+    return $?
+  fi
+  printf '%s [y/N]: ' "$prompt" >&2
+  local ans=""
+  IFS= read -r ans || true
+  ans="${ans,,}"
+  [[ "$ans" == "y" || "$ans" == "yes" ]]
+}
 
-  apt_kernel_prune "$KERNEL_BEFORE"
+gui_log() {
+  if [[ "$NO_GUI" == "1" ]]; then
+    return 0
+  fi
+  sync || true; sleep 0.2
+  if has zenity; then
+    zenity --text-info --width=900 --height=600 --title="${APPNAME} - Log" --filename="$LOGFILE" >/dev/null 2>&1 || true
+  elif has less; then
+    less "$LOGFILE" || true
+  else
+    tail -n 200 "$LOGFILE" || true
+  fi
+}
 
-elif [[ "$PM" == "dnf" ]]; then
+prompt_yes_no_timeout() {
+  local prompt="$1"
+  local timeout_s="${2:-10}"
+
+  printf '%s [y/N] (auto No in %ss): ' "$prompt" "$timeout_s" | tee -a "$LOGFILE"
+  local ans=""
+
+  if IFS= read -r -t "$timeout_s" ans; then
+    echo "$ans" | tee -a "$LOGFILE" >/dev/null
+  else
+    echo | tee -a "$LOGFILE" >/dev/null
+    return 1
+  fi
+
+  ans="${ans,,}"
+  [[ "$ans" == "y" || "$ans" == "yes" ]]
+}
+
+# ==============================================================================
+# Sudo keepalive
+# ==============================================================================
+SUDO_KEEPALIVE_PID=""
+
+start_sudo_keepalive() {
+  if ! has sudo; then return 0; fi
+  if [[ $EUID -eq 0 ]]; then return 0; fi
+
+  sec "Sudo önbelleme"
+  if ! sudo -v; then
+    log "ERR: Sudo parolası girilmedi. Çıkılıyor."
+    exit 1
+  fi
+
+  (
+    while true; do
+      sudo -n true >/dev/null 2>&1 || exit 0
+      sleep 200
+    done
+  ) &
+  SUDO_KEEPALIVE_PID="$!"
+  add_trap "kill \"$SUDO_KEEPALIVE_PID\" 2>/dev/null || true"
+}
+
+# ==============================================================================
+# Health checks
+# ==============================================================================
+svc_active() {
+  local svc="$1"
+  if has systemctl; then
+    systemctl is-active --quiet "$svc" 2>/dev/null
+    return $?
+  fi
+  return 1
+}
+
+snap_health() {
+  if ! has snap; then return 1; fi
+  if [[ -S /run/snapd.socket ]]; then return 0; fi
+  if svc_active snapd; then return 0; fi
+  return 1
+}
+
+# ==============================================================================
+# Update backends
+# ==============================================================================
+dnf_update_and_cleanup() {
+  if ! has dnf; then return 0; fi
   sec "DNF: upgrade (refresh)"
-  run sudo dnf -y upgrade --refresh
-
+  soft_run sudo dnf -y upgrade --refresh
   sec "DNF: cleanup"
-  run sudo dnf -y autoremove
-  run sudo dnf -y clean all
-fi
+  soft_run sudo dnf -y autoremove
+  soft_run sudo dnf -y clean all
+}
 
-# ---------- flatpak ----------
-if has flatpak; then
+apt_update_and_cleanup() {
+  if ! has apt-get; then return 0; fi
+  sec "APT: update & upgrade"
+  soft_run sudo apt-get update
+  soft_run sudo apt-get -y full-upgrade
+  sec "APT: cleanup"
+  soft_run sudo apt-get -y autoremove --purge
+  soft_run sudo apt-get -y autoclean
+}
+
+flatpak_update_and_cleanup() {
+  if ! has flatpak; then return 0; fi
   sec "Flatpak: update"
-  echo "+ flatpak -y update" | tee -a "$LOGFILE"
-  FLATPAK_OUT="$(flatpak -y update 2>&1 | tee -a "$LOGFILE" || true)"
-
-  if echo "$FLATPAK_OUT" | grep -qi "end-of-life"; then
-    FLATPAK_EOL_SUMMARY="$(
-      echo "$FLATPAK_OUT" | awk '
-        BEGIN{p=0}
-        /Info: runtime .* end-of-life/{p=1}
-        p==1{print}
-        /Updates complete\.|Nothing to do\./{p=0}
-      ' | sed 's/[[:space:]]*$//' | head -n 160
-    )"
-  fi
-
+  soft_run flatpak -y update
   sec "Flatpak: unused remove"
-  run flatpak -y uninstall --unused
-fi
+  soft_run flatpak -y uninstall --unused
+}
 
-# ---------- snap ----------
-if has snap; then
-  sec "Snap: refresh"
-  run sudo snap refresh
-fi
-
-# ---------- fwupd ----------
-if has fwupdmgr; then
-  sec "FWUPD"
-  run sudo fwupdmgr refresh --force
-  run sudo fwupdmgr get-updates || true
-fi
-
-# ---------- reboot check ----------
-REBOOT_NOTE=""
-if [[ -f /var/run/reboot-required ]]; then
-  REBOOT_NOTE="⚠ Reboot öneriliyor (/var/run/reboot-required mevcut)."
-fi
-
-KERNEL_AFTER="$(uname -r)"
-DISK_AFTER="$(disk_line || echo 'n/a')"
-
-# ---------- summary ----------
-sec "Özet"
-{
-  echo "✔ Güncelleme tamamlandı."
-  echo "▶ Kernel (önce): $KERNEL_BEFORE"
-  echo "▶ Kernel (şimdi): $KERNEL_AFTER"
-  echo "▶ Disk (önce)  : $DISK_BEFORE"
-  echo "▶ Disk (şimdi) : $DISK_AFTER"
-  echo "▶ Log          : $LOGFILE"
-  [[ -n "$REBOOT_NOTE" ]] && echo "$REBOOT_NOTE"
-  if [[ -n "$FLATPAK_EOL_SUMMARY" ]]; then
-    echo
-    echo "⚠ Flatpak EOL uyarısı tespit edildi (özet):"
-    echo "$FLATPAK_EOL_SUMMARY"
+snap_refresh() {
+  if ! has snap; then return 0; fi
+  sec "Snap"
+  if snap_health; then
+    soft_run sudo snap refresh
+  else
+    log "⏭ snap atlandı (snapd sağlıklı değil)"
   fi
-} | tee -a "$LOGFILE"
+}
 
-hr | tee -a "$LOGFILE"
+fwupd_refresh_and_updates() {
+  if ! has fwupdmgr; then return 0; fi
+  sec "FWUPD"
+  soft_run sudo fwupdmgr refresh --force
+  soft_run_allow_rcs "0 2" sudo fwupdmgr get-updates
+}
 
-# ---------- GUI end ----------
-if [[ "$ZENITY_OK" -eq 1 ]]; then
-  SUM="${APP_NAME} ${APP_VERSION}\n${APP_DESC}\n\n✔ Güncelleme tamamlandı.\n\nKernel:\n- önce: $KERNEL_BEFORE\n- şimdi: $KERNEL_AFTER\n\nDisk:\n- önce: $DISK_BEFORE\n- şimdi: $DISK_AFTER"
-  [[ -n "$REBOOT_NOTE" ]] && SUM="$SUM\n\n$REBOOT_NOTE"
-  [[ -n "$FLATPAK_EOL_SUMMARY" ]] && SUM="$SUM\n\n⚠ Flatpak EOL uyarısı var (detay logda)."
+# ==============================================================================
+# Optional maintenance
+# ==============================================================================
+journal_vacuum_optional() {
+  if ! has journalctl; then return 0; fi
+  sec "Journal temizliği - opsiyonel"
+  local j_cmd="journalctl --vacuum-size=100M --vacuum-time=7d"
+  log "Komut: $j_cmd"
+  log "Not: Eski loglar silinir (debug geçmişi kısalır)."
 
-  zenity --info --title="${APP_NAME}" --text="$SUM" --width=620 >/dev/null 2>&1 || true
+  if prompt_yes_no_timeout "Journal loglarını küçülteyim mi?" 10; then
+    # shellcheck disable=SC2086
+    soft_run sudo $j_cmd
+  else
+    log "⏭ Journal temizliği atlandı (timeout veya No)"
+  fi
+}
+
+failed_services() {
+  if ! has systemctl; then return 0; fi
+  sec "Başarısız servisler"
+  if systemctl --failed --no-legend 2>/dev/null | grep -q .; then
+    log "⚠ Başarısız servisler:"
+    systemctl --failed --no-legend 2>/dev/null | tee -a "$LOGFILE" || true
+  else
+    log "✔ Başarısız servis yok"
+  fi
+}
+
+boot_perf() {
+  if ! has systemd-analyze; then return 0; fi
+  sec "Sistem performansı (boot zamanı)"
+  soft_run systemd-analyze
+  log "Top 10 (systemd-analyze blame):"
+  LC_C systemd-analyze blame 2>/dev/null | head -n 10 | tee -a "$LOGFILE" || true
+}
+
+reboot_hint() {
+  local needs_reboot=0
+
+  if has needs-restarting && has sudo; then
+    if ! sudo needs-restarting -r >/dev/null 2>&1; then
+      needs_reboot=1
+    fi
+  fi
+
+  if [[ -f /var/run/reboot-required ]]; then
+    needs_reboot=1
+  fi
+
+  if (( needs_reboot == 1 )); then
+    log "⚠ REBOOT GEREKİYOR (Kernel/Kritik güncelleme)"
+  fi
+}
+
+# ==============================================================================
+# MAIN
+# ==============================================================================
+lock_init
+
+KERNEL_BEFORE="$(uname -r 2>/dev/null || echo Unknown)"
+HOSTN="$(hostname 2>/dev/null || echo Unknown)"
+USERN="${USER:-$(whoami 2>/dev/null || echo Unknown)}"
+UPTIME_BEFORE="$(uptime_line)"
+DISK_BEFORE="$(disk_line_root)"
+
+hr
+log "${APPNAME} v${VERSION} - Tembel ama takıntılı adminin en yakın dostu"
+hr
+log "HOST   : ${HOSTN}"
+log "USER   : ${USERN}"
+log "KERNEL : ${KERNEL_BEFORE}"
+log "UPTIME : ${UPTIME_BEFORE}"
+log "DISK   : ${DISK_BEFORE}"
+log "LOG    : ${LOGFILE}"
+hr
+
+start_sudo_keepalive
+
+sec "Sistem özeti"
+log "OS     : $(os_pretty)"
+log "CPU    : $(LC_C lscpu 2>/dev/null | awk -F: '/Model name/ {gsub(/^[ \t]+/,"",$2); print $2; exit}' || echo Unknown)"
+log "RAM    : $(LC_C free -h 2>/dev/null | awk '/Mem:/ {print $2" total, "$3" used, "$7" available"}' || echo Unknown)"
+log "ROOTFS : ${DISK_BEFORE}"
+log "DISK   :"
+LC_C df -h 2>/dev/null | tee -a "$LOGFILE" || true
+
+sec "Araç durumu"
+for tool in apt-get dnf flatpak fwupdmgr zenity systemctl systemd-analyze journalctl snap; do
+  if has "$tool"; then
+    log "✔ $tool"
+  else
+    log "✖ $tool"
+  fi
+done
+
+if has snap; then
+  if snap_health; then
+    log "✔ snap (snapd aktif)"
+  else
+    log "✖ snap (snapd aktif değil)"
+  fi
+fi
+
+dnf_update_and_cleanup
+apt_update_and_cleanup
+flatpak_update_and_cleanup
+snap_refresh
+fwupd_refresh_and_updates
+
+journal_vacuum_optional
+failed_services
+boot_perf
+disk_all_partitions_warn
+
+KERNEL_AFTER="$(uname -r 2>/dev/null || echo Unknown)"
+DISK_AFTER="$(disk_line_root)"
+
+sec "Özet"
+log "✔ Güncelleme tamamlandı."
+log "▶ Kernel (önce): ${KERNEL_BEFORE}"
+log "▶ Kernel (şimdi): ${KERNEL_AFTER}"
+log "▶ Disk (önce)  : ${DISK_BEFORE}"
+log "▶ Disk (şimdi) : ${DISK_AFTER}"
+log "▶ Log          : ${LOGFILE}"
+
+reboot_hint
+hr
+
+if gui_question "Log dosyasını görüntüleyeyim mi?\n\n${LOGFILE}"; then
   gui_log
 fi
