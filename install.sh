@@ -54,8 +54,10 @@ install -m 0755 "$TMP" "$DST"
 echo "✅ ${APP_NAME} yüklendi: $DST"
 echo
 echo "Kullanım:"
-echo "  ${BIN_NAME}"
-echo "  ${BIN_NAME} --gui"
+echo "  ${BIN_NAME}                # Varsayılan: sessiz mod (önerilen). Özet gösterir, detay log'a yazar."
+echo "  ${BIN_NAME} --show-output  # Paket yöneticilerinin (APT/DNF/Flatpak/Snap/fwupd) çıktısını ekrana basar."
+echo "  ${BIN_NAME} --no-gui       # Zenity / GUI kullanmadan tamamen CLI çalışır."
+
 
 # PATH hint
 if ! echo "$PATH" | tr ':' '\n' | grep -qx "$TARGET_DIR"; then
