@@ -5,8 +5,8 @@
 #
 
 # --- AYARLAR ---
-VERSION="3.4.5"
-CODENAME="Stable Output"
+VERSION="3.4.6"
+CODENAME="Colorful"
 LOG_DIR="/var/log/arcb-updater"
 LOG_FILE="$LOG_DIR/update_$(date +%Y%m%d_%H%M%S).log"
 GITHUB_RAW_URL="https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/guncel"
@@ -18,12 +18,12 @@ set -Eeuo pipefail
 umask 0077
 
 # Renkler
-RED='\033'
-GREEN='\033'
-YELLOW='\033'
-BLUE='\033'
-BOLD='\033'
-NC='\033'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
+NC='\033[0m'
 
 # --- YENİ: MODLAR VE SAYAÇLAR ---
 VERBOSE_MODE=false
@@ -88,7 +88,7 @@ print_info() {
     echo "[$(date '+%F %T')] INFO: $1" >> "$LOG_FILE"
 }
 
-# --- YENİ: SİSTEM BİLGİSİ BAŞLIK KUTUSU (ASCII VERSION) ---
+# --- YENİ: SİSTEM BİLGİSİ BAŞLIK KUTUSU (COLORFUL, NO VERTICAL BARS) ---
 print_system_header() {
     local hostname_str
     hostname_str=$(hostname 2>/dev/null || echo "unknown")
@@ -101,14 +101,12 @@ print_system_header() {
     local disk_str
     disk_str=$(df -h / 2>/dev/null | awk 'NR==2{print $5}' || echo "N/A")
     
-    echo -e "${GREEN}"
-    echo "+==========================================+"
-    printf "|  %-40s |\n" "ARCB-WIDER-UPDATER v$VERSION"
-    printf "|  %-40s |\n" "Host: $hostname_str | User: $user_str"
-    printf "|  %-40s |\n" "Kernel: $kernel_str"
-    printf "|  %-40s |\n" "RAM: $ram_str | Disk: $disk_str used"
-    echo "+==========================================+"
-    echo -e "${NC}"
+    echo -e "${GREEN}========================================${NC}"
+    echo -e "${GREEN}  ARCB-WIDER-UPDATER v${VERSION}${NC}"
+    echo -e "${GREEN}  Host: ${hostname_str} | User: ${user_str}${NC}"
+    echo -e "${GREEN}  Kernel: ${kernel_str}${NC}"
+    echo -e "${GREEN}  RAM: ${ram_str} | Disk: ${disk_str} used${NC}"
+    echo -e "${GREEN}========================================${NC}"
     
     # Log'a da yaz
     {
@@ -143,89 +141,97 @@ check_reboot_required() {
     echo "Gerekli değil"
 }
 
-# --- YENİ: FİNAL ÖZET KUTUSU (ASCII VERSION + FIX) ---
+# --- YENİ: FİNAL ÖZET KUTUSU (COLORFUL, NO VERTICAL BARS + FIX) ---
 print_final_summary() {
     local reboot_status
     reboot_status=$(check_reboot_required)
     
-    # FIX: Ensure all counters are numeric before arithmetic
-    local apt_c="${APT_COUNT:-0}"
-    local dnf_c="${DNF_COUNT:-0}"
-    local flatpak_c="${FLATPAK_COUNT:-0}"
-    local snap_c="${SNAP_COUNT:-0}"
-    local fwupd_c="${FWUPD_COUNT:-0}"
+    # FIX: Ensure all counters are numeric - strip any non-numeric chars
+    local apt_c dnf_c flatpak_c snap_c fwupd_c
+    apt_c=$(echo "${APT_COUNT:-0}" | tr -cd '0-9')
+    dnf_c=$(echo "${DNF_COUNT:-0}" | tr -cd '0-9')
+    flatpak_c=$(echo "${FLATPAK_COUNT:-0}" | tr -cd '0-9')
+    snap_c=$(echo "${SNAP_COUNT:-0}" | tr -cd '0-9')
+    fwupd_c=$(echo "${FWUPD_COUNT:-0}" | tr -cd '0-9')
+    
+    # Default to 0 if empty after stripping
+    apt_c=${apt_c:-0}
+    dnf_c=${dnf_c:-0}
+    flatpak_c=${flatpak_c:-0}
+    snap_c=${snap_c:-0}
+    fwupd_c=${fwupd_c:-0}
+    
     local total_updates=$((apt_c + dnf_c + flatpak_c + snap_c + fwupd_c))
     
-    echo -e "\n${GREEN}"
-    echo "+==========================================+"
-    echo "|  [+] GÜNCELLEME TAMAMLANDI               |"
-    echo "+------------------------------------------+"
+    echo ""
+    echo -e "${GREEN}========================================${NC}"
+    echo -e "${GREEN}  [+] GÜNCELLEME TAMAMLANDI${NC}"
+    echo -e "${GREEN}----------------------------------------${NC}"
     
     # APT veya DNF
     if command -v apt-get &> /dev/null; then
         if [[ $apt_c -gt 0 ]]; then
-            printf "|  APT: %-33s |\n" "$apt_c paket güncellendi"
+            echo -e "${GREEN}  APT: ${apt_c} paket güncellendi${NC}"
         else
-            printf "|  APT: %-33s |\n" "Güncel"
+            echo -e "${GREEN}  APT: Güncel${NC}"
         fi
     fi
     
     if command -v dnf &> /dev/null; then
         if [[ $dnf_c -gt 0 ]]; then
-            printf "|  DNF: %-33s |\n" "$dnf_c paket güncellendi"
+            echo -e "${GREEN}  DNF: ${dnf_c} paket güncellendi${NC}"
         else
-            printf "|  DNF: %-33s |\n" "Güncel"
+            echo -e "${GREEN}  DNF: Güncel${NC}"
         fi
     fi
     
     # Flatpak
     if command -v flatpak &> /dev/null; then
         if [[ $flatpak_c -gt 0 ]]; then
-            printf "|  Flatpak: %-29s |\n" "$flatpak_c uygulama güncellendi"
+            echo -e "${GREEN}  Flatpak: ${flatpak_c} uygulama güncellendi${NC}"
         else
-            printf "|  Flatpak: %-29s |\n" "Güncel"
+            echo -e "${GREEN}  Flatpak: Güncel${NC}"
         fi
     fi
     
     # Snap
     if command -v snap &> /dev/null; then
         if [[ $snap_c -gt 0 ]]; then
-            printf "|  Snap: %-32s |\n" "$snap_c paket güncellendi"
+            echo -e "${GREEN}  Snap: ${snap_c} paket güncellendi${NC}"
         else
-            printf "|  Snap: %-32s |\n" "Güncel"
+            echo -e "${GREEN}  Snap: Güncel${NC}"
         fi
     fi
     
     # Firmware
     if command -v fwupdmgr &> /dev/null; then
         if [[ $fwupd_c -gt 0 ]]; then
-            printf "|  Firmware: %-28s |\n" "$fwupd_c güncelleme"
+            echo -e "${GREEN}  Firmware: ${fwupd_c} güncelleme${NC}"
         else
-            printf "|  Firmware: %-28s |\n" "Güncel"
+            echo -e "${GREEN}  Firmware: Güncel${NC}"
         fi
     fi
     
-    echo "+------------------------------------------+"
+    echo -e "${GREEN}----------------------------------------${NC}"
     
     # Snapshot bilgisi
     if [[ -n "$SNAPSHOT_NAME" ]]; then
-        printf "|  Snapshot: %-28s |\n" "$SNAPSHOT_NAME"
+        echo -e "${GREEN}  Snapshot: ${SNAPSHOT_NAME}${NC}"
     else
-        printf "|  Snapshot: %-28s |\n" "Oluşturulmadı"
+        echo -e "${GREEN}  Snapshot: Oluşturulmadı${NC}"
     fi
     
     # Reboot durumu
     if [[ "$reboot_status" == "Gerekli" ]]; then
-        printf "|  Reboot: %-30s |\n" "[!] Gerekli"
+        echo -e "${YELLOW}  Reboot: [!] Gerekli${NC}"
     else
-        printf "|  Reboot: %-30s |\n" "Gerekli değil"
+        echo -e "${GREEN}  Reboot: Gerekli değil${NC}"
     fi
     
     # Log yolu
-    printf "|  Log: %-33s |\n" "$LOG_FILE"
+    echo -e "${BLUE}  Log: ${LOG_FILE}${NC}"
     
-    echo "+==========================================+"
-    echo -e "${NC}"
+    echo -e "${GREEN}========================================${NC}"
     
     # Log'a da yaz
     {

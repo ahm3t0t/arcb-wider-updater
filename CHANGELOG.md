@@ -1,4 +1,18 @@
 # Changelog
+
+## [v3.4.6] - 2026-01-25
+
+### Fixed
+- Fixed missing first character in header display (echo -e issue)
+- Fixed ANSI color codes that were broken (escape sequences restored)
+- Fixed arithmetic syntax error on line 157 (counters now sanitized with tr -cd)
+- Removed vertical bars (|) from header and summary boxes per user feedback
+
+### Changed
+- Header and summary now use horizontal lines only (=== and ---)
+- Colorful output restored (green, blue, yellow ANSI colors)
+- Codename changed from "Stable Output" to "Colorful"
+
 ## [v3.4.5] - 2026-01-25
 
 ### Fixed
