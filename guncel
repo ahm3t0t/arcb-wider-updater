@@ -90,11 +90,16 @@ print_info() {
 
 # --- YENİ: SİSTEM BİLGİSİ BAŞLIK KUTUSU ---
 print_system_header() {
-    local hostname_str=$(hostname 2>/dev/null || echo "unknown")
-    local user_str=$(whoami 2>/dev/null || echo "unknown")
-    local kernel_str=$(uname -r 2>/dev/null || echo "unknown")
-    local ram_str=$(free -h 2>/dev/null | awk '/^Mem:/{print $2}' || echo "N/A")
-    local disk_str=$(df -h / 2>/dev/null | awk 'NR==2{print $5}' || echo "N/A")
+    local hostname_str
+    hostname_str=$(hostname 2>/dev/null || echo "unknown")
+    local user_str
+    user_str=$(whoami 2>/dev/null || echo "unknown")
+    local kernel_str
+    kernel_str=$(uname -r 2>/dev/null || echo "unknown")
+    local ram_str
+    ram_str=$(free -h 2>/dev/null | awk '/^Mem:/{print $2}' || echo "N/A")
+    local disk_str
+    disk_str=$(df -h / 2>/dev/null | awk 'NR==2{print $5}' || echo "N/A")
     
     echo -e "${GREEN}"
     echo "╔══════════════════════════════════════════╗"
@@ -140,7 +145,8 @@ check_reboot_required() {
 
 # --- YENİ: FİNAL ÖZET KUTUSU ---
 print_final_summary() {
-    local reboot_status=$(check_reboot_required)
+    local reboot_status
+    reboot_status=$(check_reboot_required)
     local total_updates=$((APT_COUNT + DNF_COUNT + FLATPAK_COUNT + SNAP_COUNT + FWUPD_COUNT))
     
     echo -e "\n${GREEN}"
