@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 # BATS Unit Tests for guncel - ARCB Wider Updater
-# v3.9.0 "Tested"
+# v3.9.1 "Tested"
 
 load test_helper
 
@@ -17,7 +17,7 @@ load test_helper
 @test "--help flag shows version in header" {
     run bash "$GUNCEL_SCRIPT" --help
     [ "$status" -eq 0 ]
-    [[ "$output" == *"v3.9.0"* ]]
+    [[ "$output" == *"v3.9.1"* ]]
 }
 
 @test "--help flag shows dry-run option" {
@@ -30,10 +30,10 @@ load test_helper
 # VERSION OUTPUT TESTS (via --help header)
 # =============================================================================
 
-@test "--help shows version number 3.9.0" {
+@test "--help shows version number 3.9.1" {
     run bash "$GUNCEL_SCRIPT" --help
     [ "$status" -eq 0 ]
-    [[ "$output" == *"3.9.0"* ]]
+    [[ "$output" == *"3.9.1"* ]]
 }
 
 @test "--help shows codename Tested" {
@@ -78,8 +78,8 @@ load test_helper
     grep -q 'SKIP_SNAPSHOT=' "$GUNCEL_SCRIPT"
 }
 
-@test "SKIP_DNF variable exists" {
-    grep -q 'SKIP_DNF=' "$GUNCEL_SCRIPT"
+@test "SKIP_PKG_MANAGER variable exists" {
+    grep -q 'SKIP_PKG_MANAGER=' "$GUNCEL_SCRIPT"
 }
 
 @test "--skip-flatpak option documented in help" {
