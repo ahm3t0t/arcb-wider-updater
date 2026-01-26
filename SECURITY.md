@@ -12,7 +12,7 @@ If you discover a security vulnerability, please report it responsibly.
 
 ### Preferred ways:
 - Open a **GitHub Issue** with the `security` label
-- Or contact the maintainer directly via email
+- Or contact the maintainer directly via email "meet@calmkernel.tr"
 
 Please avoid sharing sensitive details publicly before a fix is discussed.
 
