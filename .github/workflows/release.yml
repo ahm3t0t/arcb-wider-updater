@@ -5,48 +5,39 @@ on:
     tags:
       - 'v*'
 
-permissions:
-  contents: write
-
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Generate SHA256SUMS
-        run: |
-          sha256sum guncel > SHA256SUMS
-          sha256sum install.sh >> SHA256SUMS
-          echo "Generated SHA256SUMS:"
-          cat SHA256SUMS
-
-      - name: Extract version from tag
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - uses: actions/checkout@v4
+      
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
         with:
-          name: "ARCB Wider Updater ${{ steps.version.outputs.VERSION }}"
-          body: |
-            ## ARCB Wider Updater ${{ steps.version.outputs.VERSION }}
-            
-            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
-            
-            ### Quick Install
-            \`\`\`bash
-            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | sudo bash
-            \`\`\`
-            
-            ### SHA256 Checksums
-            Verify your download with the attached \`SHA256SUMS\` file.
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+      
+      - name: Create signed checksums
+        run: |
+          # SHA256 checksums oluştur
+          sha256sum guncel install.sh > SHA256SUMS
+          
+          # GPG ile imzala
+          gpg --armor --detach-sign SHA256SUMS
+          gpg --armor --detach-sign guncel
+          gpg --armor --detach-sign install.sh
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "ARCB Wider Updater ${{ github.ref_name }}"
+          generate_release_notes: true
           files: |
-            SHA256SUMS
             guncel
+            guncel.asc
             install.sh
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            install.sh.asc
+            SHA256SUMS
+            SHA256SUMS.asc
