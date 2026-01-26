@@ -1,5 +1,13 @@
 # Changelog
 
+## [Night-V1.0.0] - 2026-01-26 (install.sh)
+### Changed
+- **install.sh artık ayrı versiyon sistemi kullanıyor**
+  - Format: Night-Vx.x.x
+  - Ana script (guncel) versiyonundan bağımsız
+  - Kurulum banner: ">>> ARCB Wider Updater Kurulum (Night-V1.0.0)"
+
+
 ## [3.8.0] - 2026-01-26
 ### Added
 - **GitHub Actions Release Automation:** Automatic release creation on tag push

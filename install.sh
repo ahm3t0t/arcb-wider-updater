@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# ARCB Updater Installer v3.7.1 (Hotfix)
-# Sync: v3.7.1 | Fix: Color codes and echo display issues
+# ARCB Updater Installer Night-V1.0.0
+# Sync: Night-V1.0.0 | install.sh artık ayrı versiyon sistemi kullanıyor
 
 # 1. HATA YÖNETİMİ
 set -Eeuo pipefail
@@ -82,7 +82,7 @@ download_file() {
     fi
 }
 
-printf "\n%s>>> ARCB Wider Updater Kurulum (v3.7.1)%s\n" "$BLUE" "$NC"
+printf "\n%s>>> ARCB Wider Updater Kurulum (Night-V1.0.0)%s\n" "$BLUE" "$NC"
 
 # İndirme veya Kopyalama Mantığı
 if [[ -n "$SOURCE_FILE" ]]; then
