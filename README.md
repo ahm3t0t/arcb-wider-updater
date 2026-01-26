@@ -30,7 +30,8 @@
 ```bash
 # Installation / Kurulum
 curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/install.sh | sudo bash
-
+```
+```bash
 # Usage / Kullanım
 guncel              # Interactive mode / İnteraktif mod
 guncel --auto       # Automatic mode / Otomatik mod
