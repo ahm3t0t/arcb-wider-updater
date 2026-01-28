@@ -8,23 +8,63 @@
 **Linux sistemleri için Zırhlı, Akıllı ve Çoklu-Dağıtım (Multi-Distro) Güncelleme Aracı.**
 
 > *Tembel ama takıntılı adminin en yakın dostu.*
-> **One command. One updater. Zero nonsense.**
 
-Debian (Zorin OS, Ubuntu) ve RHEL (Fedora) tabanlı sistemlerde; Snapshot (Yedek), Repo Güncellemesi, Flatpak/Snap ve Firmware kontrolünü tek komutla, güvenli bir şekilde yapar.
+---
+
+## 🤔 ARCB Ne Demek?
+
+**A**rmored **R**obust **C**onfigurable **B**ash - Zırhlı, Sağlam, Yapılandırılabilir Bash scripti.
+
+---
+
+## 💡 Neden Bu Araç?
+
+### Problem
+Tipik bir Linux masaüstünde güncelleme yapmak için:
+
+```bash
+sudo apt update && sudo apt upgrade -y      # Sistem paketleri
+flatpak update -y                            # Flatpak uygulamaları
+sudo snap refresh                            # Snap paketleri
+sudo fwupdmgr refresh && sudo fwupdmgr update # Firmware
+```
+
+4 ayrı komut, farklı sözdizimi, hata kontrolü yok, log yok, yedek yok.
+
+### Çözüm
+
+```bash
+guncel
+```
+
+Tek komut. Hepsi bir arada. Güvenli ve izlenebilir.
+
+### Bu Araç Size Ne Kazandırır?
+
+| Özellik | Manuel Güncelleme | guncel |
+|---------|-------------------|--------|
+| Tek komut | ❌ 4+ komut | ✅ `guncel` |
+| Hata kontrolü | ❌ Yok | ✅ Strict mode |
+| Log kaydı | ❌ Yok | ✅ Detaylı log |
+| Yedekleme | ❌ Manuel | ✅ Otomatik |
+| Cron desteği | ❌ Karmaşık | ✅ `--auto` |
+| Flatpak/Snap/Firmware | ❌ Ayrı ayrı | ✅ Hepsi dahil |
+| Rollback | ❌ Yok | ✅ `.bak` dosyası |
+
+---
 
 ## 📑 İçindekiler
 
-- Özellikler
-- Sürüm Sistemi
-- Kurulum
-- Kullanım
-- Komut Satırı Seçenekleri
-- Config Dosyası
-- SHA256 Doğrulama
-- Rollback
-- Log Yönetimi
-- Katkıda Bulunma
-- Lisans
+- [Özellikler](#-özellikler)
+- [Hızlı Başlangıç](#-hızlı-başlangıç)
+- [Kullanım Senaryoları](#-kullanım-senaryoları)
+- [Komut Satırı Seçenekleri](#-komut-satırı-seçenekleri)
+- [Config Dosyası](#️-config-dosyası-v360)
+- [Otomatik Güncelleme (Cron/Systemd)](#-otomatik-güncelleme-cronsystemd)
+- [GPG İmza Doğrulama](#-gpg-i̇mza-doğrulama-v410)
+- [Sorun Giderme](#-sorun-giderme-troubleshooting)
+- [Sıkça Sorulan Sorular](#-sıkça-sorulan-sorular-faq)
+- [Katkıda Bulunma](#-katkıda-bulunma)
 
 ---
 
@@ -77,12 +117,89 @@ Bu proje **iki ayrı versiyon sistemi** kullanır:
 
 ---
 
-## 📦 Kurulum (Tek Satır)
+## ⚡ Hızlı Başlangıç
 
-Aşağıdaki komutu terminale yapıştırın. Script gerekli yetkileri güvenli bir şekilde isteyecek ve kurulumu tamamlayacaktır:
+### Kurulum (30 saniye)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/install.sh | sudo bash
+```
+
+### İlk Çalıştırma
+
+```bash
+# Önce ne yapacağını gör (dry-run)
+sudo guncel --dry-run
+
+# Memnunsan çalıştır
+sudo guncel
+```
+
+### Örnek Çıktı
+
+```
+========================================
+  ARCB-WIDER-UPDATER v4.1.4
+  Host: my-laptop | User: root
+  Kernel: 6.14.0-37-generic
+  RAM: 16Gi | Disk: 45% used
+========================================
+
+>>> APT: Güncelleme Başlıyor
+...
+>>> Flatpak: Güncelleme
+...
+>>> Snap: Güncelleme
+...
+>>> Firmware: Kontrol
+...
+
+========================================
+  [+] GÜNCELLEME TAMAMLANDI
+----------------------------------------
+  APT: 12 paket güncellendi
+  Flatpak: 3 uygulama güncellendi
+  Snap: Güncel
+  Firmware: Güncel
+----------------------------------------
+  Snapshot: ARCB-Update-2026-01-28
+  Reboot: Gerekli değil
+  Log: /var/log/arcb-updater/update_20260128_103045.log
+========================================
+```
+
+---
+
+## 🎯 Kullanım Senaryoları
+
+### Senaryo 1: Günlük Kullanım (Masaüstü)
+
+```bash
+# Sabah kahvenizi alın, terminali açın
+sudo guncel --verbose
+
+# Veya sadece bakmak istiyorsanız
+sudo guncel --dry-run
+```
+
+### Senaryo 2: Sunucu (Headless)
+
+```bash
+# SSH ile bağlanıp sessizce güncelle
+sudo guncel --auto --quiet
+```
+
+### Senaryo 3: Sadece Güvenlik Güncellemeleri
+
+```bash
+# Flatpak ve Snap'i atla, sadece sistem paketleri
+sudo guncel --only system
+```
+
+### Senaryo 4: Firmware Hariç Her Şey
+
+```bash
+sudo guncel --skip fwupd
 ```
 
 ---
@@ -162,6 +279,66 @@ CONFIG_SKIP_DNF=false
 ```
 
 **Not:** Komut satırı argümanları config dosyasındaki ayarları override eder.
+
+---
+
+## ⏰ Otomatik Güncelleme (Cron/Systemd)
+
+### Cron ile Haftalık Güncelleme
+
+```bash
+# Crontab'ı düzenle
+sudo crontab -e
+
+# Her Pazar gece 03:00'te çalıştır
+0 3 * * 0 /usr/local/bin/guncel --auto --quiet >> /var/log/arcb-updater/cron.log 2>&1
+```
+
+### Systemd Timer ile (Önerilen)
+
+**1. Service dosyası oluştur:**
+
+```bash
+sudo tee /etc/systemd/system/arcb-updater.service << 'EOF'
+[Unit]
+Description=ARCB Wider Updater
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/guncel --auto --quiet
+Nice=19
+IOSchedulingClass=idle
+EOF
+```
+
+**2. Timer dosyası oluştur:**
+
+```bash
+sudo tee /etc/systemd/system/arcb-updater.timer << 'EOF'
+[Unit]
+Description=ARCB Wider Updater Timer
+
+[Timer]
+OnCalendar=Sun 03:00
+Persistent=true
+RandomizedDelaySec=1800
+
+[Install]
+WantedBy=timers.target
+EOF
+```
+
+**3. Timer'ı etkinleştir:**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now arcb-updater.timer
+
+# Durumu kontrol et
+sudo systemctl status arcb-updater.timer
+```
 
 ---
 
@@ -247,6 +424,150 @@ cat /var/log/arcb-updater/update_*.log | tail -50
 
 # Logrotate'u manuel çalıştır
 sudo logrotate -f /etc/logrotate.d/arcb-wider-updater
+```
+
+---
+
+## 🔧 Sorun Giderme (Troubleshooting)
+
+### "APT kilidi" Hatası
+
+```
+[~] APT kilitli (fuser), bekleniyor... (1/15)
+```
+
+**Sebep:** Başka bir paket yöneticisi çalışıyor (apt, dpkg, Software Center).
+
+**Çözüm:** Diğer işlemin bitmesini bekleyin veya:
+```bash
+# Kilidi kontrol et
+sudo lsof /var/lib/dpkg/lock-frontend
+
+# Zorla kaldır (dikkatli olun!)
+sudo rm /var/lib/dpkg/lock-frontend
+sudo dpkg --configure -a
+```
+
+### "Başka bir güncelleme işlemi çalışıyor" Hatası
+
+```
+[X] HATA: Başka bir güncelleme işlemi zaten çalışıyor.
+```
+
+**Sebep:** Önceki `guncel` komutu hala çalışıyor veya düzgün kapanmadı.
+
+**Çözüm:**
+```bash
+# Kilit dosyasını kontrol et
+sudo ls -la /var/lock/arcb-wider-updater.lock
+
+# Gerekirse sil
+sudo rm /var/lock/arcb-wider-updater.lock
+```
+
+### GPG Doğrulama Başarısız
+
+```
+❌ GPG imza doğrulaması başarısız!
+```
+
+**Sebep:** İndirilen dosya değiştirilmiş veya bozuk olabilir.
+
+**Çözüm:**
+```bash
+# Manuel olarak doğrula
+curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/pubkey.asc | gpg --import
+curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS -o /tmp/SHA256SUMS
+curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS.asc -o /tmp/SHA256SUMS.asc
+gpg --verify /tmp/SHA256SUMS.asc /tmp/SHA256SUMS
+```
+
+### Güncelleme Sonrası Sorun
+
+```bash
+# Eski sürüme geri dön
+sudo cp /usr/local/bin/guncel.bak /usr/local/bin/guncel
+
+# Veya arşivden belirli bir tarihe
+sudo cp /usr/local/bin/guncel.bak_20260128_103045 /usr/local/bin/guncel
+```
+
+### Log Dosyasını İnceleme
+
+```bash
+# Son güncelleme logunu görüntüle
+sudo cat /var/log/arcb-updater/update_*.log | tail -100
+
+# Hataları filtrele
+sudo grep -i "error\|hata\|failed" /var/log/arcb-updater/update_*.log
+```
+
+---
+
+## ❓ Sıkça Sorulan Sorular (FAQ)
+
+### Sistemime zarar verir mi?
+
+**Hayır.** Script sadece resmi paket yöneticilerini (`apt`, `dnf`, `flatpak`, `snap`, `fwupdmgr`) kullanır. Ek olarak:
+- Her güncellemeden önce yedek alınır (`.bak` dosyası)
+- Timeshift/Snapper varsa snapshot oluşturulur
+- Strict mode ile herhangi bir hata anında durur
+- `--dry-run` ile önce ne yapacağını görebilirsiniz
+
+### Root yetkisi neden gerekli?
+
+Sistem paketlerini güncellemek (`apt upgrade`, `dnf upgrade`) root yetkisi gerektirir. Script otomatik olarak `sudo` ister.
+
+### Cron'da neden `--auto` kullanmalıyım?
+
+`--auto` modu:
+- Kullanıcı onayı istemez
+- Self-update'i otomatik kabul eder
+- Cron/systemd için idealdir
+
+### Flatpak'i neden atlayamıyorum?
+
+Atlayabilirsiniz:
+```bash
+sudo guncel --skip flatpak
+```
+
+### Sadece ne güncellenecek görmek istiyorum
+
+```bash
+sudo guncel --dry-run
+```
+
+### Config dosyası nerede?
+
+```bash
+# Örnek config'i kopyala
+sudo cp /usr/local/share/arcb-wider-updater.conf.example /etc/arcb-wider-updater.conf
+
+# Düzenle
+sudo nano /etc/arcb-wider-updater.conf
+```
+
+### Eski logları nasıl silerim?
+
+Loglar `logrotate` ile otomatik yönetilir (haftalık, 4 hafta saklanır). Manuel silmek için:
+```bash
+sudo rm /var/log/arcb-updater/update_*.log
+```
+
+### Güncelleme ne kadar sürer?
+
+Sisteminize ve internet hızınıza bağlı. Tipik olarak:
+- Güncel sistem: 30 saniye - 1 dakika
+- Birkaç güncelleme: 2-5 dakika
+- Büyük güncelleme: 10-30 dakika
+
+### Reboot gerekli mi?
+
+Script size söyler:
+```
+Reboot: Gerekli  ← Kernel veya kritik paket güncellendiyse
+Reboot: Gerekli değil  ← Güvenle devam edebilirsiniz
 ```
 
 ---

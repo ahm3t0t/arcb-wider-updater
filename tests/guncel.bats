@@ -1,8 +1,12 @@
 #!/usr/bin/env bats
 # BATS Unit Tests for guncel - ARCB Wider Updater
-# v4.1.0 "Signed"
 
 load test_helper
+
+# Get current version from script dynamically
+get_script_version() {
+    grep -oP '^VERSION="\K[^"]+' "$GUNCEL_SCRIPT"
+}
 
 # =============================================================================
 # --help OUTPUT TESTS
@@ -15,9 +19,10 @@ load test_helper
 }
 
 @test "--help flag shows version in header" {
+    local version=$(get_script_version)
     run bash "$GUNCEL_SCRIPT" --help
     [ "$status" -eq 0 ]
-    [[ "$output" == *"v4.1.0"* ]]
+    [[ "$output" == *"$version"* ]]
 }
 
 @test "--help flag shows dry-run option" {
@@ -30,10 +35,11 @@ load test_helper
 # VERSION OUTPUT TESTS (via --help header)
 # =============================================================================
 
-@test "--help shows version number 4.1.0" {
+@test "--help shows version number from VERSION variable" {
+    local version=$(get_script_version)
     run bash "$GUNCEL_SCRIPT" --help
     [ "$status" -eq 0 ]
-    [[ "$output" == *"4.1.0"* ]]
+    [[ "$output" == *"$version"* ]]
 }
 
 @test "--help shows codename Signed" {
