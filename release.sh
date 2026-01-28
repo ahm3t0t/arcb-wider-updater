@@ -1,9 +1,11 @@
 #!/bin/bash
 # ARCB Wider Updater - Release Script
-# Kullanım: ./release.sh [patch|minor|major] veya ./release.sh 4.2.0
+# Versiyon: Dev-V1.1.0
+# Kullanım: ./release.sh [patch|minor|major] [-y] veya ./release.sh 4.2.0 -y
 
 set -euo pipefail
 
+RELEASE_SCRIPT_VERSION="Dev-V1.1.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GUNCEL_FILE="$SCRIPT_DIR/guncel"
 
@@ -11,7 +13,11 @@ GUNCEL_FILE="$SCRIPT_DIR/guncel"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m'
+
+# Varsayılan: onay iste
+AUTO_CONFIRM=false
 
 # Mevcut versiyonu al
 get_current_version() {
@@ -44,23 +50,62 @@ bump_version() {
 
 # Kullanım bilgisi
 usage() {
-    echo "Kullanım: $0 [patch|minor|major|X.Y.Z]"
+    echo -e "${BLUE}ARCB Release Script${NC} ($RELEASE_SCRIPT_VERSION)"
+    echo ""
+    echo "Kullanım: $0 [patch|minor|major|X.Y.Z] [-y]"
+    echo ""
+    echo "Seçenekler:"
+    echo "  -y, --yes    Onay sormadan devam et (otomasyon için)"
+    echo "  -v, --version  Script versiyonunu göster"
+    echo "  -h, --help     Bu yardım mesajını göster"
     echo ""
     echo "Örnekler:"
-    echo "  $0 patch     # 4.1.3 -> 4.1.4"
-    echo "  $0 minor     # 4.1.3 -> 4.2.0"
-    echo "  $0 major     # 4.1.3 -> 5.0.0"
-    echo "  $0 4.2.0     # 4.1.3 -> 4.2.0"
+    echo "  $0 patch       # 4.1.3 -> 4.1.4"
+    echo "  $0 minor       # 4.1.3 -> 4.2.0"
+    echo "  $0 major       # 4.1.3 -> 5.0.0"
+    echo "  $0 4.2.0       # 4.1.3 -> 4.2.0"
+    echo "  $0 patch -y    # Onay sormadan patch release"
     exit 1
 }
 
 # Ana akış
 main() {
-    if [[ $# -lt 1 ]]; then
+    local bump_type=""
+
+    # Argümanları parse et
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -y|--yes)
+                AUTO_CONFIRM=true
+                shift
+                ;;
+            -v|--version)
+                echo "release.sh $RELEASE_SCRIPT_VERSION"
+                exit 0
+                ;;
+            -h|--help)
+                usage
+                ;;
+            -*)
+                echo -e "${RED}Bilinmeyen seçenek: $1${NC}"
+                usage
+                ;;
+            *)
+                if [[ -z "$bump_type" ]]; then
+                    bump_type="$1"
+                else
+                    echo -e "${RED}Fazla argüman: $1${NC}"
+                    usage
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    if [[ -z "$bump_type" ]]; then
         usage
     fi
 
-    local bump_type="$1"
     local current_version
     current_version=$(get_current_version)
 
@@ -71,12 +116,16 @@ main() {
     echo -e "${GREEN}Yeni versiyon:${NC}    $new_version"
     echo ""
 
-    # Onay iste
-    read -p "Devam edilsin mi? [y/N] " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "${RED}İptal edildi.${NC}"
-        exit 1
+    # Onay iste (AUTO_CONFIRM değilse)
+    if [[ "$AUTO_CONFIRM" != "true" ]]; then
+        read -p "Devam edilsin mi? [y/N] " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo -e "${RED}İptal edildi.${NC}"
+            exit 1
+        fi
+    else
+        echo -e "${BLUE}Otomatik onay (-y) aktif, devam ediliyor...${NC}"
     fi
 
     # Versiyonu güncelle
