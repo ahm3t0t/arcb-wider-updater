@@ -275,7 +275,7 @@ The script automatically:
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+See [CONTRIBUTING.en.md](CONTRIBUTING.en.md) for contribution guidelines.
 
 ---
 

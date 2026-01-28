@@ -100,4 +100,4 @@
 
 Önerileriniz için [Issue](https://github.com/ahm3t0t/arcb-wider-updater/issues) açabilirsiniz.
 
-Detaylı katkı kılavuzu: [CONTRIBUTING.md](CONTRIBUTING.md)
+Detaylı katkı kılavuzu: [CONTRIBUTING.tr.md](CONTRIBUTING.tr.md)

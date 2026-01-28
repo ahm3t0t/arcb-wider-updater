@@ -18,10 +18,10 @@
 
 ## 🌐 Documentation / Dokümantasyon
 
-| Language | Documentation | Roadmap |
-|----------|---------------|---------|
-| 🇹🇷 Türkçe | [README.tr.md](README.tr.md) | [ROADMAP.tr.md](ROADMAP.tr.md) |
-| 🇬🇧 English | [README.en.md](README.en.md) | [ROADMAP.en.md](ROADMAP.en.md) |
+| Language | Documentation | Roadmap | Changelog |
+|----------|---------------|---------|-----------|
+| 🇹🇷 Türkçe | [README.tr.md](README.tr.md) | [ROADMAP.tr.md](ROADMAP.tr.md) | [CHANGELOG.tr.md](CHANGELOG.tr.md) |
+| 🇬🇧 English | [README.en.md](README.en.md) | [ROADMAP.en.md](ROADMAP.en.md) | [CHANGELOG.en.md](CHANGELOG.en.md) |
 
 ---
 
@@ -117,15 +117,15 @@ bats --tap tests/*.bats
 - SHA256 verification / SHA256 doğrulama
 - Strict mode (`set -Eeuo pipefail`)
 
-See [SECURITY.md](SECURITY.md) for details / Detaylar için bakın.
+Detaylar için / For details: [SECURITY.tr.md](SECURITY.tr.md) | [SECURITY.en.md](SECURITY.en.md)
 
 ---
 
 ## 🤝 Contributing / Katkıda Bulunma
 
-Katkıda bulunmak için [CONTRIBUTING.md](CONTRIBUTING.md) dosyasını inceleyin.
+Katkıda bulunmak için / For contribution guidelines: [CONTRIBUTING.tr.md](CONTRIBUTING.tr.md) | [CONTRIBUTING.en.md](CONTRIBUTING.en.md)
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+Davranış kuralları / Code of conduct: [CODE_OF_CONDUCT.tr.md](CODE_OF_CONDUCT.tr.md) | [CODE_OF_CONDUCT.en.md](CODE_OF_CONDUCT.en.md)
 
 ---
 

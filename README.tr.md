@@ -598,7 +598,7 @@ Script otomatik olarak:
 
 ## 🤝 Katkıda Bulunma
 
-Katkıda bulunmak için [CONTRIBUTING.md](CONTRIBUTING.md) dosyasını inceleyin.
+Katkıda bulunmak için [CONTRIBUTING.tr.md](CONTRIBUTING.tr.md) dosyasını inceleyin.
 
 ---
 
