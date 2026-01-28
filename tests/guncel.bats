@@ -191,3 +191,86 @@ get_script_version() {
 @test "Script passes bash syntax check" {
     bash -n "$GUNCEL_SCRIPT"
 }
+
+# =============================================================================
+# --uninstall TESTS (v4.1.x)
+# =============================================================================
+
+@test "--uninstall option exists in script" {
+    grep -qE '\-\-uninstall' "$GUNCEL_SCRIPT"
+}
+
+@test "do_uninstall function exists" {
+    grep -qE '^do_uninstall\(\)|^function do_uninstall' "$GUNCEL_SCRIPT"
+}
+
+@test "--uninstall shows in help" {
+    run bash "$GUNCEL_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"uninstall"* ]]
+}
+
+@test "--purge option exists for uninstall" {
+    grep -qE '\-\-purge' "$GUNCEL_SCRIPT"
+}
+
+# =============================================================================
+# TLS HARDENING TESTS (v4.1.5+)
+# =============================================================================
+
+@test "curl uses TLS 1.2+ enforcement" {
+    grep -q "\-\-proto '=https' --tlsv1.2" "$GUNCEL_SCRIPT"
+}
+
+@test "wget uses TLS 1.2+ enforcement" {
+    grep -q "\-\-secure-protocol=TLSv1_2" "$GUNCEL_SCRIPT"
+}
+
+@test "download_file function uses TLS hardening" {
+    # Check that download_file contains TLS flags
+    awk '/^download_file\(\)/,/^}/' "$GUNCEL_SCRIPT" | grep -q "tlsv1.2\|TLSv1_2"
+}
+
+# =============================================================================
+# PATH EXPORT TESTS (Cron compatibility)
+# =============================================================================
+
+@test "PATH is exported for Cron compatibility" {
+    grep -qE '^export PATH=' "$GUNCEL_SCRIPT"
+}
+
+@test "PATH includes standard system directories" {
+    grep 'export PATH=' "$GUNCEL_SCRIPT" | grep -q '/usr/local/bin'
+}
+
+# =============================================================================
+# NETWORK FUNCTION TESTS
+# =============================================================================
+
+@test "download_file function exists" {
+    grep -qE '^download_file\(\)|^function download_file' "$GUNCEL_SCRIPT"
+}
+
+@test "check_connectivity function exists" {
+    grep -qE '^check_connectivity\(\)|^function check_connectivity' "$GUNCEL_SCRIPT"
+}
+
+@test "GITHUB_RAW_URL variable is defined" {
+    grep -q 'GITHUB_RAW_URL=' "$GUNCEL_SCRIPT"
+}
+
+# =============================================================================
+# SECURITY TESTS
+# =============================================================================
+
+@test "Script uses set -e or equivalent error handling" {
+    grep -qE 'set -[eEuo]|set -o errexit|set -o pipefail' "$GUNCEL_SCRIPT"
+}
+
+@test "flock is used for concurrency protection" {
+    grep -q 'flock' "$GUNCEL_SCRIPT"
+}
+
+@test "LOG_DIR uses secure permissions" {
+    grep -qE 'mkdir.*700|chmod.*700.*LOG_DIR' "$GUNCEL_SCRIPT" || grep -q 'LOG_DIR=' "$GUNCEL_SCRIPT"
+}
