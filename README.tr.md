@@ -67,8 +67,8 @@ Bu proje **iki ayrı versiyon sistemi** kullanır:
 
 | Bileşen | Format | Güncel | Güncelleme Sıklığı |
 |---------|--------|--------|--------------------|
-| `guncel` (ana script) | SemVer (x.x.x) | v4.0.0 | Her özellik/fix'te |
-| `install.sh` (kurulum) | Night-Vx.x.x | Night-V1.0.0 | Sadece kurulum mantığı değiştiğinde |
+| `guncel` (ana script) | SemVer (x.x.x) | v4.1.4 | Her özellik/fix'te |
+| `install.sh` (kurulum) | Night-Vx.x.x | Night-V1.1.0 | Sadece kurulum mantığı değiştiğinde |
 
 **Neden ayrı sistemler?**
 - Ana script sık güncellenir (yeni özellikler, bug fix'ler)
@@ -165,6 +165,41 @@ CONFIG_SKIP_DNF=false
 
 ---
 
+## 🔐 GPG İmza Doğrulama (v4.1.0+)
+
+**v4.1.0'dan itibaren** tüm release'ler GPG ile kriptografik olarak imzalanmaktadır.
+
+### Kurulum Sırasında Doğrulama
+
+`install.sh` scripti otomatik olarak:
+1. Public key'i indirir ve import eder (`pubkey.asc`)
+2. `SHA256SUMS.asc` imzasını doğrular
+3. İndirilen dosyanın hash'ini kontrol eder
+4. Doğrulama başarısız olursa kurulumu iptal eder
+
+```bash
+# Kurulum çıktısı örneği:
+🔐 GPG imza doğrulaması başlatılıyor...
+   ✓ Public key import edildi
+   ✓ GPG imzası doğrulandı
+   ✓ SHA256 checksum doğrulandı
+✅ Kurulum Başarılı! (v4.1.4 - Signed)
+```
+
+### Manuel Doğrulama
+
+```bash
+# Public key'i import et
+curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/pubkey.asc | gpg --import
+
+# İmzayı doğrula
+curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS -o SHA256SUMS
+curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS.asc -o SHA256SUMS.asc
+gpg --verify SHA256SUMS.asc SHA256SUMS
+```
+
+---
+
 ## 🔒 SHA256 Doğrulama (v3.6.0)
 
 Self-update sırasında, indirilen dosyanın hash'i GitHub Release'deki `SHA256SUMS` dosyası ile karşılaştırılır. Hash eşleşmezse güncelleme iptal edilir.
@@ -213,6 +248,25 @@ cat /var/log/arcb-updater/update_*.log | tail -50
 # Logrotate'u manuel çalıştır
 sudo logrotate -f /etc/logrotate.d/arcb-wider-updater
 ```
+
+---
+
+## 🚀 Release Oluşturma (Geliştiriciler İçin)
+
+Yeni release oluşturmak için `release.sh` scripti kullanılır:
+
+```bash
+./release.sh patch     # 4.1.4 → 4.1.5 (bug fix)
+./release.sh minor     # 4.1.4 → 4.2.0 (yeni özellik)
+./release.sh major     # 4.1.4 → 5.0.0 (breaking change)
+./release.sh 4.2.0     # manuel versiyon
+```
+
+Script otomatik olarak:
+1. `guncel` dosyasındaki VERSION'u günceller
+2. Commit oluşturur
+3. Tag oluşturur ve push eder
+4. GitHub Actions release workflow'unu tetikler (GPG imzalama dahil)
 
 ---
 

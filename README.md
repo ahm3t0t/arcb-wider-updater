@@ -51,8 +51,8 @@ This project uses two separate version systems:
 
 | Component | Format | Current | Update Frequency |
 |-----------|--------|---------|------------------|
-| `guncel` (main script) | SemVer (x.x.x) | v4.0.0 | Her özellik/fix'te / Every feature/fix |
-| `install.sh` (installer) | Night-Vx.x.x | Night-V1.0.0 | Sadece kurulum değiştiğinde / Only when install logic changes |
+| `guncel` (main script) | SemVer (x.x.x) | v4.1.4 | Her özellik/fix'te / Every feature/fix |
+| `install.sh` (installer) | Night-Vx.x.x | Night-V1.1.0 | Sadece kurulum değiştiğinde / Only when install logic changes |
 
 **Neden ayrı? / Why separate?**
 - Ana script sık güncellenir, installer nadiren değişir
@@ -67,6 +67,7 @@ This project uses two separate version systems:
 - ✅ Selective Updates: `--skip` and `--only` flags (including `--skip system`)
 - ✅ Dry-Run Mode: Preview without applying
 - ✅ Config File: `/etc/arcb-wider-updater.conf`
+- ✅ GPG Signature Verification: Cryptographically signed releases (v4.1.0+)
 - ✅ SHA256 Verification: Secure self-updates
 - ✅ Automatic Backup: Rollback capability
 

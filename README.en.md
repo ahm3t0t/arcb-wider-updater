@@ -67,8 +67,8 @@ This project uses **two separate version systems**:
 
 | Component | Format | Current | Update Frequency |
 |-----------|--------|---------|------------------|
-| `guncel` (main script) | SemVer (x.x.x) | v4.0.0 | Every feature/fix |
-| `install.sh` (installer) | Night-Vx.x.x | Night-V1.0.0 | Only when install logic changes |
+| `guncel` (main script) | SemVer (x.x.x) | v4.1.4 | Every feature/fix |
+| `install.sh` (installer) | Night-Vx.x.x | Night-V1.1.0 | Only when install logic changes |
 
 **Why separate systems?**
 - Main script updates frequently (new features, bug fixes)
@@ -165,6 +165,41 @@ CONFIG_SKIP_DNF=false
 
 ---
 
+## 🔐 GPG Signature Verification (v4.1.0+)
+
+From **v4.1.0 onwards**, all releases are cryptographically signed with GPG.
+
+### Verification During Installation
+
+The `install.sh` script automatically:
+1. Downloads and imports the public key (`pubkey.asc`)
+2. Verifies the `SHA256SUMS.asc` signature
+3. Validates the downloaded file's hash
+4. Aborts installation if verification fails
+
+```bash
+# Example installation output:
+🔐 GPG imza doğrulaması başlatılıyor...
+   ✓ Public key import edildi
+   ✓ GPG imzası doğrulandı
+   ✓ SHA256 checksum doğrulandı
+✅ Kurulum Başarılı! (v4.1.4 - Signed)
+```
+
+### Manual Verification
+
+```bash
+# Import public key
+curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/pubkey.asc | gpg --import
+
+# Verify signature
+curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS -o SHA256SUMS
+curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS.asc -o SHA256SUMS.asc
+gpg --verify SHA256SUMS.asc SHA256SUMS
+```
+
+---
+
 ## 🔒 SHA256 Verification (v3.6.0)
 
 During self-update, the downloaded file's hash is compared against the `SHA256SUMS` file from GitHub Releases. If hashes don't match, the update is cancelled.
@@ -213,6 +248,25 @@ cat /var/log/arcb-updater/update_*.log | tail -50
 # Manually run logrotate
 sudo logrotate -f /etc/logrotate.d/arcb-wider-updater
 ```
+
+---
+
+## 🚀 Creating Releases (For Developers)
+
+Use the `release.sh` script to create new releases:
+
+```bash
+./release.sh patch     # 4.1.4 → 4.1.5 (bug fix)
+./release.sh minor     # 4.1.4 → 4.2.0 (new feature)
+./release.sh major     # 4.1.4 → 5.0.0 (breaking change)
+./release.sh 4.2.0     # manual version
+```
+
+The script automatically:
+1. Updates VERSION in `guncel` file
+2. Creates a commit
+3. Creates and pushes a tag
+4. Triggers GitHub Actions release workflow (including GPG signing)
 
 ---
 

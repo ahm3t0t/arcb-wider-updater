@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.4] - 2026-01-28
+### Changed
+- VERSION: 4.1.3 → 4.1.4
+- Release automation test with `release.sh` script
+
+## [4.1.3] - 2026-01-28
+### Changed
+- VERSION: 4.1.2 → 4.1.3
+- Synchronized version number between code and GitHub release
+
+## [4.1.2] - 2026-01-28
+### Fixed
+- **GitHub Actions GPG Signing:** Added `--batch --yes` flags for CI environment
+  - Fixes "cannot open '/dev/tty'" error in non-interactive environment
+
+### Changed
+- VERSION: 4.1.0 → 4.1.2
+- CODENAME: "Signed"
+
+## [4.1.0] - 2026-01-28
+### Added
+- **Modular Update Functions:** Each backend (APT, DNF, Flatpak, Snap, Firmware) now has its own dedicated function
+  - `update_apt()`, `update_dnf()`, `update_flatpak()`, `update_snap()`, `update_firmware()`
+  - Cleaner code structure, easier to maintain and extend
+
+### Changed
+- VERSION: 4.0.0 → 4.1.0
+- CODENAME: "Polished" → "Signed"
+- Refactored `perform_updates()` to use modular functions
+
+## [Night-V1.1.0] - 2026-01-28 (install.sh)
+### Added
+- **GPG Signature Verification:** Full cryptographic verification during installation
+  - Downloads and imports public key from `pubkey.asc`
+  - Verifies `SHA256SUMS.asc` signature against public key
+  - Validates downloaded file hash against signed checksums
+  - Installation aborted if verification fails
+- New variables: `GPG_PUBKEY_URL`, `GPG_SHA256SUMS_URL`, `GPG_SHA256SUMS_SIG_URL`
+- `verify_gpg_signature()` function with graceful fallback if GPG not installed
+
+### Security
+- **Supply Chain Security:** Prevents installation of tampered scripts
+- GPG verification skipped for local file installations (developer workflow)
+
+### Changed
+- install.sh version: Night-V1.0.0 → Night-V1.1.0
+- Banner updated: ">>> ARCB Wider Updater Kurulum (Night-V1.1.0)"
+
 ## [4.0.0] - 2026-01-26
 ### Changed
 - **Header Simplified:** Removed version info from script header comment, keeping only project name and GitHub URL
