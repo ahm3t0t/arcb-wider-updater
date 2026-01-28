@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# ARCB Updater Installer Night-V1.0.0
-# Sync: Night-V1.0.0 | install.sh artık ayrı versiyon sistemi kullanıyor
+# ARCB Updater Installer Night-V1.1.0
+# Sync: Night-V1.1.0 | GPG imza doğrulama desteği eklendi
 
 # 1. HATA YÖNETİMİ
 set -Eeuo pipefail
@@ -17,6 +17,12 @@ INSTALL_PATH="/usr/local/bin/guncel"
 REPO_URL="https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/guncel"
 LOGROTATE_REPO_URL="https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/logrotate.d/arcb-wider-updater"
 LOGROTATE_DEST="/etc/logrotate.d/arcb-wider-updater"
+
+# GPG Doğrulama URL'leri (v1.1.0)
+GPG_PUBKEY_URL="https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/pubkey.asc"
+GPG_SHA256SUMS_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS"
+GPG_SHA256SUMS_SIG_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS.asc"
+GPG_KEY_ID="D727A928B6C776B5AC5ABA3B393D543D891B6206"
 
 # --- SMART LOCAL FILE DETECTION ---
 # 1. Scriptin kendi bulunduğu dizini bul (Pipe ile gelmiyorsa)
@@ -37,10 +43,13 @@ elif [[ -f "$LOCAL_CWD_FILE" && -s "$LOCAL_CWD_FILE" ]]; then
     SOURCE_TYPE="Local (Current Dir)"
 fi
 
-# 2. TEMP DOSYA
+# 2. TEMP DOSYALAR
 TEMP_FILE="$(mktemp /tmp/guncel_install_XXXXXX)"
 TEMP_LOGROTATE="$(mktemp /tmp/logrotate_install_XXXXXX)"
-trap 'rm -f "$TEMP_FILE" "$TEMP_LOGROTATE"' EXIT
+TEMP_PUBKEY="$(mktemp /tmp/guncel_pubkey_XXXXXX)"
+TEMP_SHA256SUMS="$(mktemp /tmp/guncel_sha256sums_XXXXXX)"
+TEMP_SHA256SUMS_SIG="$(mktemp /tmp/guncel_sha256sums_sig_XXXXXX)"
+trap 'rm -f "$TEMP_FILE" "$TEMP_LOGROTATE" "$TEMP_PUBKEY" "$TEMP_SHA256SUMS" "$TEMP_SHA256SUMS_SIG"' EXIT
 
 # --- ROOT VE ORTAM KONTROLÜ ---
 if [[ $EUID -ne 0 ]]; then
@@ -82,7 +91,81 @@ download_file() {
     fi
 }
 
-printf "\n%s>>> ARCB Wider Updater Kurulum (Night-V1.0.0)%s\n" "$BLUE" "$NC"
+# GPG doğrulama fonksiyonu (v1.1.0)
+verify_gpg_signature() {
+    local file="$1"
+    local skip_gpg=false
+
+    # GPG kurulu mu?
+    if ! command -v gpg &> /dev/null; then
+        printf "%s⚠️  GPG bulunamadı, imza doğrulama atlanıyor.%s\n" "$YELLOW" "$NC"
+        printf "%s   Kurulum için: apt install gnupg%s\n" "$BLUE" "$NC"
+        return 0
+    fi
+
+    printf "%s🔐 GPG imza doğrulaması başlatılıyor...%s\n" "$BLUE" "$NC"
+
+    # Public key'i indir ve import et
+    if curl -fsSL "$GPG_PUBKEY_URL" -o "$TEMP_PUBKEY" 2>/dev/null || \
+       wget -qO "$TEMP_PUBKEY" "$GPG_PUBKEY_URL" 2>/dev/null; then
+        if gpg --import "$TEMP_PUBKEY" 2>/dev/null; then
+            printf "%s   ✓ Public key import edildi%s\n" "$GREEN" "$NC"
+        else
+            printf "%s⚠️  Public key import edilemedi, GPG doğrulama atlanıyor.%s\n" "$YELLOW" "$NC"
+            skip_gpg=true
+        fi
+    else
+        printf "%s⚠️  Public key indirilemedi, GPG doğrulama atlanıyor.%s\n" "$YELLOW" "$NC"
+        skip_gpg=true
+    fi
+
+    if [[ "$skip_gpg" == "true" ]]; then
+        return 0
+    fi
+
+    # SHA256SUMS ve imzasını indir
+    if ! curl -fsSL "$GPG_SHA256SUMS_URL" -o "$TEMP_SHA256SUMS" 2>/dev/null && \
+       ! wget -qO "$TEMP_SHA256SUMS" "$GPG_SHA256SUMS_URL" 2>/dev/null; then
+        printf "%s⚠️  SHA256SUMS indirilemedi, GPG doğrulama atlanıyor.%s\n" "$YELLOW" "$NC"
+        return 0
+    fi
+
+    if ! curl -fsSL "$GPG_SHA256SUMS_SIG_URL" -o "$TEMP_SHA256SUMS_SIG" 2>/dev/null && \
+       ! wget -qO "$TEMP_SHA256SUMS_SIG" "$GPG_SHA256SUMS_SIG_URL" 2>/dev/null; then
+        printf "%s⚠️  SHA256SUMS.asc indirilemedi, GPG doğrulama atlanıyor.%s\n" "$YELLOW" "$NC"
+        return 0
+    fi
+
+    # GPG imza doğrulama
+    if gpg --verify "$TEMP_SHA256SUMS_SIG" "$TEMP_SHA256SUMS" 2>/dev/null; then
+        printf "%s   ✓ GPG imzası doğrulandı%s\n" "$GREEN" "$NC"
+    else
+        printf "%s❌ GPG imza doğrulaması başarısız!%s\n" "$RED" "$NC"
+        printf "%s   Dosya değiştirilmiş olabilir. Kurulum iptal edildi.%s\n" "$RED" "$NC"
+        exit 1
+    fi
+
+    # SHA256 checksum doğrulama
+    local expected_hash
+    expected_hash=$(grep "guncel" "$TEMP_SHA256SUMS" 2>/dev/null | awk '{print $1}')
+    local actual_hash
+    actual_hash=$(sha256sum "$file" | awk '{print $1}')
+
+    if [[ -n "$expected_hash" && "$expected_hash" == "$actual_hash" ]]; then
+        printf "%s   ✓ SHA256 checksum doğrulandı%s\n" "$GREEN" "$NC"
+    elif [[ -n "$expected_hash" ]]; then
+        printf "%s❌ SHA256 checksum uyuşmuyor!%s\n" "$RED" "$NC"
+        printf "%s   Beklenen: %s%s\n" "$RED" "$expected_hash" "$NC"
+        printf "%s   Bulunan:  %s%s\n" "$RED" "$actual_hash" "$NC"
+        exit 1
+    else
+        printf "%s⚠️  SHA256SUMS dosyasında 'guncel' bulunamadı, checksum atlanıyor.%s\n" "$YELLOW" "$NC"
+    fi
+
+    return 0
+}
+
+printf "\n%s>>> ARCB Wider Updater Kurulum (Night-V1.1.0)%s\n" "$BLUE" "$NC"
 
 # İndirme veya Kopyalama Mantığı
 if [[ -n "$SOURCE_FILE" ]]; then
@@ -108,6 +191,13 @@ fi
 if ! grep -q "ARCB Wider Updater" "$TEMP_FILE"; then
     printf "%s❌ Dosya imza doğrulaması başarısız!%s\n" "$RED" "$NC"
     exit 1
+fi
+
+# 3.1 GPG DOĞRULAMA (v1.1.0) - Uzaktan indirme durumunda
+if [[ -z "$SOURCE_FILE" ]]; then
+    verify_gpg_signature "$TEMP_FILE"
+else
+    printf "%s📂 Yerel dosya kullanılıyor, GPG doğrulama atlandı.%s\n" "$YELLOW" "$NC"
 fi
 
 # 4. KURULUM VE YEDEKLEME (v3.6.0: Basit .bak yedek)

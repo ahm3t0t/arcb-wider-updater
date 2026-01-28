@@ -5,8 +5,8 @@
 #
 
 # --- AYARLAR ---
-VERSION="4.0.0"
-CODENAME="Polished"
+VERSION="4.1.0"
+CODENAME="Signed"
 LOG_DIR="/var/log/arcb-updater"
 LOG_FILE="$LOG_DIR/update_$(date +%Y%m%d_%H%M%S).log"
 GITHUB_RAW_URL="https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/guncel"
@@ -588,6 +588,206 @@ should_run_backend() {
     return 0
 }
 
+# --- v4.1.0: MODÜLER GÜNCELLEME FONKSİYONLARI ---
+
+# APT Güncellemesi
+update_apt() {
+    if ! command -v apt-get &> /dev/null; then return 1; fi
+    if [[ "$SKIP_PKG_MANAGER" == "true" ]]; then return 1; fi
+    if ! should_run_backend "apt"; then return 1; fi
+
+    local apt_opts=()
+    if [[ "${AUTO_MODE:-false}" == "true" ]]; then
+        export DEBIAN_FRONTEND=noninteractive
+        apt_opts=(-o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold")
+    fi
+
+    wait_for_lock
+    print_header "APT: Güncelleme Başlıyor"
+
+    if [[ "$VERBOSE_MODE" == "true" ]]; then
+        apt-get update 2>&1 | tee -a "$LOG_FILE"
+    else
+        apt-get update >> "$LOG_FILE" 2>&1
+    fi
+
+    print_header "APT: Dist-Upgrade"
+    local apt_upgradable
+    apt_upgradable=$(apt-get -s dist-upgrade 2>/dev/null | grep -c "^Inst " || echo "0")
+    APT_COUNT=${apt_upgradable:-0}
+
+    if [[ "$VERBOSE_MODE" == "true" ]]; then
+        apt-get dist-upgrade -y "${apt_opts[@]}" 2>&1 | tee -a "$LOG_FILE"
+    else
+        apt-get dist-upgrade -y "${apt_opts[@]}" >> "$LOG_FILE" 2>&1
+    fi
+
+    print_header "APT: Temizlik"
+    if [[ "$VERBOSE_MODE" == "true" ]]; then
+        apt-get autoremove -y "${apt_opts[@]}" 2>&1 | tee -a "$LOG_FILE"
+        apt-get autoclean -y "${apt_opts[@]}" 2>&1 | tee -a "$LOG_FILE"
+    else
+        apt-get autoremove -y "${apt_opts[@]}" >> "$LOG_FILE" 2>&1
+        apt-get autoclean -y "${apt_opts[@]}" >> "$LOG_FILE" 2>&1
+    fi
+
+    print_info "APT: $APT_COUNT paket güncellendi."
+    return 0
+}
+
+# DNF Güncellemesi
+update_dnf() {
+    if ! command -v dnf &> /dev/null; then return 1; fi
+    if [[ "$SKIP_PKG_MANAGER" == "true" ]]; then return 1; fi
+    if ! should_run_backend "dnf"; then return 1; fi
+
+    if ! wait_for_dnf_lock; then
+        print_error "DNF kilidi alınamadı, DNF güncellemesi atlanıyor."
+        return 1
+    fi
+
+    print_header "DNF: Güncelleme"
+
+    local dnf_temp
+    dnf_temp=$(mktemp)
+
+    if [[ "$VERBOSE_MODE" == "true" ]]; then
+        dnf upgrade --refresh -y 2>&1 | tee -a "$LOG_FILE" | tee "$dnf_temp"
+    else
+        dnf upgrade --refresh -y 2>&1 | tee "$dnf_temp" >> "$LOG_FILE"
+    fi
+
+    # DNF sayacını parse et
+    DNF_COUNT=$(grep -E "^Upgrading:" "$dnf_temp" 2>/dev/null | grep -oP '\d+' | head -1 || echo "0")
+    if [[ -z "$DNF_COUNT" || "$DNF_COUNT" == "0" ]]; then
+        DNF_COUNT=$(grep -cE "^\s*Upgrading\s+[a-zA-Z]" "$dnf_temp" 2>/dev/null || echo "0")
+    fi
+    if [[ -z "$DNF_COUNT" || "$DNF_COUNT" == "0" ]]; then
+        DNF_COUNT=$(grep -oP "Upgraded:\s*\K\d+" "$dnf_temp" 2>/dev/null || echo "0")
+    fi
+    if [[ -z "$DNF_COUNT" || "$DNF_COUNT" == "0" ]]; then
+        DNF_COUNT=$(grep -cE "→|->|\s+[0-9]+\.[0-9]+.*\s+[0-9]+\.[0-9]+" "$dnf_temp" 2>/dev/null || echo "0")
+    fi
+
+    rm -f "$dnf_temp"
+    DNF_COUNT=${DNF_COUNT:-0}
+
+    print_info "DNF: $DNF_COUNT paket güncellendi."
+    return 0
+}
+
+# Flatpak Güncellemesi
+update_flatpak() {
+    if ! command -v flatpak &> /dev/null; then return 1; fi
+    if [[ "$SKIP_FLATPAK" == "true" ]]; then return 1; fi
+    if ! should_run_backend "flatpak"; then return 1; fi
+
+    print_header "Flatpak: Güncelleme"
+
+    local flatpak_upgradable
+    flatpak_upgradable=$(flatpak remote-ls --updates 2>/dev/null | wc -l | tr -cd '0-9')
+    flatpak_upgradable=${flatpak_upgradable:-0}
+
+    local flatpak_temp
+    flatpak_temp=$(mktemp)
+
+    if [[ "$VERBOSE_MODE" == "true" ]]; then
+        flatpak update -y 2>&1 | tee -a "$LOG_FILE" | tee "$flatpak_temp" || print_warning "Flatpak hata verdi."
+        flatpak uninstall --unused -y 2>&1 | tee -a "$LOG_FILE" || true
+    else
+        flatpak update -y 2>&1 | tee "$flatpak_temp" >> "$LOG_FILE" || print_warning "Flatpak hata verdi."
+        flatpak uninstall --unused -y >> "$LOG_FILE" 2>&1 || true
+    fi
+
+    if grep -qi "Nothing to do" "$flatpak_temp" 2>/dev/null; then
+        FLATPAK_COUNT=0
+    else
+        local flatpak_updated
+        flatpak_updated=$(grep -cE "^[0-9]+\.\s" "$flatpak_temp" 2>/dev/null | tr -cd '0-9')
+        flatpak_updated=${flatpak_updated:-0}
+        if [[ "$flatpak_updated" -gt 0 ]]; then
+            FLATPAK_COUNT=$flatpak_updated
+        else
+            FLATPAK_COUNT=${flatpak_upgradable:-0}
+        fi
+    fi
+
+    rm -f "$flatpak_temp"
+
+    print_info "Flatpak: $FLATPAK_COUNT uygulama güncellendi."
+    return 0
+}
+
+# Snap Güncellemesi
+update_snap() {
+    if ! command -v snap &> /dev/null; then return 1; fi
+    if [[ "$SKIP_SNAP" == "true" ]]; then return 1; fi
+    if ! should_run_backend "snap"; then return 1; fi
+
+    print_header "Snap: Güncelleme"
+
+    local snap_upgradable
+    snap_upgradable=$(snap refresh --list 2>/dev/null | tail -n +2 | wc -l | tr -cd '0-9')
+    snap_upgradable=${snap_upgradable:-0}
+    SNAP_COUNT=${snap_upgradable:-0}
+
+    if [[ "$VERBOSE_MODE" == "true" ]]; then
+        snap refresh 2>&1 | tee -a "$LOG_FILE" || print_warning "Snap hata verdi."
+    else
+        snap refresh >> "$LOG_FILE" 2>&1 || print_warning "Snap hata verdi."
+    fi
+
+    print_info "Snap: $SNAP_COUNT paket güncellendi."
+    return 0
+}
+
+# Firmware Güncellemesi
+update_firmware() {
+    if ! command -v fwupdmgr &> /dev/null; then return 1; fi
+    if [[ "$SKIP_FWUPD" == "true" ]]; then return 1; fi
+    if ! should_run_backend "fwupd"; then return 1; fi
+
+    print_header "Firmware: Kontrol"
+
+    local fwupd_output fwupd_exit_code=0
+    fwupd_output=$(fwupdmgr get-updates 2>&1) || fwupd_exit_code=$?
+
+    if [[ $fwupd_exit_code -eq 2 ]] || [[ "$fwupd_output" =~ "No updatable devices" ]]; then
+        print_info "Firmware: Güncellenebilir cihaz bulunamadı."
+        FWUPD_COUNT=0
+        return 0
+    fi
+
+    if [[ $fwupd_exit_code -ne 0 ]]; then
+        print_warning "Firmware kontrolü başarısız (exit code: $fwupd_exit_code)"
+        FWUPD_COUNT=0
+        return 1
+    fi
+
+    local fwupd_upgradable
+    fwupd_upgradable=$(echo "$fwupd_output" | grep -c "New version" | tr -cd '0-9' || echo "0")
+    fwupd_upgradable=${fwupd_upgradable:-0}
+    FWUPD_COUNT=${fwupd_upgradable:-0}
+
+    if [[ "${AUTO_MODE:-false}" == "true" ]]; then
+        { fwupdmgr refresh --force || true; fwupdmgr update -y || true; } >> "$LOG_FILE" 2>&1
+        if [[ "$QUIET_MODE" != "true" ]]; then
+            printf '%sTamamlandı (Detaylar log dosyasında).%s\n' "${GREEN}" "${NC}"
+        fi
+    else
+        if [[ "$VERBOSE_MODE" == "true" ]]; then
+            fwupdmgr refresh --force 2>&1 | tee -a "$LOG_FILE" || true
+            fwupdmgr update -y 2>&1 | tee -a "$LOG_FILE" || true
+        else
+            fwupdmgr refresh --force >> "$LOG_FILE" 2>&1 || true
+            fwupdmgr update -y >> "$LOG_FILE" 2>&1 || true
+        fi
+    fi
+
+    print_info "Firmware: $FWUPD_COUNT güncelleme."
+    return 0
+}
+
 # --- v3.8.0: DRY-RUN GÜNCELLEME LİSTELEME ---
 perform_dry_run_check() {
     print_header "[DRY-RUN] Mevcut Güncellemeler Kontrol Ediliyor"
@@ -682,181 +882,15 @@ perform_updates() {
         perform_dry_run_check
         return
     fi
-    
-    local apt_opts=()
-    if [[ "${AUTO_MODE:-false}" == "true" ]]; then
-        export DEBIAN_FRONTEND=noninteractive
-        apt_opts=(-o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold")
-    fi
 
-    # APT Güncellemesi
-    if command -v apt-get &> /dev/null && [[ "$SKIP_PKG_MANAGER" != "true" ]] && should_run_backend "apt"; then
-        wait_for_lock
-        print_header "APT: Güncelleme Başlıyor"
-        
-        if [[ "$VERBOSE_MODE" == "true" ]]; then
-            apt-get update 2>&1 | tee -a "$LOG_FILE"
-        else
-            apt-get update >> "$LOG_FILE" 2>&1
-        fi
-        
-        print_header "APT: Dist-Upgrade"
-        local apt_upgradable
-        apt_upgradable=$(apt-get -s dist-upgrade 2>/dev/null | grep -c "^Inst " || echo "0")
-        APT_COUNT=${apt_upgradable:-0}
-        
-        if [[ "$VERBOSE_MODE" == "true" ]]; then
-            apt-get dist-upgrade -y "${apt_opts[@]}" 2>&1 | tee -a "$LOG_FILE"
-        else
-            apt-get dist-upgrade -y "${apt_opts[@]}" >> "$LOG_FILE" 2>&1
-        fi
-        
-        print_header "APT: Temizlik"
-        if [[ "$VERBOSE_MODE" == "true" ]]; then
-            apt-get autoremove -y "${apt_opts[@]}" 2>&1 | tee -a "$LOG_FILE"
-            apt-get autoclean -y "${apt_opts[@]}" 2>&1 | tee -a "$LOG_FILE"
-        else
-            apt-get autoremove -y "${apt_opts[@]}" >> "$LOG_FILE" 2>&1
-            apt-get autoclean -y "${apt_opts[@]}" >> "$LOG_FILE" 2>&1
-        fi
-        
-        print_info "APT: $APT_COUNT paket güncellendi."
+    # v4.1.0: Modüler güncelleme - her backend ayrı fonksiyonda
+    # APT veya DNF (birini çalıştır)
+    update_apt || update_dnf || true
 
-    elif command -v dnf &> /dev/null && [[ "$SKIP_PKG_MANAGER" != "true" ]] && should_run_backend "dnf"; then
-        if ! wait_for_dnf_lock; then
-            print_error "DNF kilidi alınamadı, DNF güncellemesi atlanıyor."
-        else
-            print_header "DNF: Güncelleme"
-            
-            # v3.6.1 FIX: DNF sayacını güncelleme çıktısından al
-            local dnf_temp
-            dnf_temp=$(mktemp)
-            
-            if [[ "$VERBOSE_MODE" == "true" ]]; then
-                dnf upgrade --refresh -y 2>&1 | tee -a "$LOG_FILE" | tee "$dnf_temp"
-            else
-                dnf upgrade --refresh -y 2>&1 | tee "$dnf_temp" >> "$LOG_FILE"
-            fi
-            
-            # v3.6.1 FIX: Parse DNF output for actual upgraded count
-            # Look for "Upgrading:" line in Transaction Summary or count upgraded packages
-            DNF_COUNT=$(grep -E "^Upgrading:" "$dnf_temp" 2>/dev/null | grep -oP '\d+' | head -1 || echo "0")
-            if [[ -z "$DNF_COUNT" || "$DNF_COUNT" == "0" ]]; then
-                # Alternative: count "Upgrading <package>" lines
-                DNF_COUNT=$(grep -cE "^\s*Upgrading\s+[a-zA-Z]" "$dnf_temp" 2>/dev/null || echo "0")
-            fi
-            if [[ -z "$DNF_COUNT" || "$DNF_COUNT" == "0" ]]; then
-                # Alternative: look for "Upgraded:" in summary
-                DNF_COUNT=$(grep -oP "Upgraded:\s*\K\d+" "$dnf_temp" 2>/dev/null || echo "0")
-            fi
-            if [[ -z "$DNF_COUNT" || "$DNF_COUNT" == "0" ]]; then
-                # Alternative: count lines with version upgrade pattern (x.x.x -> y.y.y)
-                DNF_COUNT=$(grep -cE "→|->|\s+[0-9]+\.[0-9]+.*\s+[0-9]+\.[0-9]+" "$dnf_temp" 2>/dev/null || echo "0")
-            fi
-            
-            rm -f "$dnf_temp"
-            DNF_COUNT=${DNF_COUNT:-0}
-            
-            print_info "DNF: $DNF_COUNT paket güncellendi."
-        fi
-    fi
-
-    # Flatpak Güncellemesi
-    if command -v flatpak &> /dev/null && [[ "$SKIP_FLATPAK" != "true" ]] && should_run_backend "flatpak"; then
-        print_header "Flatpak: Güncelleme"
-        
-        # v3.6.1 FIX: Flatpak sayacını güncelleme ÖNCE al
-        local flatpak_upgradable
-        flatpak_upgradable=$(flatpak remote-ls --updates 2>/dev/null | wc -l | tr -cd '0-9')
-        flatpak_upgradable=${flatpak_upgradable:-0}
-        
-        local flatpak_temp
-        flatpak_temp=$(mktemp)
-        
-        if [[ "$VERBOSE_MODE" == "true" ]]; then
-            flatpak update -y 2>&1 | tee -a "$LOG_FILE" | tee "$flatpak_temp" || print_warning "Flatpak hata verdi."
-            flatpak uninstall --unused -y 2>&1 | tee -a "$LOG_FILE" || true
-        else
-            flatpak update -y 2>&1 | tee "$flatpak_temp" >> "$LOG_FILE" || print_warning "Flatpak hata verdi."
-            flatpak uninstall --unused -y >> "$LOG_FILE" 2>&1 || true
-        fi
-        
-        # v3.6.1 FIX: Check if "Nothing to do" in output - means no updates
-        if grep -qi "Nothing to do" "$flatpak_temp" 2>/dev/null; then
-            FLATPAK_COUNT=0
-        else
-            # Count actual updates from output or use pre-count
-            local flatpak_updated
-            flatpak_updated=$(grep -cE "^[0-9]+\.\s" "$flatpak_temp" 2>/dev/null | tr -cd '0-9')
-            flatpak_updated=${flatpak_updated:-0}
-            if [[ "$flatpak_updated" -gt 0 ]]; then
-                FLATPAK_COUNT=$flatpak_updated
-            else
-                FLATPAK_COUNT=${flatpak_upgradable:-0}
-            fi
-        fi
-        
-        rm -f "$flatpak_temp"
-        
-        print_info "Flatpak: $FLATPAK_COUNT uygulama güncellendi."
-    fi
-
-    # Snap Güncellemesi
-    if command -v snap &> /dev/null && [[ "$SKIP_SNAP" != "true" ]] && should_run_backend "snap"; then
-        print_header "Snap: Güncelleme"
-        
-        local snap_upgradable
-        snap_upgradable=$(snap refresh --list 2>/dev/null | tail -n +2 | wc -l | tr -cd '0-9')
-        snap_upgradable=${snap_upgradable:-0}
-        SNAP_COUNT=${snap_upgradable:-0}
-        
-        if [[ "$VERBOSE_MODE" == "true" ]]; then
-            snap refresh 2>&1 | tee -a "$LOG_FILE" || print_warning "Snap hata verdi."
-        else
-            snap refresh >> "$LOG_FILE" 2>&1 || print_warning "Snap hata verdi."
-        fi
-        
-        print_info "Snap: $SNAP_COUNT paket güncellendi."
-    fi
-    
-    # Firmware Güncellemesi - v3.8.1 FIX: "No updatable devices" durumunda exit 0
-    if command -v fwupdmgr &> /dev/null && [[ "$SKIP_FWUPD" != "true" ]] && should_run_backend "fwupd"; then
-        print_header "Firmware: Kontrol"
-        
-        local fwupd_output fwupd_exit_code=0
-        fwupd_output=$(fwupdmgr get-updates 2>&1) || fwupd_exit_code=$?
-        
-        # fwupdmgr returns exit code 2 for "No updatable devices" - this is not an error
-        if [[ $fwupd_exit_code -eq 2 ]] || [[ "$fwupd_output" =~ "No updatable devices" ]]; then
-            print_info "Firmware: Güncellenebilir cihaz bulunamadı."
-            FWUPD_COUNT=0
-        elif [[ $fwupd_exit_code -ne 0 ]]; then
-            print_warning "Firmware kontrolü başarısız (exit code: $fwupd_exit_code)"
-            FWUPD_COUNT=0
-        else
-            local fwupd_upgradable
-            fwupd_upgradable=$(echo "$fwupd_output" | grep -c "New version" | tr -cd '0-9' || echo "0")
-            fwupd_upgradable=${fwupd_upgradable:-0}
-            FWUPD_COUNT=${fwupd_upgradable:-0}
-            
-            if [[ "${AUTO_MODE:-false}" == "true" ]]; then
-                { fwupdmgr refresh --force || true; fwupdmgr update -y || true; } >> "$LOG_FILE" 2>&1
-                if [[ "$QUIET_MODE" != "true" ]]; then
-                    printf '%sTamamlandı (Detaylar log dosyasında).%s\n' "${GREEN}" "${NC}"
-                fi
-            else
-                if [[ "$VERBOSE_MODE" == "true" ]]; then
-                    fwupdmgr refresh --force 2>&1 | tee -a "$LOG_FILE" || true
-                    fwupdmgr update -y 2>&1 | tee -a "$LOG_FILE" || true
-                else
-                    fwupdmgr refresh --force >> "$LOG_FILE" 2>&1 || true
-                    fwupdmgr update -y >> "$LOG_FILE" 2>&1 || true
-                fi
-            fi
-        fi
-        
-        print_info "Firmware: $FWUPD_COUNT güncelleme."
-    fi
+    # Diğer backend'ler
+    update_flatpak || true
+    update_snap || true
+    update_firmware || true
 }
 
 show_help() {
