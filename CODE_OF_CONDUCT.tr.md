@@ -58,7 +58,7 @@ hareket etmek sayılabilir.
 
 Taciz edici, rahatsız edici veya başka türlü kabul edilemez davranış
 örnekleri, uygulamadan sorumlu topluluk liderlerine şu adresten
-bildirilebilir: ahmet@tanrikulu.net
+bildirilebilir: meet@calmkernel.tr
 
 Tüm şikayetler derhal ve adil bir şekilde incelenecek ve soruşturulacaktır.
 
