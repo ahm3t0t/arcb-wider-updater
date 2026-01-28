@@ -70,11 +70,12 @@ Tek komut. Hepsi bir arada. Güvenli ve izlenebilir.
 
 ## 🚀 Özellikler
 
-* **Multi-Distro Desteği (v5.0 BigFour):**
+* **Multi-Distro Desteği (v5.1 BigFive):**
     * ✅ **Debian/Ubuntu/Zorin:** `APT` paket yöneticisi ve `Timeshift` yedekleme.
     * ✅ **Fedora/RHEL:** `DNF` paket yöneticisi ve `Snapper` yedekleme.
     * ✅ **Arch/Manjaro/EndeavourOS:** `Pacman` paket yöneticisi (v5.0+).
     * ✅ **openSUSE Leap/Tumbleweed:** `Zypper` paket yöneticisi (v5.0+).
+    * ✅ **Alpine Linux:** `APK` paket yöneticisi (v5.1+).
 * **Tam Kapsam:**
     * Sistem paketleri, Flatpak, Snap ve `fwupdmgr` (Firmware) güncellemeleri.
 * **Ironclad Güvenlik:**

@@ -42,10 +42,10 @@ get_script_version() {
     [[ "$output" == *"$version"* ]]
 }
 
-@test "--help shows codename Signed" {
+@test "--help shows codename BigFive" {
     run bash "$GUNCEL_SCRIPT" --help
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Signed"* ]]
+    [[ "$output" == *"BigFive"* ]]
 }
 
 # =============================================================================
@@ -315,6 +315,28 @@ get_script_version() {
     [[ "$output" == *"zypper"* ]]
 }
 
-@test "BigFour execution chain exists" {
-    grep -q 'update_apt || update_dnf || update_pacman || update_zypper' "$GUNCEL_SCRIPT"
+@test "BigFive execution chain exists" {
+    grep -q 'update_apt || update_dnf || update_pacman || update_zypper || update_apk' "$GUNCEL_SCRIPT"
+}
+
+# =============================================================================
+# v5.1 BIGFIVE TESTS (Alpine apk)
+# =============================================================================
+
+@test "update_apk function exists" {
+    grep -qE '^update_apk\(\)|^function update_apk' "$GUNCEL_SCRIPT"
+}
+
+@test "APK_COUNT variable is initialized" {
+    grep -q '^APK_COUNT=' "$GUNCEL_SCRIPT"
+}
+
+@test "should_run_backend recognizes apk" {
+    grep -q '"apk"' "$GUNCEL_SCRIPT"
+}
+
+@test "help shows apk option" {
+    run bash "$GUNCEL_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"apk"* ]]
 }

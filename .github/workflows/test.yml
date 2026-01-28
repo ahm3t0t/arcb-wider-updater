@@ -34,7 +34,7 @@ jobs:
       - name: Run BATS tests
         run: bats tests/*.bats
 
-  # v5.0 BigFour: Multi-distro install test matrix
+  # v5.1 BigFive: Multi-distro install test matrix
   multi-distro-test:
     name: Install Test (${{ matrix.distro }})
     runs-on: ubuntu-latest
@@ -58,6 +58,10 @@ jobs:
             image: opensuse/tumbleweed:latest
             pkg_manager: zypper
             install_deps: zypper refresh && zypper install -y curl wget gpg2 ca-certificates gawk
+          - distro: alpine
+            image: alpine:3.20
+            pkg_manager: apk
+            install_deps: apk update && apk add --no-cache bash curl wget gnupg ca-certificates coreutils gawk
 
     container:
       image: ${{ matrix.image }}
