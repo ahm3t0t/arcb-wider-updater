@@ -20,14 +20,16 @@ jobs:
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
       
       - name: Create signed checksums
+        env:
+          GPG_TTY: ""
         run: |
           # SHA256 checksums oluştur
           sha256sum guncel install.sh > SHA256SUMS
-          
-          # GPG ile imzala
-          gpg --armor --detach-sign SHA256SUMS
-          gpg --armor --detach-sign guncel
-          gpg --armor --detach-sign install.sh
+
+          # GPG ile imzala (batch mode for CI)
+          gpg --batch --yes --armor --detach-sign SHA256SUMS
+          gpg --batch --yes --armor --detach-sign guncel
+          gpg --batch --yes --armor --detach-sign install.sh
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
