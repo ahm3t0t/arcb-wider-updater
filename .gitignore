@@ -54,3 +54,4 @@ Cargo.lock
 # GitHub Actions artifacts
 # =========================
 .artifacts/
+.claude-notes
