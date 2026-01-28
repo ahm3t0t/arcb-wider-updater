@@ -51,7 +51,7 @@ This project uses two separate version systems:
 
 | Component | Format | Current | Update Frequency |
 |-----------|--------|---------|------------------|
-| `guncel` (main script) | SemVer (x.x.x) | v4.1.4 | Her özellik/fix'te / Every feature/fix |
+| `guncel` (main script) | SemVer (x.x.x) | v5.2.0 | Her özellik/fix'te / Every feature/fix |
 | `install.sh` (installer) | Night-Vx.x.x | Night-V1.1.0 | Sadece kurulum değiştiğinde / Only when install logic changes |
 
 **Neden ayrı? / Why separate?**
@@ -62,7 +62,14 @@ This project uses two separate version systems:
 
 ## 📋 Features / Özellikler
 
-- ✅ Multi-Distro: Debian/Ubuntu/Zorin (APT) + Fedora/RHEL (DNF)
+### BigFive Multi-Distro Support (v5.2.0)
+- ✅ **APT** - Debian/Ubuntu/Zorin/Linux Mint
+- ✅ **DNF** - Fedora/RHEL/CentOS
+- ✅ **Pacman** - Arch Linux/Manjaro/EndeavourOS
+- ✅ **Zypper** - openSUSE Leap/Tumbleweed
+- ✅ **APK** - Alpine Linux
+
+### Core Features / Temel Özellikler
 - ✅ Full Coverage: System packages, Flatpak, Snap, Firmware
 - ✅ Selective Updates: `--skip` and `--only` flags (including `--skip system`)
 - ✅ Dry-Run Mode: Preview without applying
@@ -70,6 +77,7 @@ This project uses two separate version systems:
 - ✅ GPG Signature Verification: Cryptographically signed releases (v4.1.0+)
 - ✅ SHA256 Verification: Secure self-updates
 - ✅ Automatic Backup: Rollback capability
+- ✅ TLS 1.2+ Hardening: Secure downloads
 
 ---
 
@@ -91,6 +99,25 @@ bats tests/*.bats
 # Verbose çıktı / Verbose output
 bats --tap tests/*.bats
 ```
+
+### Test Status / Test Durumu
+
+| Component | Tests | Status |
+|-----------|-------|--------|
+| guncel.bats | 60 | ✅ |
+| install.bats | 35 | ✅ |
+| **Total** | **95** | ✅ |
+
+---
+
+## 🔐 Security / Güvenlik
+
+- GPG signed releases / GPG imzalı sürümler
+- TLS 1.2+ enforced / TLS 1.2+ zorunlu
+- SHA256 verification / SHA256 doğrulama
+- Strict mode (`set -Eeuo pipefail`)
+
+See [SECURITY.md](SECURITY.md) for details / Detaylar için bakın.
 
 ---
 

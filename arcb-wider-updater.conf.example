@@ -1,6 +1,6 @@
 # /etc/arcb-wider-updater.conf
 # ARCB Wider Updater Yapılandırma Dosyası / Configuration File
-# v3.6.0 "Configurable"
+# v5.2.0 "BigFive"
 #
 # Bu dosyayı /etc/arcb-wider-updater.conf olarak kopyalayın.
 # Copy this file to /etc/arcb-wider-updater.conf
@@ -44,9 +44,11 @@ CONFIG_SKIP_SNAP=false
 # Skip firmware updates (fwupdmgr)
 CONFIG_SKIP_FWUPD=false
 
-# Sistem paket yöneticisini atla - APT/DNF (true/false)
-# Skip system package manager (APT/DNF)
-CONFIG_SKIP_DNF=false
+# Sistem paket yöneticisini atla (true/false)
+# Skip system package manager (APT/DNF/Pacman/Zypper/APK)
+# Not: Bu ayar tüm sistem paket yöneticilerini etkiler
+# Note: This setting affects all system package managers
+CONFIG_SKIP_PKG_MANAGER=false
 
 # ============================================
 # RENKLER / COLORS (Opsiyonel / Optional)
@@ -77,3 +79,24 @@ CONFIG_SKIP_DNF=false
 # Snapshot'sız hızlı güncelleme:
 # Quick update without snapshot:
 #   CONFIG_SKIP_SNAPSHOT=true
+#
+# Sadece sistem güncelle, diğer her şeyi atla:
+# Only system update, skip everything else:
+#   CONFIG_SKIP_SNAPSHOT=true
+#   CONFIG_SKIP_FLATPAK=true
+#   CONFIG_SKIP_SNAP=true
+#   CONFIG_SKIP_FWUPD=true
+
+# ============================================
+# DESTEKLENEN PAKET YÖNETİCİLERİ (v5.2.0 BigFive)
+# SUPPORTED PACKAGE MANAGERS
+# ============================================
+#
+# APT    - Debian, Ubuntu, Zorin OS, Linux Mint
+# DNF    - Fedora, RHEL, CentOS, Rocky Linux
+# Pacman - Arch Linux, Manjaro, EndeavourOS
+# Zypper - openSUSE Leap, openSUSE Tumbleweed
+# APK    - Alpine Linux
+#
+# Script otomatik olarak sisteminize uygun olanı kullanır.
+# The script automatically uses the appropriate one for your system.

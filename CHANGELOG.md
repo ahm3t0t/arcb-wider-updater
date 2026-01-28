@@ -5,6 +5,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.0] - 2026-01-28 "BigFive"
+### Added
+- **Alpine Linux Support:** New `update_apk()` function for Alpine Linux package management
+  - `apk update && apk upgrade` for system updates
+  - `apk cache clean` for cache cleanup
+- **APK_COUNT variable:** Track Alpine package updates in summary
+- **Alpine CI Testing:** Added Alpine 3.20 to multi-distro test matrix
+- **New BATS tests:** 4 new APK-specific tests (60 total for guncel.bats)
+
+### Changed
+- VERSION: 5.0.0 → 5.2.0
+- CODENAME: "BigFour" → "BigFive"
+- `should_run_backend()` now recognizes `apk` as a valid backend
+- Execution chain: `update_apt || update_dnf || update_pacman || update_zypper || update_apk`
+- Help text updated with `--skip apk` and `--only apk` options
+- `print_summary()` now displays APK update count
+
+### Documentation
+- Updated README.tr.md and README.en.md for BigFive
+- Updated CI workflow comments
+
+## [5.0.0] - 2026-01-28 "BigFour"
+### Added
+- **Arch Linux Support:** New `update_pacman()` function
+  - `pacman -Sy && pacman -Su --noconfirm` for system updates
+  - Orphan package cleanup with `pacman -Rns`
+  - Cache cleanup with `paccache` (if available)
+- **openSUSE Support:** New `update_zypper()` function
+  - `zypper refresh && zypper --non-interactive update`
+  - Orphan package detection
+- **PACMAN_COUNT and ZYPPER_COUNT variables:** Track updates per backend
+- **Multi-distro CI matrix:** Ubuntu, Fedora, Arch Linux, openSUSE Tumbleweed
+- **New BATS tests:** 9 new BigFour tests (56 total)
+
+### Changed
+- VERSION: 4.1.4 → 5.0.0
+- CODENAME: "Signed" → "BigFour"
+- `should_run_backend()` now recognizes `pacman` and `zypper`
+- Execution chain updated for 4 package managers
+- Help text updated with BigFour options
+
+### Documentation
+- Comprehensive README updates for Arch and openSUSE users
+- Docker test environment documentation
+
+## [4.1.5] - 2026-01-28
+### Added
+- **`updater` symlink:** English alias for `guncel` command
+- **TLS 1.2+ hardening:** All curl/wget calls now enforce modern TLS
+  - curl: `--proto '=https' --tlsv1.2`
+  - wget: `--secure-protocol=TLSv1_2`
+- **PATH export:** Ensures Cron compatibility with standard system directories
+- **`--uninstall` option:** Remove ARCB Wider Updater from system
+- **`--uninstall --purge`:** Remove including config and logs
+
+### Changed
+- VERSION: 4.1.4 → 4.1.5
+- install.sh creates `updater` symlink alongside `guncel`
+
+### Security
+- TLS hardening prevents downgrade attacks during downloads
+
 ## [4.1.4] - 2026-01-28
 ### Changed
 - VERSION: 4.1.3 → 4.1.4
@@ -42,6 +104,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Verifies `SHA256SUMS.asc` signature against public key
   - Validates downloaded file hash against signed checksums
   - Installation aborted if verification fails
+- **`updater` symlink:** English alias created during installation
+- **TLS 1.2+ hardening:** Secure downloads with modern TLS
 - New variables: `GPG_PUBKEY_URL`, `GPG_SHA256SUMS_URL`, `GPG_SHA256SUMS_SIG_URL`
 - `verify_gpg_signature()` function with graceful fallback if GPG not installed
 
