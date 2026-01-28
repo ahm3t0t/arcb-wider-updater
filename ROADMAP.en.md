@@ -100,4 +100,4 @@
 
 Feel free to open an [Issue](https://github.com/ahm3t0t/arcb-wider-updater/issues) for suggestions.
 
-Detailed contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
+Detailed contribution guide: [CONTRIBUTING.en.md](CONTRIBUTING.en.md)
