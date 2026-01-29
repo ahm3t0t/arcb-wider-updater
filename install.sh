@@ -314,6 +314,46 @@ else
     printf "%s⚠️  Bash completion dizini bulunamadı (%s).%s\n" "$YELLOW" "$BASH_COMPLETION_DIR" "$NC"
 fi
 
+# 7. MAN PAGE KURULUMU (v1.3.0)
+printf "\n%s>>> Man Page%s\n" "$BLUE" "$NC"
+
+MAN_DIR="/usr/share/man/man8"
+MAN_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/guncel.8"
+LOCAL_MAN_FILE="$SCRIPT_DIR/docs/guncel.8"
+TEMP_MAN="$(mktemp /tmp/guncel_man_XXXXXX)"
+
+if [[ -d "$MAN_DIR" ]]; then
+    # Yerel dosya var mı?
+    if [[ -f "$LOCAL_MAN_FILE" ]]; then
+        cp "$LOCAL_MAN_FILE" "$TEMP_MAN"
+        printf "📂 Man page: %sLocal%s\n" "$YELLOW" "$NC"
+    else
+        if curl --proto '=https' --tlsv1.2 -fsSL "$MAN_URL" -o "$TEMP_MAN" 2>/dev/null || \
+           wget --secure-protocol=TLSv1_2 -qO "$TEMP_MAN" "$MAN_URL" 2>/dev/null; then
+            printf "➡️  İndiriliyor: %s\n" "$MAN_URL"
+        else
+            printf "%s⚠️  Man page indirilemedi (opsiyonel).%s\n" "$YELLOW" "$NC"
+            TEMP_MAN=""
+        fi
+    fi
+
+    if [[ -n "$TEMP_MAN" && -s "$TEMP_MAN" ]]; then
+        if install -m 0644 -o root -g root "$TEMP_MAN" "$MAN_DIR/guncel.8"; then
+            # Symlink'ler için de man page
+            ln -sf "$MAN_DIR/guncel.8" "$MAN_DIR/updater.8" 2>/dev/null
+            ln -sf "$MAN_DIR/guncel.8" "$MAN_DIR/bigfive.8" 2>/dev/null
+            # Man veritabanını güncelle
+            mandb -q 2>/dev/null || true
+            printf "%s✅ Man page kuruldu (man guncel)%s\n" "$GREEN" "$NC"
+        else
+            printf "%s⚠️  Man page kurulamadı (opsiyonel).%s\n" "$YELLOW" "$NC"
+        fi
+    fi
+    rm -f "$TEMP_MAN" 2>/dev/null
+else
+    printf "%s⚠️  Man dizini bulunamadı (%s).%s\n" "$YELLOW" "$MAN_DIR" "$NC"
+fi
+
 printf "%s\n" "--------------------------------------------------"
 printf "%sℹ️  Not: flock bağımlılığı util-linux paketi ile gelir (genelde kurulu).%s\n" "$BLUE" "$NC"
 printf "Komut: %sguncel%s | %supdater%s | %sbigfive%s [--auto] [--skip ...] [--only ...] [--help]\n" "$BOLD" "$NC" "$BOLD" "$NC" "$BOLD" "$NC"

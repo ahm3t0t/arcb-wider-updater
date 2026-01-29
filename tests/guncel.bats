@@ -424,3 +424,39 @@ get_script_version() {
 @test "Bash completion includes backend values" {
     grep -q 'flatpak snap fwupd' "$PROJECT_ROOT/completions/guncel.bash"
 }
+
+# =============================================================================
+# MAN PAGE TESTS (v5.4)
+# =============================================================================
+
+@test "Man page file exists" {
+    [ -f "$PROJECT_ROOT/docs/guncel.8" ]
+}
+
+@test "Man page has valid troff format" {
+    head -1 "$PROJECT_ROOT/docs/guncel.8" | grep -q '^\.\\"'
+}
+
+@test "Man page includes NAME section" {
+    grep -q '^\.SH NAME' "$PROJECT_ROOT/docs/guncel.8"
+}
+
+@test "Man page includes SYNOPSIS section" {
+    grep -q '^\.SH SYNOPSIS' "$PROJECT_ROOT/docs/guncel.8"
+}
+
+@test "Man page includes OPTIONS section" {
+    grep -q '^\.SH OPTIONS' "$PROJECT_ROOT/docs/guncel.8"
+}
+
+@test "Man page documents --json option" {
+    grep -q '\-\-json' "$PROJECT_ROOT/docs/guncel.8"
+}
+
+@test "Man page documents all package managers" {
+    grep -q 'APT' "$PROJECT_ROOT/docs/guncel.8" && \
+    grep -q 'DNF' "$PROJECT_ROOT/docs/guncel.8" && \
+    grep -q 'Pacman' "$PROJECT_ROOT/docs/guncel.8" && \
+    grep -q 'Zypper' "$PROJECT_ROOT/docs/guncel.8" && \
+    grep -q 'APK' "$PROJECT_ROOT/docs/guncel.8"
+}

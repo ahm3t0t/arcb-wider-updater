@@ -21,15 +21,16 @@ jobs:
       
       - name: Prepare release assets
         run: |
-          # Bash completion'ı root'a kopyala (release asset olarak)
+          # Bash completion ve man page'i root'a kopyala (release asset olarak)
           cp completions/guncel.bash guncel.bash
+          cp docs/guncel.8 guncel.8
 
       - name: Create signed checksums
         env:
           GPG_TTY: ""
         run: |
-          # SHA256 checksums oluştur (completion dahil)
-          sha256sum guncel install.sh guncel.bash > SHA256SUMS
+          # SHA256 checksums oluştur (completion ve man page dahil)
+          sha256sum guncel install.sh guncel.bash guncel.8 > SHA256SUMS
 
           # GPG ile imzala (batch mode for CI)
           gpg --batch --yes --armor --detach-sign SHA256SUMS
@@ -47,5 +48,6 @@ jobs:
             install.sh
             install.sh.asc
             guncel.bash
+            guncel.8
             SHA256SUMS
             SHA256SUMS.asc

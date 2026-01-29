@@ -1,0 +1,210 @@
+.\" Man page for guncel - ARCB Wider Updater
+.\" Generated from guncel.8.md
+.TH GUNCEL 8 "January 2026" "ARCB Wider Updater 5.4.0" "System Administration"
+.SH NAME
+guncel \- universal Linux system updater (BigFive Edition)
+.SH SYNOPSIS
+.B guncel
+.RI [ OPTIONS ]
+.br
+.B updater
+.RI [ OPTIONS ]
+.br
+.B bigfive
+.RI [ OPTIONS ]
+.SH DESCRIPTION
+.B ARCB Wider Updater
+(BigFive Edition) updates all package managers on your Linux system with a
+single command. It supports five major package managers (APT, DNF, Pacman,
+Zypper, APK) plus Flatpak, Snap, and firmware updates.
+.PP
+The tool automatically detects which package managers are available on your
+system and runs the appropriate update commands. It creates timestamped logs,
+supports dry-run mode, and can output JSON for integration with monitoring
+systems.
+.SH OPTIONS
+.TP
+.B \-\-auto
+Non-interactive mode for cron jobs and automated tasks. Updates proceed
+without user confirmation.
+.TP
+.B \-\-verbose
+Show detailed output including all package manager commands and their
+full output.
+.TP
+.B \-\-quiet
+Minimal output mode. Only shows errors and final summary.
+.TP
+.B \-\-dry\-run
+Show what would be updated without making any changes. Useful for
+previewing updates before applying them.
+.TP
+.B \-\-json
+Output lightweight JSON suitable for monitoring systems (Zabbix, Nagios,
+Prometheus). Includes status, exit code, timestamp, and update count.
+.TP
+.B \-\-json\-full
+Output detailed JSON for SIEM and audit systems (Wazuh, Splunk, ELK).
+Includes system info, package details, warnings, and errors.
+.TP
+.BI \-\-skip " backends"
+Skip specified backends (comma-separated). Available values:
+snapshot, flatpak, snap, fwupd, system, apt, dnf, pacman, zypper, apk
+.TP
+.BI \-\-only " backends"
+Run only specified backends (comma-separated). Available values:
+system, flatpak, snap, fwupd, apt, dnf, pacman, zypper, apk
+.TP
+.B \-\-uninstall
+Remove ARCB Wider Updater from the system. Configuration and logs are
+preserved.
+.TP
+.B "\-\-uninstall \-\-purge"
+Completely remove ARCB Wider Updater including configuration files and logs.
+.TP
+.B \-\-help
+Display help message and exit.
+.SH SUPPORTED PACKAGE MANAGERS
+.TP
+.B APT
+(Debian, Ubuntu, Linux Mint, Pop!_OS, Zorin OS)
+.br
+Runs apt update, apt dist-upgrade, apt autoremove, apt autoclean
+.TP
+.B DNF
+(Fedora, RHEL, CentOS, Rocky Linux, AlmaLinux)
+.br
+Runs dnf upgrade with automatic orphan cleanup
+.TP
+.B Pacman
+(Arch Linux, Manjaro, EndeavourOS)
+.br
+Runs pacman -Syu with orphan package cleanup and cache management
+.TP
+.B Zypper
+(openSUSE Leap, openSUSE Tumbleweed)
+.br
+Runs zypper refresh and zypper update
+.TP
+.B APK
+(Alpine Linux)
+.br
+Runs apk update and apk upgrade with cache cleanup
+.TP
+.B Flatpak
+Updates all Flatpak applications and removes unused runtimes
+.TP
+.B Snap
+Refreshes all Snap packages
+.TP
+.B Firmware
+(fwupd) Checks and applies firmware updates for supported hardware
+.SH FILES
+.TP
+.I /etc/arcb-wider-updater.conf
+Main configuration file. Set default options here.
+.TP
+.I /var/log/arcb-updater/
+Log directory. Each update creates a timestamped log file.
+.TP
+.I /usr/local/bin/guncel
+Main executable script.
+.TP
+.I /usr/local/bin/updater
+Symlink to guncel (English alias).
+.TP
+.I /usr/local/bin/bigfive
+Symlink to guncel (brand alias).
+.TP
+.I /usr/share/bash-completion/completions/guncel
+Bash completion script.
+.SH EXAMPLES
+Run interactive update (recommended):
+.PP
+.RS
+sudo guncel
+.RE
+.PP
+Run automated update for cron:
+.PP
+.RS
+sudo guncel --auto
+.RE
+.PP
+Preview what would be updated:
+.PP
+.RS
+sudo guncel --dry-run
+.RE
+.PP
+Update only system packages (skip Flatpak/Snap):
+.PP
+.RS
+sudo guncel --only system
+.RE
+.PP
+Skip firmware updates:
+.PP
+.RS
+sudo guncel --skip fwupd
+.RE
+.PP
+Output JSON for monitoring:
+.PP
+.RS
+sudo guncel --json
+.RE
+.SH EXIT STATUS
+.TP
+.B 0
+Success - all updates completed without errors.
+.TP
+.B 1
+General error - one or more update operations failed.
+.TP
+.B 130
+Interrupted by user (Ctrl+C).
+.SH ENVIRONMENT
+.TP
+.B ARCB_AUTO_MODE
+If set to "true", enables automatic mode (same as --auto).
+.TP
+.B ARCB_VERBOSE
+If set to "true", enables verbose output (same as --verbose).
+.TP
+.B ARCB_QUIET
+If set to "true", enables quiet mode (same as --quiet).
+.SH CONFIGURATION
+Configuration file format
+.RI ( /etc/arcb-wider-updater.conf ):
+.PP
+.RS
+.nf
+# Enable automatic mode by default
+CONFIG_AUTO_MODE=true
+
+# Skip specific backends
+CONFIG_SKIP_FLATPAK=true
+CONFIG_SKIP_SNAP=true
+
+# Enable verbose output
+CONFIG_VERBOSE=true
+.fi
+.RE
+.SH SEE ALSO
+.BR apt (8),
+.BR dnf (8),
+.BR pacman (8),
+.BR zypper (8),
+.BR apk (8),
+.BR flatpak (1),
+.BR snap (8),
+.BR fwupdmgr (1)
+.SH BUGS
+Report bugs at: https://github.com/ahm3t0t/arcb-wider-updater/issues
+.SH COPYRIGHT
+Copyright (C) 2026 Ahmet T. Licensed under MIT License.
+.SH AUTHOR
+Written by Ahmet T. with contributions from Claude AI.
+.PP
+Project homepage: https://github.com/ahm3t0t/arcb-wider-updater
