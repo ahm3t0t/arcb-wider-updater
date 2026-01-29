@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.4.7] - 2026-01-29 "BigFive Edition - Beacon"
+### Fixed
+- **DNF5 counter parsing:** Parses "Upgrading: X packages" from Transaction Summary
+  - DNF5 output format differs from DNF4, old patterns didn't work
+  - Fixed "DNF: 0" display issue on Fedora 43+ systems
+- **Zypper counter parsing:** Correctly parses package count from `zypper lu` output
+  - Old `grep -c "^v"` pattern was incorrect
+- **install.sh temp file cleanup:** Added TEMP_COMPLETION and TEMP_MAN to trap
+  - Temp files are now cleaned up when script is interrupted
+
+### Changed
+- install.sh version: Night-V1.3.0 → Night-V1.3.1
+
+---
+
 ## [5.4.6] - 2026-01-29 "BigFive Edition - Beacon"
 ### Fixed
 - **Self-update download URL:** Changed `GITHUB_RAW_URL` from raw.githubusercontent.com to releases URL

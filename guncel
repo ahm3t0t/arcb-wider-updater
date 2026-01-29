@@ -5,7 +5,7 @@
 #
 
 # --- AYARLAR ---
-VERSION="5.4.6"
+VERSION="5.4.7"
 EDITION="BigFive"
 CODENAME="Beacon"
 LOG_DIR="/var/log/arcb-updater"
@@ -902,16 +902,16 @@ update_dnf() {
         dnf upgrade --refresh -y 2>&1 | tee "$dnf_temp" >> "$LOG_FILE"
     fi
 
-    # DNF sayacını parse et
-    DNF_COUNT=$(grep -E "^Upgrading:" "$dnf_temp" 2>/dev/null | grep -oP '\d+' | head -1 || echo "0")
+    # DNF sayacını parse et - v5.4.7 FIX: DNF5 formatı desteği
+    # Önce Transaction Summary'den "Upgrading: X packages" satırını dene
+    DNF_COUNT=$(grep -oP "Upgrading:\s+\K\d+" "$dnf_temp" 2>/dev/null | head -1 || echo "0")
+    # DNF4 fallback: "Upgraded: X" satırı
     if [[ -z "$DNF_COUNT" || "$DNF_COUNT" == "0" ]]; then
-        DNF_COUNT=$(grep -cE "^\s*Upgrading\s+[a-zA-Z]" "$dnf_temp" 2>/dev/null || echo "0")
+        DNF_COUNT=$(grep -oP "Upgraded\s+\K\d+" "$dnf_temp" 2>/dev/null | head -1 || echo "0")
     fi
+    # Son fallback: Upgrading satırlarını say (her paket için bir satır)
     if [[ -z "$DNF_COUNT" || "$DNF_COUNT" == "0" ]]; then
-        DNF_COUNT=$(grep -oP "Upgraded:\s*\K\d+" "$dnf_temp" 2>/dev/null || echo "0")
-    fi
-    if [[ -z "$DNF_COUNT" || "$DNF_COUNT" == "0" ]]; then
-        DNF_COUNT=$(grep -cE "→|->|\s+[0-9]+\.[0-9]+.*\s+[0-9]+\.[0-9]+" "$dnf_temp" 2>/dev/null || echo "0")
+        DNF_COUNT=$(grep -cE "^\[.*/.*\] Upgrading " "$dnf_temp" 2>/dev/null || echo "0")
     fi
 
     rm -f "$dnf_temp"
@@ -994,8 +994,10 @@ update_zypper() {
         zypper refresh >> "$LOG_FILE" 2>&1
     fi
 
-    # Güncellenecek paket sayısını al
-    ZYPPER_COUNT=$(zypper -q lu 2>/dev/null | grep -c "^v" || echo "0")
+    # Güncellenecek paket sayısını al - v5.4.7 FIX: Doğru parsing
+    # zypper lu çıktısı: "S | Repository | Name | Current | Available | Arch"
+    # Header ve separator satırlarını atla, sadece paket satırlarını say
+    ZYPPER_COUNT=$(zypper -q lu 2>/dev/null | grep -v "^-" | grep -v "^S " | grep -c "|" || echo "0")
     ZYPPER_COUNT=${ZYPPER_COUNT:-0}
 
     # Güncelleme yap

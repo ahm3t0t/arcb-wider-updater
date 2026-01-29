@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# ARCB Updater Installer Night-V1.3.0
-# Sync: Night-V1.3.0 | Bash completion kurulumu eklendi
+# ARCB Updater Installer Night-V1.3.1
+# Sync: Night-V1.3.1 | Temp file cleanup düzeltmesi
 
 # 1. HATA YÖNETİMİ
 set -Eeuo pipefail
@@ -43,13 +43,15 @@ elif [[ -f "$LOCAL_CWD_FILE" && -s "$LOCAL_CWD_FILE" ]]; then
     SOURCE_TYPE="Local (Current Dir)"
 fi
 
-# 2. TEMP DOSYALAR
+# 2. TEMP DOSYALAR - v1.3.1 FIX: Tüm temp dosyaları trap'e eklendi
 TEMP_FILE="$(mktemp /tmp/guncel_install_XXXXXX)"
 TEMP_LOGROTATE="$(mktemp /tmp/logrotate_install_XXXXXX)"
 TEMP_PUBKEY="$(mktemp /tmp/guncel_pubkey_XXXXXX)"
 TEMP_SHA256SUMS="$(mktemp /tmp/guncel_sha256sums_XXXXXX)"
 TEMP_SHA256SUMS_SIG="$(mktemp /tmp/guncel_sha256sums_sig_XXXXXX)"
-trap 'rm -f "$TEMP_FILE" "$TEMP_LOGROTATE" "$TEMP_PUBKEY" "$TEMP_SHA256SUMS" "$TEMP_SHA256SUMS_SIG"' EXIT
+TEMP_COMPLETION=""
+TEMP_MAN=""
+trap 'rm -f "$TEMP_FILE" "$TEMP_LOGROTATE" "$TEMP_PUBKEY" "$TEMP_SHA256SUMS" "$TEMP_SHA256SUMS_SIG" "$TEMP_COMPLETION" "$TEMP_MAN"' EXIT
 
 # --- ROOT VE ORTAM KONTROLÜ ---
 if [[ $EUID -ne 0 ]]; then
@@ -167,7 +169,7 @@ verify_gpg_signature() {
     return 0
 }
 
-printf "\n%s>>> ARCB Wider Updater Kurulum (Night-V1.3.0)%s\n" "$BLUE" "$NC"
+printf "\n%s>>> ARCB Wider Updater Kurulum (Night-V1.3.1)%s\n" "$BLUE" "$NC"
 
 # İndirme veya Kopyalama Mantığı
 if [[ -n "$SOURCE_FILE" ]]; then
