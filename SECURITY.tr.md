@@ -32,7 +32,7 @@ Bir güvenlik açığı keşfederseniz, lütfen **sorumlu** ve **gizli** bir şe
 
 **Süre:** 48 saat içinde raporları onaylamayı ve ilerleme güncellemeleri sağlamayı hedefliyoruz.
 
-Düzeltme yayınlanmadan önce hassas detayları herkese açık paylaşmaktan kaçının. ARCB'yi güvende tutmamıza yardım ettiğiniz için teşekkürler!
+Düzeltme yayınlanmadan önce hassas detayları herkese açık paylaşmaktan kaçının. BigFive'ı güvende tutmamıza yardım ettiğiniz için teşekkürler!
 
 ---
 
@@ -132,6 +132,6 @@ trap 'rm -f "$TEMP_FILE"' EXIT
 
 ### Lock Dosyası Koruması
 ```bash
-exec 200>/var/lock/arcb-updater.lock
+exec 200>/var/lock/bigfive-updater.lock
 flock -n 200 || exit 1
 ```

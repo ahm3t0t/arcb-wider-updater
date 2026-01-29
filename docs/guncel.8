@@ -1,6 +1,6 @@
-.\" Man page for guncel - ARCB Wider Updater
+.\" Man page for guncel - BigFive Updater
 .\" Generated from guncel.8.md
-.TH GUNCEL 8 "January 2026" "ARCB Wider Updater 5.4.8" "System Administration"
+.TH GUNCEL 8 "January 2026" "BigFive Updater 5.4.8" "System Administration"
 .SH NAME
 guncel \- universal Linux system updater (BigFive Edition)
 .SH SYNOPSIS
@@ -13,7 +13,7 @@ guncel \- universal Linux system updater (BigFive Edition)
 .B bigfive
 .RI [ OPTIONS ]
 .SH DESCRIPTION
-.B ARCB Wider Updater
+.B BigFive Updater
 (BigFive Edition) updates all package managers on your Linux system with a
 single command. It supports five major package managers (APT, DNF, Pacman,
 Zypper, APK) plus Flatpak, Snap, and firmware updates.
@@ -56,11 +56,11 @@ Run only specified backends (comma-separated). Available values:
 system, flatpak, snap, fwupd, apt, dnf, pacman, zypper, apk
 .TP
 .B \-\-uninstall
-Remove ARCB Wider Updater from the system. Configuration and logs are
+Remove BigFive Updater from the system. Configuration and logs are
 preserved.
 .TP
 .B "\-\-uninstall \-\-purge"
-Completely remove ARCB Wider Updater including configuration files and logs.
+Completely remove BigFive Updater including configuration files and logs.
 .TP
 .B \-\-help
 Display help message and exit.
@@ -104,7 +104,7 @@ Refreshes all Snap packages
 .I /etc/bigfive-updater.conf
 Main configuration file. Set default options here.
 .TP
-.I /var/log/arcb-updater/
+.I /var/log/bigfive-updater/
 Log directory. Each update creates a timestamped log file.
 .TP
 .I /usr/local/bin/guncel
@@ -172,13 +172,13 @@ General error - one or more update operations failed.
 Interrupted by user (Ctrl+C).
 .SH ENVIRONMENT
 .TP
-.B ARCB_AUTO_MODE
+.B BIGFIVE_AUTO_MODE
 If set to "true", enables automatic mode (same as --auto).
 .TP
-.B ARCB_VERBOSE
+.B BIGFIVE_VERBOSE
 If set to "true", enables verbose output (same as --verbose).
 .TP
-.B ARCB_QUIET
+.B BIGFIVE_QUIET
 If set to "true", enables quiet mode (same as --quiet).
 .SH CONFIGURATION
 Configuration file format

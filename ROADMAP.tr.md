@@ -1,4 +1,4 @@
-# ARCB Wider Updater - Yol Haritası
+# BigFive Updater - Yol Haritası
 
 > Shell script olarak geliştirmeye devam ediyoruz.
 

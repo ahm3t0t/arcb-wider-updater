@@ -1,4 +1,4 @@
-% GUNCEL(8) ARCB Wider Updater 5.4.8
+% GUNCEL(8) BigFive Updater 5.4.8
 % Ahmet T. <ahmet@tanrikulu.net>
 % January 2026
 
@@ -16,7 +16,7 @@ guncel - universal Linux system updater (BigFive Edition)
 
 # DESCRIPTION
 
-**ARCB Wider Updater** (BigFive Edition) updates all package managers on your
+**BigFive Updater** (BigFive Edition) updates all package managers on your
 Linux system with a single command. It supports five major package managers
 (APT, DNF, Pacman, Zypper, APK) plus Flatpak, Snap, and firmware updates.
 
@@ -59,11 +59,11 @@ systems.
     system, flatpak, snap, fwupd, apt, dnf, pacman, zypper, apk
 
 **--uninstall**
-:   Remove ARCB Wider Updater from the system. Configuration and logs are
+:   Remove BigFive Updater from the system. Configuration and logs are
     preserved.
 
 **--uninstall --purge**
-:   Completely remove ARCB Wider Updater including configuration files and
+:   Completely remove BigFive Updater including configuration files and
     logs.
 
 **--help**
@@ -100,7 +100,7 @@ systems.
 */etc/bigfive-updater.conf*
 :   Main configuration file. Set default options here.
 
-*/var/log/arcb-updater/*
+*/var/log/bigfive-updater/*
 :   Log directory. Each update creates a timestamped log file.
 
 */usr/local/bin/guncel*
@@ -160,13 +160,13 @@ Output JSON for monitoring:
 
 # ENVIRONMENT
 
-**ARCB_AUTO_MODE**
+**BIGFIVE_AUTO_MODE**
 :   If set to "true", enables automatic mode (same as --auto).
 
-**ARCB_VERBOSE**
+**BIGFIVE_VERBOSE**
 :   If set to "true", enables verbose output (same as --verbose).
 
-**ARCB_QUIET**
+**BIGFIVE_QUIET**
 :   If set to "true", enables quiet mode (same as --quiet).
 
 # CONFIGURATION

@@ -1,4 +1,4 @@
-# ARCB Wider Updater'a Katkıda Bulunma
+# BigFive Updater'a Katkıda Bulunma
 
 Katkıda bulunmayı düşündüğün için teşekkürler!
 
@@ -219,7 +219,7 @@ CODENAME="Alpine"
 
 ```bash
 # install.sh içinde
-# ARCB Updater Installer Night-V1.3.2
+# BigFive Updater Installer Night-V1.3.2
 ```
 
 ### Neden Ayrı Sistemler?

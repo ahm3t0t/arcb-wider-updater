@@ -32,7 +32,7 @@ If you discover a security vulnerability, please report it **responsibly** and *
 
 **Timeline:** We aim to acknowledge reports within 48 hours and provide updates on progress.
 
-Please avoid sharing sensitive details publicly before a fix is available. Thank you for helping keep ARCB secure!
+Please avoid sharing sensitive details publicly before a fix is available. Thank you for helping keep BigFive secure!
 
 ---
 
@@ -132,6 +132,6 @@ trap 'rm -f "$TEMP_FILE"' EXIT
 
 ### Lock File Protection
 ```bash
-exec 200>/var/lock/arcb-updater.lock
+exec 200>/var/lock/bigfive-updater.lock
 flock -n 200 || exit 1
 ```

@@ -1,4 +1,4 @@
-# Contributing to ARCB Wider Updater
+# Contributing to BigFive Updater
 
 Thanks for considering a contribution!
 
@@ -219,7 +219,7 @@ CODENAME="Alpine"
 
 ```bash
 # in install.sh
-# ARCB Updater Installer Night-V1.3.2
+# BigFive Updater Installer Night-V1.3.2
 ```
 
 ### Why Separate Systems?

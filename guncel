@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #
-# ARCB Wider Updater
+# BigFive Updater
 # GitHub: https://github.com/ahm3t0t/bigfive-updater
 #
 
 # --- AYARLAR ---
-VERSION="5.4.9"
+VERSION="5.5.0"
 EDITION="BigFive"
-CODENAME="Beacon"
-LOG_DIR="/var/log/arcb-updater"
+CODENAME="Dream"
+LOG_DIR="/var/log/bigfive-updater"
 LOG_FILE="$LOG_DIR/update_$(date +%Y%m%d_%H%M%S).log"
 # v5.4.5: Releases URL kullan (CDN cache sorunu önlenir - raw.githubusercontent.com cache'lenebilir)
 GITHUB_RAW_URL="https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/guncel"
@@ -222,7 +222,7 @@ print_system_header() {
     # JSON modunda terminal çıktısı bastırılır
     if [[ "$JSON_MODE" == "none" ]]; then
         printf '%s========================================%s\n' "${GREEN}" "${NC}"
-        printf '%s  ARCB-WIDER-UPDATER v%s (%s Edition)%s\n' "${GREEN}" "${VERSION}" "${EDITION}" "${NC}"
+        printf '%s  BIGFIVE-UPDATER v%s (%s Edition)%s\n' "${GREEN}" "${VERSION}" "${EDITION}" "${NC}"
         [[ "$DRY_RUN" == "true" ]] && printf '%s  [DRY-RUN MODE]%s\n' "${YELLOW}" "${NC}"
         printf '%s  Host: %s | User: %s%s\n' "${GREEN}" "${hostname_str}" "${user_str}" "${NC}"
         printf '%s  Kernel: %s%s\n' "${GREEN}" "${kernel_str}" "${NC}"
@@ -558,7 +558,7 @@ setup_logging() {
     
     {
         echo "=================================================="
-        echo "ARCB Wider Updater v$VERSION ($EDITION Edition - $CODENAME)"
+        echo "BigFive Updater v$VERSION ($EDITION Edition - $CODENAME)"
         echo "Start Time : $(date '+%F %T')"
         echo "User       : $(whoami)"
         echo "Hostname   : $(hostname 2>/dev/null || echo "unknown")"
@@ -594,7 +594,7 @@ check_connectivity() {
     if [[ "$QUIET_MODE" != "true" ]]; then
         printf '%s[~] Bağlantı kontrol ediliyor... %s' "${YELLOW}" "${NC}"
     fi
-    local UA="Mozilla/5.0 (compat; ARCBUpdater/$VERSION)"
+    local UA="Mozilla/5.0 (compat; BigFiveUpdater/$VERSION)"
     
     local raw_ok=false
     # TLS 1.2+ zorunlu (güvenlik için)
@@ -647,7 +647,7 @@ check_self_update() {
     
     if ! download_file "$GITHUB_RAW_URL" "$REMOTE_FILE"; then return; fi
 
-    if ! grep -q "ARCB Wider Updater" "$REMOTE_FILE"; then
+    if ! grep -q "BigFive Updater" "$REMOTE_FILE"; then
         rm -f "$REMOTE_FILE" "$TEMP_SHA256"
         return
     fi
@@ -778,9 +778,9 @@ create_snapshot() {
     # v3.8.0: Dry-run modunda snapshot oluşturma
     if [[ "$DRY_RUN" == "true" ]]; then
         if command -v timeshift &> /dev/null; then
-            print_dry_run "Timeshift snapshot oluşturulacak: ARCB-Update-$(date +%F)"
+            print_dry_run "Timeshift snapshot oluşturulacak: BigFive-Update-$(date +%F)"
         elif command -v snapper &> /dev/null; then
-            print_dry_run "Snapper snapshot oluşturulacak: ARCB-Update-$(date +%F)"
+            print_dry_run "Snapper snapshot oluşturulacak: BigFive-Update-$(date +%F)"
         else
             print_dry_run "Yedekleme aracı (Timeshift/Snapper) bulunamadı"
         fi
@@ -789,7 +789,7 @@ create_snapshot() {
 
     if command -v timeshift &> /dev/null; then
         print_header "Sistem Yedekleniyor (Timeshift)"
-        SNAPSHOT_NAME="ARCB-Update-$(date +%F)"
+        SNAPSHOT_NAME="BigFive-Update-$(date +%F)"
         local ts_exit_code=0
         if [[ "$VERBOSE_MODE" == "true" ]]; then
             timeout "$SNAPSHOT_TIMEOUT" timeshift --create --comments "$SNAPSHOT_NAME" --tags D 2>&1 | tee -a "$LOG_FILE" || ts_exit_code=$?
@@ -812,7 +812,7 @@ create_snapshot() {
 
     if command -v snapper &> /dev/null; then
         print_header "Sistem Yedekleniyor (Snapper)"
-        SNAPSHOT_NAME="ARCB-Update-$(date +%F)"
+        SNAPSHOT_NAME="BigFive-Update-$(date +%F)"
         local sn_exit_code=0
         timeout "$SNAPSHOT_TIMEOUT" snapper create --description "$SNAPSHOT_NAME" --cleanup-algorithm number >> "$LOG_FILE" 2>&1 || sn_exit_code=$?
         if [[ $sn_exit_code -eq 124 ]]; then
@@ -1472,7 +1472,7 @@ perform_updates() {
 
 # --- UNINSTALL FONKSİYONU ---
 do_uninstall() {
-    printf '%s>>> ARCB Wider Updater Kaldırma%s\n' "${BLUE}${BOLD}" "${NC}"
+    printf '%s>>> BigFive Updater Kaldırma%s\n' "${BLUE}${BOLD}" "${NC}"
     echo "--------------------------------------------------"
 
     local removed_items=()
@@ -1554,12 +1554,12 @@ do_uninstall() {
     fi
 
     echo ""
-    printf '%s✅ ARCB Wider Updater başarıyla kaldırıldı.%s\n' "${GREEN}${BOLD}" "${NC}"
+    printf '%s✅ BigFive Updater başarıyla kaldırıldı.%s\n' "${GREEN}${BOLD}" "${NC}"
     exit 0
 }
 
 show_help() {
-    printf '%sARCB Wider Updater v%s (%s Edition - %s)%s\n' "${BOLD}" "$VERSION" "$EDITION" "$CODENAME" "${NC}"
+    printf '%sBigFive Updater v%s (%s Edition - %s)%s\n' "${BOLD}" "$VERSION" "$EDITION" "$CODENAME" "${NC}"
     echo "--------------------------------------------------"
     echo "Kullanım: guncel | updater | bigfive [SEÇENEK]"
     echo ""
@@ -1575,7 +1575,7 @@ show_help() {
     echo "                      (system = apt, dnf, pacman, zypper, apk)"
     echo "  --only <backend>    Sadece belirtilen backend'leri çalıştır (virgülle ayır)"
     echo "                      Değerler: system, flatpak, snap, fwupd, apt, dnf, pacman, zypper, apk"
-    echo "  --uninstall         ARCB Wider Updater'ı kaldır"
+    echo "  --uninstall         BigFive Updater'ı kaldır"
     echo "  --uninstall --purge Config ve logları da sil"
     echo "  --help              Bu yardım mesajını gösterir"
     echo ""

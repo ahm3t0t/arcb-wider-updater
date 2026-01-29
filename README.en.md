@@ -1,4 +1,4 @@
-# ARCB Wider Updater 🛡️
+# BigFive Updater 🛡️
 
 [![CI Status](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml)
 [![Tests](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml)
@@ -171,7 +171,7 @@ Define default settings in `/etc/bigfive-updater.conf`:
 
 ```bash
 # /etc/bigfive-updater.conf
-# ARCB Wider Updater Configuration File
+# BigFive Updater Configuration File
 
 # Default modes (true/false)
 CONFIG_VERBOSE=false
@@ -242,7 +242,7 @@ sudo guncel --json-full
   "packages": [],
   "snapshot": {
     "created": true,
-    "name": "ARCB-Update-2026-01-29",
+    "name": "BigFive-Update-2026-01-29",
     "tool": "timeshift"
   },
   "warnings": [],
@@ -257,7 +257,7 @@ sudo guncel --json-full
 sudo guncel --json | jq '.status'
 
 # Log for Wazuh/Splunk
-sudo guncel --json-full >> /var/log/arcb-updates.json
+sudo guncel --json-full >> /var/log/bigfive-updates.json
 
 # Dry-run with JSON
 sudo guncel --dry-run --json
@@ -318,14 +318,14 @@ sudo cp /usr/local/bin/guncel.bak /usr/local/bin/guncel
 
 ## 📝 Log Management (v3.7.0)
 
-Log files are stored in `/var/log/arcb-updater/` and automatically managed by `logrotate`.
+Log files are stored in `/var/log/bigfive-updater/` and automatically managed by `logrotate`.
 
 ### Logrotate Configuration
 
 During installation, `/etc/logrotate.d/bigfive-updater` is created:
 
 ```
-/var/log/arcb-updater/*.log {
+/var/log/bigfive-updater/*.log {
     weekly          # Rotate weekly
     rotate 4        # Keep 4 weeks
     compress        # Compress old logs
@@ -340,10 +340,10 @@ During installation, `/etc/logrotate.d/bigfive-updater` is created:
 
 ```bash
 # List log files
-ls -la /var/log/arcb-updater/
+ls -la /var/log/bigfive-updater/
 
 # View latest log
-cat /var/log/arcb-updater/update_*.log | tail -50
+cat /var/log/bigfive-updater/update_*.log | tail -50
 
 # Manually run logrotate
 sudo logrotate -f /etc/logrotate.d/bigfive-updater

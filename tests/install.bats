@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-# BATS Unit Tests for install.sh - ARCB Wider Updater Installer
+# BATS Unit Tests for install.sh - BigFive Updater Installer
 # Night-V1.1.0
 
 # Path to the install script
@@ -189,8 +189,8 @@ INSTALL_SCRIPT="${BATS_TEST_DIRNAME}/../install.sh"
     grep -q 'grep.*#!/.*bash' "$INSTALL_SCRIPT"
 }
 
-@test "Script validation checks for ARCB signature" {
-    grep -q 'ARCB Wider Updater' "$INSTALL_SCRIPT"
+@test "Script validation checks for BigFive signature" {
+    grep -q 'BigFive Updater' "$INSTALL_SCRIPT"
 }
 
 # =============================================================================

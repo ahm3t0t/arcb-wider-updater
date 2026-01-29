@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ARCB Updater Installer Night-V1.3.2
+# BigFive Updater Installer Night-V1.3.2
 # Sync: Night-V1.3.2 | Zsh ve Fish completion desteği
 
 # 1. HATA YÖNETİMİ
@@ -169,7 +169,7 @@ verify_gpg_signature() {
     return 0
 }
 
-printf "\n%s>>> ARCB Wider Updater Kurulum (Night-V1.3.2)%s\n" "$BLUE" "$NC"
+printf "\n%s>>> BigFive Updater Kurulum (Night-V1.3.2)%s\n" "$BLUE" "$NC"
 
 # İndirme veya Kopyalama Mantığı
 if [[ -n "$SOURCE_FILE" ]]; then
@@ -192,7 +192,7 @@ if ! head -n 1 "$TEMP_FILE" | grep -E -q "#!/(usr/)?bin/(env )?bash"; then
     exit 1
 fi
 
-if ! grep -q "ARCB Wider Updater" "$TEMP_FILE"; then
+if ! grep -q "BigFive Updater" "$TEMP_FILE"; then
     printf "%s❌ Dosya imza doğrulaması başarısız!%s\n" "$RED" "$NC"
     exit 1
 fi
@@ -391,4 +391,4 @@ fi
 printf "%s\n" "--------------------------------------------------"
 printf "%sℹ️  Not: flock bağımlılığı util-linux paketi ile gelir (genelde kurulu).%s\n" "$BLUE" "$NC"
 printf "Komut: %sguncel%s | %supdater%s | %sbigfive%s [--auto] [--skip ...] [--only ...] [--help]\n" "$BOLD" "$NC" "$BOLD" "$NC" "$BOLD" "$NC"
-printf "Loglar: %s/var/log/arcb-updater/%s (logrotate ile yönetilir)\n" "$BOLD" "$NC"
+printf "Loglar: %s/var/log/bigfive-updater/%s (logrotate ile yönetilir)\n" "$BOLD" "$NC"

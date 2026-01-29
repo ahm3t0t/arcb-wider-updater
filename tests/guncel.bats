@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-# BATS Unit Tests for guncel - ARCB Wider Updater
+# BATS Unit Tests for guncel - BigFive Updater
 
 load test_helper
 

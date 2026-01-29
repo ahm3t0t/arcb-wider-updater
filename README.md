@@ -1,4 +1,4 @@
-# ARCB Wider Updater 🛡️
+# BigFive Updater 🛡️
 
 [![CI Status](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml)
 [![Tests](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml)

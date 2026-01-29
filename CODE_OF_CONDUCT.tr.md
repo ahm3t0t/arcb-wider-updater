@@ -114,7 +114,7 @@ Bu Davranış Kuralları [Contributor Covenant][homepage], sürüm 2.1'den
 uyarlanmıştır. Orijinal metin:
 [https://www.contributor-covenant.org/version/2/1/code_of_conduct.html][v2.1]
 
-Türkçe çeviri ARCB Wider Updater projesi için hazırlanmıştır.
+Türkçe çeviri BigFive Updater projesi için hazırlanmıştır.
 
 [homepage]: https://www.contributor-covenant.org
 [v2.1]: https://www.contributor-covenant.org/version/2/1/code_of_conduct.html

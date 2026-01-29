@@ -1,4 +1,4 @@
-# ARCB Wider Updater 🛡️
+# BigFive Updater 🛡️
 
 [![CI Status](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml)
 [![Tests](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml)
@@ -11,9 +11,10 @@
 
 ---
 
-## 🤔 ARCB Ne Demek?
+## 🤔 BigFive Ne Demek?
 
-**A**rmored **R**obust **C**onfigurable **B**ash - Zırhlı, Sağlam, Yapılandırılabilir Bash scripti.
+**Big Five** = 5 büyük paket yöneticisi desteği: APT, DNF, Pacman, Zypper, APK.
+Tek komutla tüm Linux dağıtımlarını güncelleyen evrensel araç.
 
 ---
 
@@ -158,7 +159,7 @@ sudo guncel
 
 ```
 ========================================
-  ARCB-WIDER-UPDATER v4.1.4
+  BIGFIVE-UPDATER v4.1.4
   Host: my-laptop | User: root
   Kernel: 6.14.0-37-generic
   RAM: 16Gi | Disk: 45% used
@@ -181,9 +182,9 @@ sudo guncel
   Snap: Güncel
   Firmware: Güncel
 ----------------------------------------
-  Snapshot: ARCB-Update-2026-01-28
+  Snapshot: BigFive-Update-2026-01-28
   Reboot: Gerekli değil
-  Log: /var/log/arcb-updater/update_20260128_103045.log
+  Log: /var/log/bigfive-updater/update_20260128_103045.log
 ========================================
 ```
 
@@ -289,7 +290,7 @@ Varsayılan ayarları `/etc/bigfive-updater.conf` dosyasında tanımlayabilirsin
 
 ```bash
 # /etc/bigfive-updater.conf
-# ARCB Wider Updater Yapılandırma Dosyası
+# BigFive Updater Yapılandırma Dosyası
 
 # Varsayılan modlar (true/false)
 CONFIG_VERBOSE=false
@@ -317,7 +318,7 @@ CONFIG_SKIP_DNF=false
 sudo crontab -e
 
 # Her Pazar gece 03:00'te çalıştır
-0 3 * * 0 /usr/local/bin/guncel --auto --quiet >> /var/log/arcb-updater/cron.log 2>&1
+0 3 * * 0 /usr/local/bin/guncel --auto --quiet >> /var/log/bigfive-updater/cron.log 2>&1
 ```
 
 ### Systemd Timer ile (Önerilen)
@@ -325,9 +326,9 @@ sudo crontab -e
 **1. Service dosyası oluştur:**
 
 ```bash
-sudo tee /etc/systemd/system/arcb-updater.service << 'EOF'
+sudo tee /etc/systemd/system/bigfive-updater.service << 'EOF'
 [Unit]
-Description=ARCB Wider Updater
+Description=BigFive Updater
 After=network-online.target
 Wants=network-online.target
 
@@ -342,9 +343,9 @@ EOF
 **2. Timer dosyası oluştur:**
 
 ```bash
-sudo tee /etc/systemd/system/arcb-updater.timer << 'EOF'
+sudo tee /etc/systemd/system/bigfive-updater.timer << 'EOF'
 [Unit]
-Description=ARCB Wider Updater Timer
+Description=BigFive Updater Timer
 
 [Timer]
 OnCalendar=Sun 03:00
@@ -360,10 +361,10 @@ EOF
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable --now arcb-updater.timer
+sudo systemctl enable --now bigfive-updater.timer
 
 # Durumu kontrol et
-sudo systemctl status arcb-updater.timer
+sudo systemctl status bigfive-updater.timer
 ```
 
 ---
@@ -420,7 +421,7 @@ sudo guncel --json-full
   "packages": [],
   "snapshot": {
     "created": true,
-    "name": "ARCB-Update-2026-01-29",
+    "name": "BigFive-Update-2026-01-29",
     "tool": "timeshift"
   },
   "warnings": [],
@@ -435,7 +436,7 @@ sudo guncel --json-full
 sudo guncel --json | jq '.status'
 
 # Wazuh/Splunk için log
-sudo guncel --json-full >> /var/log/arcb-updates.json
+sudo guncel --json-full >> /var/log/bigfive-updates.json
 
 # Dry-run ile JSON
 sudo guncel --dry-run --json
@@ -496,14 +497,14 @@ sudo cp /usr/local/bin/guncel.bak /usr/local/bin/guncel
 
 ## 📝 Log Yönetimi (v3.7.0)
 
-Log dosyaları `/var/log/arcb-updater/` dizininde saklanır ve `logrotate` ile otomatik yönetilir.
+Log dosyaları `/var/log/bigfive-updater/` dizininde saklanır ve `logrotate` ile otomatik yönetilir.
 
 ### Logrotate Yapılandırması
 
 Kurulum sırasında `/etc/logrotate.d/bigfive-updater` dosyası oluşturulur:
 
 ```
-/var/log/arcb-updater/*.log {
+/var/log/bigfive-updater/*.log {
     weekly          # Haftalık rotate
     rotate 4        # 4 hafta sakla
     compress        # Eski logları sıkıştır
@@ -518,10 +519,10 @@ Kurulum sırasında `/etc/logrotate.d/bigfive-updater` dosyası oluşturulur:
 
 ```bash
 # Log dosyalarını listele
-ls -la /var/log/arcb-updater/
+ls -la /var/log/bigfive-updater/
 
 # Son log'u görüntüle
-cat /var/log/arcb-updater/update_*.log | tail -50
+cat /var/log/bigfive-updater/update_*.log | tail -50
 
 # Logrotate'u manuel çalıştır
 sudo logrotate -f /etc/logrotate.d/bigfive-updater
@@ -597,10 +598,10 @@ sudo cp /usr/local/bin/guncel.bak_20260128_103045 /usr/local/bin/guncel
 
 ```bash
 # Son güncelleme logunu görüntüle
-sudo cat /var/log/arcb-updater/update_*.log | tail -100
+sudo cat /var/log/bigfive-updater/update_*.log | tail -100
 
 # Hataları filtrele
-sudo grep -i "error\|hata\|failed" /var/log/arcb-updater/update_*.log
+sudo grep -i "error\|hata\|failed" /var/log/bigfive-updater/update_*.log
 ```
 
 ---
@@ -653,7 +654,7 @@ sudo nano /etc/bigfive-updater.conf
 
 Loglar `logrotate` ile otomatik yönetilir (haftalık, 4 hafta saklanır). Manuel silmek için:
 ```bash
-sudo rm /var/log/arcb-updater/update_*.log
+sudo rm /var/log/bigfive-updater/update_*.log
 ```
 
 ### Güncelleme ne kadar sürer?

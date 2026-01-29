@@ -1,5 +1,5 @@
 #!/bin/bash
-# ARCB Wider Updater - Release Script
+# BigFive Updater - Release Script
 # Versiyon: Dev-V1.1.0
 # Kullanım: ./release.sh [patch|minor|major] [-y] veya ./release.sh 4.2.0 -y
 
@@ -50,7 +50,7 @@ bump_version() {
 
 # Kullanım bilgisi
 usage() {
-    echo -e "${BLUE}ARCB Release Script${NC} ($RELEASE_SCRIPT_VERSION)"
+    echo -e "${BLUE}BigFive Release Script${NC} ($RELEASE_SCRIPT_VERSION)"
     echo ""
     echo "Kullanım: $0 [patch|minor|major|X.Y.Z] [-y]"
     echo ""

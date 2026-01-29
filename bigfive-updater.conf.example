@@ -1,5 +1,5 @@
 # /etc/bigfive-updater.conf
-# ARCB Wider Updater Yapılandırma Dosyası / Configuration File
+# BigFive Updater Yapılandırma Dosyası / Configuration File
 # v5.4.x "BigFive - Beacon"
 #
 # Bu dosyayı /etc/bigfive-updater.conf olarak kopyalayın.
