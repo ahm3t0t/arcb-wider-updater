@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# ARCB Updater Installer Night-V1.2.1
-# Sync: Night-V1.2.1 | Releases URL kullan (CDN cache fix)
+# ARCB Updater Installer Night-V1.3.0
+# Sync: Night-V1.3.0 | Bash completion kurulumu eklendi
 
 # 1. HATA YÖNETİMİ
 set -Eeuo pipefail
@@ -166,7 +166,7 @@ verify_gpg_signature() {
     return 0
 }
 
-printf "\n%s>>> ARCB Wider Updater Kurulum (Night-V1.2.1)%s\n" "$BLUE" "$NC"
+printf "\n%s>>> ARCB Wider Updater Kurulum (Night-V1.3.0)%s\n" "$BLUE" "$NC"
 
 # İndirme veya Kopyalama Mantığı
 if [[ -n "$SOURCE_FILE" ]]; then
@@ -273,6 +273,45 @@ if command -v logrotate &> /dev/null; then
     fi
 else
     printf "%s⚠️  Logrotate bulunamadı. Log rotation için: apt install logrotate%s\n" "$YELLOW" "$NC"
+fi
+
+# 6. BASH COMPLETION KURULUMU (v1.3.0)
+printf "\n%s>>> Bash Completion%s\n" "$BLUE" "$NC"
+
+BASH_COMPLETION_DIR="/usr/share/bash-completion/completions"
+BASH_COMPLETION_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/guncel.bash"
+LOCAL_COMPLETION_FILE="$SCRIPT_DIR/completions/guncel.bash"
+TEMP_COMPLETION="$(mktemp /tmp/guncel_completion_XXXXXX)"
+
+if [[ -d "$BASH_COMPLETION_DIR" ]]; then
+    # Yerel dosya var mı?
+    if [[ -f "$LOCAL_COMPLETION_FILE" ]]; then
+        cp "$LOCAL_COMPLETION_FILE" "$TEMP_COMPLETION"
+        printf "📂 Bash completion: %sLocal%s\n" "$YELLOW" "$NC"
+    else
+        if curl --proto '=https' --tlsv1.2 -fsSL "$BASH_COMPLETION_URL" -o "$TEMP_COMPLETION" 2>/dev/null || \
+           wget --secure-protocol=TLSv1_2 -qO "$TEMP_COMPLETION" "$BASH_COMPLETION_URL" 2>/dev/null; then
+            printf "➡️  İndiriliyor: %s\n" "$BASH_COMPLETION_URL"
+        else
+            printf "%s⚠️  Bash completion indirilemedi (opsiyonel).%s\n" "$YELLOW" "$NC"
+            TEMP_COMPLETION=""
+        fi
+    fi
+
+    if [[ -n "$TEMP_COMPLETION" && -s "$TEMP_COMPLETION" ]]; then
+        if install -m 0644 -o root -g root "$TEMP_COMPLETION" "$BASH_COMPLETION_DIR/guncel"; then
+            # Symlink'ler için de completion
+            ln -sf "$BASH_COMPLETION_DIR/guncel" "$BASH_COMPLETION_DIR/updater" 2>/dev/null
+            ln -sf "$BASH_COMPLETION_DIR/guncel" "$BASH_COMPLETION_DIR/bigfive" 2>/dev/null
+            printf "%s✅ Bash completion kuruldu (guncel, updater, bigfive)%s\n" "$GREEN" "$NC"
+            printf "%sℹ️  Tab tuşu ile seçenek tamamlama aktif (yeni terminal gerekir).%s\n" "$BLUE" "$NC"
+        else
+            printf "%s⚠️  Bash completion kurulamadı (opsiyonel).%s\n" "$YELLOW" "$NC"
+        fi
+    fi
+    rm -f "$TEMP_COMPLETION" 2>/dev/null
+else
+    printf "%s⚠️  Bash completion dizini bulunamadı (%s).%s\n" "$YELLOW" "$BASH_COMPLETION_DIR" "$NC"
 fi
 
 printf "%s\n" "--------------------------------------------------"

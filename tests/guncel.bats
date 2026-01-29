@@ -388,3 +388,39 @@ get_script_version() {
 @test "START_TIME variable is used" {
     grep -q 'START_TIME=' "$GUNCEL_SCRIPT"
 }
+
+# =============================================================================
+# BASH COMPLETION TESTS (v5.4)
+# =============================================================================
+
+@test "Bash completion file exists" {
+    [ -f "$PROJECT_ROOT/completions/guncel.bash" ]
+}
+
+@test "Bash completion has valid syntax" {
+    bash -n "$PROJECT_ROOT/completions/guncel.bash"
+}
+
+@test "Bash completion registers guncel command" {
+    grep -q 'complete -F _guncel_completions guncel' "$PROJECT_ROOT/completions/guncel.bash"
+}
+
+@test "Bash completion registers updater alias" {
+    grep -q 'complete -F _guncel_completions updater' "$PROJECT_ROOT/completions/guncel.bash"
+}
+
+@test "Bash completion registers bigfive alias" {
+    grep -q 'complete -F _guncel_completions bigfive' "$PROJECT_ROOT/completions/guncel.bash"
+}
+
+@test "Bash completion includes --json option" {
+    grep -q '\-\-json' "$PROJECT_ROOT/completions/guncel.bash"
+}
+
+@test "Bash completion includes --skip option" {
+    grep -q '\-\-skip' "$PROJECT_ROOT/completions/guncel.bash"
+}
+
+@test "Bash completion includes backend values" {
+    grep -q 'flatpak snap fwupd' "$PROJECT_ROOT/completions/guncel.bash"
+}

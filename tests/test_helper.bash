@@ -5,6 +5,9 @@
 # Path to the main script
 export GUNCEL_SCRIPT="${BATS_TEST_DIRNAME}/../guncel"
 
+# Path to project root
+export PROJECT_ROOT="${BATS_TEST_DIRNAME}/.."
+
 # Mock directory for test isolation
 export MOCK_DIR="${BATS_TEST_DIRNAME}/mocks"
 
