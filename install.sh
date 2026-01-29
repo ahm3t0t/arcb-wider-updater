@@ -148,7 +148,8 @@ verify_gpg_signature() {
 
     # SHA256 checksum doğrulama
     local expected_hash
-    expected_hash=$(grep "guncel" "$TEMP_SHA256SUMS" 2>/dev/null | awk '{print $1}')
+    # Sadece "guncel" dosyasını bul (guncel.bash, guncel.8 değil)
+    expected_hash=$(grep -E "  guncel$" "$TEMP_SHA256SUMS" 2>/dev/null | awk '{print $1}')
     local actual_hash
     actual_hash=$(sha256sum "$file" | awk '{print $1}')
 
