@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.4.5] - 2026-01-29 "BigFive Edition - Beacon"
+### Fixed
+- **Self-update SHA256 verification:** Fixed grep pattern in `check_self_update()` function
+  - Old: `grep "guncel"` → matched `guncel`, `guncel.bash`, `guncel.8` (returned 3 hashes)
+  - New: `grep -E "  guncel$"` → matches only `guncel` (single hash)
+  - This bug completely blocked self-updates ("SHA256 verification failed" error)
+
+---
+
 ## [5.4.3] - 2026-01-29 "BigFive Edition - Beacon"
 ### Fixed
 - **Installation URL:** Changed from raw.githubusercontent.com to releases URL (avoids CDN cache issues)

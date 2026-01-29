@@ -5,6 +5,15 @@ Bu projedeki tüm önemli değişiklikler bu dosyada belgelenecektir.
 Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına,
 versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standardına uygundur.
 
+## [5.4.5] - 2026-01-29 "BigFive Edition - Beacon"
+### Düzeltilenler
+- **Self-update SHA256 doğrulama:** `check_self_update()` fonksiyonundaki grep pattern düzeltildi
+  - Eski: `grep "guncel"` → `guncel`, `guncel.bash`, `guncel.8` (3 hash döndürüyordu)
+  - Yeni: `grep -E "  guncel$"` → sadece `guncel` (tek hash)
+  - Bu hata self-update'i tamamen engelliyordu ("SHA256 doğrulama başarısız" hatası)
+
+---
+
 ## [5.4.3] - 2026-01-29 "BigFive Edition - Beacon"
 ### Düzeltilenler
 - **Kurulum URL'i:** raw.githubusercontent.com yerine releases URL kullanılıyor (CDN cache sorunu önlendi)

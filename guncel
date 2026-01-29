@@ -5,7 +5,7 @@
 #
 
 # --- AYARLAR ---
-VERSION="5.4.4"
+VERSION="5.4.5"
 EDITION="BigFive"
 CODENAME="Beacon"
 LOG_DIR="/var/log/arcb-updater"
@@ -660,7 +660,8 @@ check_self_update() {
         # SHA256 doğrulama (v3.6.0)
         if download_file "$GITHUB_SHA256_URL" "$TEMP_SHA256" 2>/dev/null; then
             local EXPECTED
-            EXPECTED=$(grep "guncel" "$TEMP_SHA256" 2>/dev/null | awk '{print $1}')
+            # v5.4.4 FIX: Sadece "guncel" dosyasını yakala (guncel.bash, guncel.8 değil)
+            EXPECTED=$(grep -E "  guncel$" "$TEMP_SHA256" 2>/dev/null | awk '{print $1}')
             if [[ -n "$EXPECTED" && "$EXPECTED" != "$REMOTE_HASH" ]]; then
                 print_error "SHA256 doğrulama başarısız! Güncelleme iptal edildi."
                 echo "[$(date '+%F %T')] ERROR: SHA256 mismatch - Expected: $EXPECTED, Got: $REMOTE_HASH" >> "$LOG_FILE"
