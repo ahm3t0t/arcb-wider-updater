@@ -1,11 +1,11 @@
 # ARCB Wider Updater 🛡️
 
-[![CI Status](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/ci.yml/badge.svg)](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/ci.yml)
-[![Tests](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/test.yml/badge.svg)](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/test.yml)
-[![Latest Release](https://img.shields.io/github/v/release/ahm3t0t/arcb-wider-updater?sort=semver&label=Version)](https://github.com/ahm3t0t/arcb-wider-updater/releases)
-[![License](https://img.shields.io/github/license/ahm3t0t/arcb-wider-updater)](https://github.com/ahm3t0t/arcb-wider-updater/blob/main/LICENSE)
-![GitHub last commit](https://img.shields.io/github/last-commit/ahm3t0t/arcb-wider-updater)
-![GitHub code size](https://img.shields.io/github/languages/code-size/ahm3t0t/arcb-wider-updater)
+[![CI Status](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml)
+[![Tests](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml)
+[![Latest Release](https://img.shields.io/github/v/release/ahm3t0t/bigfive-updater?sort=semver&label=Version)](https://github.com/ahm3t0t/bigfive-updater/releases)
+[![License](https://img.shields.io/github/license/ahm3t0t/bigfive-updater)](https://github.com/ahm3t0t/bigfive-updater/blob/main/LICENSE)
+![GitHub last commit](https://img.shields.io/github/last-commit/ahm3t0t/bigfive-updater)
+![GitHub code size](https://img.shields.io/github/languages/code-size/ahm3t0t/bigfive-updater)
 
 **Linux sistemleri için Zırhlı, Akıllı ve Çoklu-Dağıtım (Multi-Distro) Güncelleme Aracı.**
 
@@ -29,7 +29,7 @@
 
 ```bash
 # Installation / Kurulum
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/install.sh | sudo bash
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/install.sh | sudo bash
 ```
 ```bash
 # Usage / Kullanım (3 alias: guncel, updater, bigfive)
@@ -78,7 +78,7 @@ This project uses two separate version systems:
 - ✅ JSON Output: `--json` for monitoring, `--json-full` for SIEM/audit (v5.3+)
 - ✅ Shell Completion: Bash, Zsh, Fish tab completion (v5.4+)
 - ✅ Man Page: `man guncel` for full documentation (v5.4+)
-- ✅ Config File: `/etc/arcb-wider-updater.conf`
+- ✅ Config File: `/etc/bigfive-updater.conf`
 - ✅ GPG Signature Verification: Cryptographically signed releases
 - ✅ SHA256 Verification: Secure self-updates
 - ✅ Automatic Backup: Rollback capability

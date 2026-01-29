@@ -66,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **SHA256 checksum verification:** Fixed grep pattern to match exact filename `guncel` (not `guncel.bash` or `guncel.8`)
 
 ### Changed
-- **arcb-wider-updater.conf.example:** Updated to v5.4.x, added `CONFIG_JSON_MODE` option
+- **bigfive-updater.conf.example:** Updated to v5.4.x, added `CONFIG_JSON_MODE` option
 - **guncel:** Added `CONFIG_JSON_MODE` support in `load_config()`
 
 ---
@@ -385,7 +385,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Logrotate support:** Automatic log rotation and cleanup
-  - New config file: `/etc/logrotate.d/arcb-wider-updater`
+  - New config file: `/etc/logrotate.d/bigfive-updater`
   - Weekly rotation, keeps 4 weeks of logs
   - Compresses old logs automatically
   - Installed automatically via install.sh
@@ -407,7 +407,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `--skip snapshot,flatpak,snap,fwupd,dnf` to skip specific backends
   - `--only system,flatpak,fwupd` to run only specified backends
   - Example: `guncel --skip flatpak,snap` or `guncel --only dnf`
-- **Config file support:** `/etc/arcb-wider-updater.conf`
+- **Config file support:** `/etc/bigfive-updater.conf`
   - Define default modes, skip settings, and colors
   - Command line arguments override config settings
 - **SHA256 verification during self-update:**

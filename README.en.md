@@ -1,9 +1,9 @@
 # ARCB Wider Updater 🛡️
 
-[![CI Status](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/ci.yml/badge.svg)](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/ci.yml)
-[![Tests](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/test.yml/badge.svg)](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/test.yml)
-[![Latest Release](https://img.shields.io/github/v/release/ahm3t0t/arcb-wider-updater?sort=semver&label=Version)](https://github.com/ahm3t0t/arcb-wider-updater/releases)
-[![License](https://img.shields.io/github/license/ahm3t0t/arcb-wider-updater)](https://github.com/ahm3t0t/arcb-wider-updater/blob/main/LICENSE)
+[![CI Status](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml)
+[![Tests](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml)
+[![Latest Release](https://img.shields.io/github/v/release/ahm3t0t/bigfive-updater?sort=semver&label=Version)](https://github.com/ahm3t0t/bigfive-updater/releases)
+[![License](https://img.shields.io/github/license/ahm3t0t/bigfive-updater)](https://github.com/ahm3t0t/bigfive-updater/blob/main/LICENSE)
 
 **Armored, Smart, Multi-Distro Update Tool for Linux Systems.**
 
@@ -60,7 +60,7 @@ Performs Snapshot (Backup), Repository Updates, Flatpak/Snap and Firmware checks
 * **Man Page (v5.4+):**
     * Full documentation via `man guncel`.
 * **Config File Support (v3.6.0):**
-    * Define default settings in `/etc/arcb-wider-updater.conf`.
+    * Define default settings in `/etc/bigfive-updater.conf`.
 * **SHA256 Verification (v3.6.0):**
     * Hash verification during self-update for secure updates.
 * **Automatic Backup (v3.6.0):**
@@ -103,7 +103,7 @@ This project uses **two separate version systems**:
 Paste the following command into your terminal. The script will safely request necessary privileges and complete the installation:
 
 ```bash
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/install.sh | sudo bash
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/install.sh | sudo bash
 ```
 
 ---
@@ -167,10 +167,10 @@ guncel --only flatpak,fwupd     # Only Flatpak and Firmware
 
 ## ⚙️ Config File (v3.6.0)
 
-Define default settings in `/etc/arcb-wider-updater.conf`:
+Define default settings in `/etc/bigfive-updater.conf`:
 
 ```bash
-# /etc/arcb-wider-updater.conf
+# /etc/bigfive-updater.conf
 # ARCB Wider Updater Configuration File
 
 # Default modes (true/false)
@@ -290,11 +290,11 @@ The `install.sh` script automatically:
 
 ```bash
 # Import public key
-curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/pubkey.asc | gpg --import
+curl -fsSL https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/pubkey.asc | gpg --import
 
 # Verify signature
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS -o SHA256SUMS
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS.asc -o SHA256SUMS.asc
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS -o SHA256SUMS
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS.asc -o SHA256SUMS.asc
 gpg --verify SHA256SUMS.asc SHA256SUMS
 ```
 
@@ -322,7 +322,7 @@ Log files are stored in `/var/log/arcb-updater/` and automatically managed by `l
 
 ### Logrotate Configuration
 
-During installation, `/etc/logrotate.d/arcb-wider-updater` is created:
+During installation, `/etc/logrotate.d/bigfive-updater` is created:
 
 ```
 /var/log/arcb-updater/*.log {
@@ -346,7 +346,7 @@ ls -la /var/log/arcb-updater/
 cat /var/log/arcb-updater/update_*.log | tail -50
 
 # Manually run logrotate
-sudo logrotate -f /etc/logrotate.d/arcb-wider-updater
+sudo logrotate -f /etc/logrotate.d/bigfive-updater
 ```
 
 ---

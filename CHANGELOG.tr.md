@@ -66,7 +66,7 @@ versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - **SHA256 checksum doğrulama:** Tam dosya adı `guncel` eşleşmesi için grep pattern düzeltildi (`guncel.bash` veya `guncel.8` değil)
 
 ### Değişenler
-- **arcb-wider-updater.conf.example:** v5.4.x'e güncellendi, `CONFIG_JSON_MODE` opsiyonu eklendi
+- **bigfive-updater.conf.example:** v5.4.x'e güncellendi, `CONFIG_JSON_MODE` opsiyonu eklendi
 - **guncel:** `load_config()` fonksiyonuna `CONFIG_JSON_MODE` desteği eklendi
 
 ---
@@ -385,7 +385,7 @@ versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Eklenenler
 - **Logrotate desteği:** Otomatik log rotation ve temizlik
-  - Yeni config dosyası: `/etc/logrotate.d/arcb-wider-updater`
+  - Yeni config dosyası: `/etc/logrotate.d/bigfive-updater`
   - Haftalık rotation, 4 haftalık log tutar
   - Eski logları otomatik sıkıştırır
   - install.sh aracılığıyla otomatik kurulur
@@ -407,7 +407,7 @@ versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   - Belirli backend'leri atlamak için `--skip snapshot,flatpak,snap,fwupd,dnf`
   - Sadece belirtilen backend'leri çalıştırmak için `--only system,flatpak,fwupd`
   - Örnek: `guncel --skip flatpak,snap` veya `guncel --only dnf`
-- **Config dosyası desteği:** `/etc/arcb-wider-updater.conf`
+- **Config dosyası desteği:** `/etc/bigfive-updater.conf`
   - Varsayılan modları, skip ayarlarını ve renkleri tanımla
   - Komut satırı argümanları config ayarlarını override eder
 - **Self-update sırasında SHA256 doğrulama:**

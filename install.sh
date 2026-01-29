@@ -15,14 +15,14 @@ NC=$'\033[0m'
 
 INSTALL_PATH="/usr/local/bin/guncel"
 # v1.2.1: Releases URL kullan (CDN cache sorunu önlenir)
-REPO_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/guncel"
-LOGROTATE_REPO_URL="https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/logrotate.d/arcb-wider-updater"
-LOGROTATE_DEST="/etc/logrotate.d/arcb-wider-updater"
+REPO_URL="https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/guncel"
+LOGROTATE_REPO_URL="https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/logrotate.d/bigfive-updater"
+LOGROTATE_DEST="/etc/logrotate.d/bigfive-updater"
 
 # GPG Doğrulama URL'leri (v1.1.0)
-GPG_PUBKEY_URL="https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/pubkey.asc"
-GPG_SHA256SUMS_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS"
-GPG_SHA256SUMS_SIG_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS.asc"
+GPG_PUBKEY_URL="https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/pubkey.asc"
+GPG_SHA256SUMS_URL="https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS"
+GPG_SHA256SUMS_SIG_URL="https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS.asc"
 
 # --- SMART LOCAL FILE DETECTION ---
 # 1. Scriptin kendi bulunduğu dizini bul (Pipe ile gelmiyorsa)
@@ -31,7 +31,7 @@ SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}" )" &> /dev/null && p
 # 2. Adaylar:
 LOCAL_REPO_FILE="$SCRIPT_DIR/guncel"
 LOCAL_CWD_FILE="./guncel"
-LOCAL_LOGROTATE_FILE="$SCRIPT_DIR/logrotate.d/arcb-wider-updater"
+LOCAL_LOGROTATE_FILE="$SCRIPT_DIR/logrotate.d/bigfive-updater"
 
 # 3. Kaynak Belirleme
 SOURCE_FILE=""
@@ -61,7 +61,7 @@ if [[ $EUID -ne 0 ]]; then
     else
         printf "%s❌ Bu script root yetkisi gerektirir.%s\n" "$RED" "$NC"
         printf "%sLütfen komutu başına 'sudo' ekleyerek çalıştırın:%s\n" "$RED" "$NC"
-        printf "%s   curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/install.sh | sudo bash%s\n" "$BLUE" "$NC"
+        printf "%s   curl -fsSL https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/install.sh | sudo bash%s\n" "$BLUE" "$NC"
         exit 1
     fi
 fi
@@ -282,7 +282,7 @@ fi
 printf "\n%s>>> Bash Completion%s\n" "$BLUE" "$NC"
 
 BASH_COMPLETION_DIR="/usr/share/bash-completion/completions"
-BASH_COMPLETION_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/guncel.bash"
+BASH_COMPLETION_URL="https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/guncel.bash"
 LOCAL_COMPLETION_FILE="$SCRIPT_DIR/completions/guncel.bash"
 TEMP_COMPLETION="$(mktemp /tmp/guncel_completion_XXXXXX)"
 
@@ -352,7 +352,7 @@ fi
 printf "\n%s>>> Man Page%s\n" "$BLUE" "$NC"
 
 MAN_DIR="/usr/share/man/man8"
-MAN_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/guncel.8"
+MAN_URL="https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/guncel.8"
 LOCAL_MAN_FILE="$SCRIPT_DIR/docs/guncel.8"
 TEMP_MAN="$(mktemp /tmp/guncel_man_XXXXXX)"
 

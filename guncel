@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # ARCB Wider Updater
-# GitHub: https://github.com/ahm3t0t/arcb-wider-updater
+# GitHub: https://github.com/ahm3t0t/bigfive-updater
 #
 
 # --- AYARLAR ---
@@ -11,9 +11,9 @@ CODENAME="Beacon"
 LOG_DIR="/var/log/arcb-updater"
 LOG_FILE="$LOG_DIR/update_$(date +%Y%m%d_%H%M%S).log"
 # v5.4.5: Releases URL kullan (CDN cache sorunu önlenir - raw.githubusercontent.com cache'lenebilir)
-GITHUB_RAW_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/guncel"
-GITHUB_SHA256_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS"
-CONFIG_FILE="/etc/arcb-wider-updater.conf"
+GITHUB_RAW_URL="https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/guncel"
+GITHUB_SHA256_URL="https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS"
+CONFIG_FILE="/etc/bigfive-updater.conf"
 
 # STRICT MODE
 set -Eeuo pipefail
@@ -1520,8 +1520,8 @@ do_uninstall() {
     fi
 
     # Logrotate config
-    if [[ -f "/etc/logrotate.d/arcb-wider-updater" ]]; then
-        rm -f "/etc/logrotate.d/arcb-wider-updater" && removed_items+=("Logrotate: /etc/logrotate.d/arcb-wider-updater")
+    if [[ -f "/etc/logrotate.d/bigfive-updater" ]]; then
+        rm -f "/etc/logrotate.d/bigfive-updater" && removed_items+=("Logrotate: /etc/logrotate.d/bigfive-updater")
     fi
 
     # Log dizini
@@ -1535,7 +1535,7 @@ do_uninstall() {
     fi
 
     # Lock dosyası
-    rm -f "/var/lock/arcb-wider-updater.lock" 2>/dev/null
+    rm -f "/var/lock/bigfive-updater.lock" 2>/dev/null
 
     echo ""
     if [[ ${#removed_items[@]} -gt 0 ]]; then
@@ -1597,7 +1597,7 @@ show_help() {
     echo ""
     echo "Config Dosyası: $CONFIG_FILE"
     echo "  Varsayılan ayarları config dosyasında tanımlayabilirsiniz."
-    echo "  Örnek: /etc/arcb-wider-updater.conf.example"
+    echo "  Örnek: /etc/bigfive-updater.conf.example"
     exit 0
 }
 
@@ -1661,7 +1661,7 @@ fi
 check_root
 
 # --- FLOCK: Eşzamanlı çalışma kilidi ---
-LOCK_FILE="/var/lock/arcb-wider-updater.lock"
+LOCK_FILE="/var/lock/bigfive-updater.lock"
 # Bazı container'larda /var/lock veya /run/lock yoksa oluştur
 # Fedora/RHEL'de /var/lock -> /run/lock symlink'i var
 if [[ -L "/var/lock" ]]; then

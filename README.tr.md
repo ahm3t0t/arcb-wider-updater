@@ -1,9 +1,9 @@
 # ARCB Wider Updater 🛡️
 
-[![CI Status](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/ci.yml/badge.svg)](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/ci.yml)
-[![Tests](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/test.yml/badge.svg)](https://github.com/ahm3t0t/arcb-wider-updater/actions/workflows/test.yml)
-[![Latest Release](https://img.shields.io/github/v/release/ahm3t0t/arcb-wider-updater?sort=semver&label=Version)](https://github.com/ahm3t0t/arcb-wider-updater/releases)
-[![License](https://img.shields.io/github/license/ahm3t0t/arcb-wider-updater)](https://github.com/ahm3t0t/arcb-wider-updater/blob/main/LICENSE)
+[![CI Status](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/ci.yml)
+[![Tests](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml/badge.svg)](https://github.com/ahm3t0t/bigfive-updater/actions/workflows/test.yml)
+[![Latest Release](https://img.shields.io/github/v/release/ahm3t0t/bigfive-updater?sort=semver&label=Version)](https://github.com/ahm3t0t/bigfive-updater/releases)
+[![License](https://img.shields.io/github/license/ahm3t0t/bigfive-updater)](https://github.com/ahm3t0t/bigfive-updater/blob/main/LICENSE)
 
 **Linux sistemleri için Zırhlı, Akıllı ve Çoklu-Dağıtım (Multi-Distro) Güncelleme Aracı.**
 
@@ -96,7 +96,7 @@ Tek komut. Hepsi bir arada. Güvenli ve izlenebilir.
 * **Man Sayfası (v5.4+):**
     * `man guncel` ile detaylı dokümantasyon.
 * **Config Dosyası Desteği (v3.6.0):**
-    * `/etc/arcb-wider-updater.conf` ile varsayılan ayarları tanımlayın.
+    * `/etc/bigfive-updater.conf` ile varsayılan ayarları tanımlayın.
 * **SHA256 Doğrulama (v3.6.0):**
     * Self-update sırasında hash kontrolü ile güvenli güncelleme.
 * **Otomatik Yedekleme (v3.6.0):**
@@ -141,7 +141,7 @@ Bu proje **iki ayrı versiyon sistemi** kullanır:
 ### Kurulum (30 saniye)
 
 ```bash
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/install.sh | sudo bash
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/install.sh | sudo bash
 ```
 
 ### İlk Çalıştırma
@@ -285,10 +285,10 @@ guncel --only flatpak,fwupd     # Sadece Flatpak ve Firmware
 
 ## ⚙️ Config Dosyası (v3.6.0)
 
-Varsayılan ayarları `/etc/arcb-wider-updater.conf` dosyasında tanımlayabilirsiniz:
+Varsayılan ayarları `/etc/bigfive-updater.conf` dosyasında tanımlayabilirsiniz:
 
 ```bash
-# /etc/arcb-wider-updater.conf
+# /etc/bigfive-updater.conf
 # ARCB Wider Updater Yapılandırma Dosyası
 
 # Varsayılan modlar (true/false)
@@ -468,11 +468,11 @@ sudo guncel --dry-run --json
 
 ```bash
 # Public key'i import et
-curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/pubkey.asc | gpg --import
+curl -fsSL https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/pubkey.asc | gpg --import
 
 # İmzayı doğrula
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS -o SHA256SUMS
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS.asc -o SHA256SUMS.asc
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS -o SHA256SUMS
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS.asc -o SHA256SUMS.asc
 gpg --verify SHA256SUMS.asc SHA256SUMS
 ```
 
@@ -500,7 +500,7 @@ Log dosyaları `/var/log/arcb-updater/` dizininde saklanır ve `logrotate` ile o
 
 ### Logrotate Yapılandırması
 
-Kurulum sırasında `/etc/logrotate.d/arcb-wider-updater` dosyası oluşturulur:
+Kurulum sırasında `/etc/logrotate.d/bigfive-updater` dosyası oluşturulur:
 
 ```
 /var/log/arcb-updater/*.log {
@@ -524,7 +524,7 @@ ls -la /var/log/arcb-updater/
 cat /var/log/arcb-updater/update_*.log | tail -50
 
 # Logrotate'u manuel çalıştır
-sudo logrotate -f /etc/logrotate.d/arcb-wider-updater
+sudo logrotate -f /etc/logrotate.d/bigfive-updater
 ```
 
 ---
@@ -560,10 +560,10 @@ sudo dpkg --configure -a
 **Çözüm:**
 ```bash
 # Kilit dosyasını kontrol et
-sudo ls -la /var/lock/arcb-wider-updater.lock
+sudo ls -la /var/lock/bigfive-updater.lock
 
 # Gerekirse sil
-sudo rm /var/lock/arcb-wider-updater.lock
+sudo rm /var/lock/bigfive-updater.lock
 ```
 
 ### GPG Doğrulama Başarısız
@@ -577,9 +577,9 @@ sudo rm /var/lock/arcb-wider-updater.lock
 **Çözüm:**
 ```bash
 # Manuel olarak doğrula
-curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/pubkey.asc | gpg --import
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS -o /tmp/SHA256SUMS
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS.asc -o /tmp/SHA256SUMS.asc
+curl -fsSL https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/pubkey.asc | gpg --import
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS -o /tmp/SHA256SUMS
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS.asc -o /tmp/SHA256SUMS.asc
 gpg --verify /tmp/SHA256SUMS.asc /tmp/SHA256SUMS
 ```
 
@@ -643,10 +643,10 @@ sudo guncel --dry-run
 
 ```bash
 # Örnek config'i kopyala
-sudo cp /usr/local/share/arcb-wider-updater.conf.example /etc/arcb-wider-updater.conf
+sudo cp /usr/local/share/bigfive-updater.conf.example /etc/bigfive-updater.conf
 
 # Düzenle
-sudo nano /etc/arcb-wider-updater.conf
+sudo nano /etc/bigfive-updater.conf
 ```
 
 ### Eski logları nasıl silerim?

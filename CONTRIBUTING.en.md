@@ -30,8 +30,8 @@ Thanks for considering a contribution!
 ## Development Setup
 
 ```bash
-git clone git@github.com:ahm3t0t/arcb-wider-updater.git
-cd arcb-wider-updater
+git clone git@github.com:ahm3t0t/bigfive-updater.git
+cd bigfive-updater
 chmod +x guncel install.sh release.sh
 ./guncel --help
 ```
@@ -368,8 +368,8 @@ type/short-description
 
 1. **Fork & Clone**
    ```bash
-   git clone git@github.com:YOUR_USERNAME/arcb-wider-updater.git
-   cd arcb-wider-updater
+   git clone git@github.com:YOUR_USERNAME/bigfive-updater.git
+   cd bigfive-updater
    ```
 
 2. **Create Feature Branch**
@@ -459,5 +459,5 @@ sudo ./guncel --only apk       # Alpine Linux
 
 For questions, open an issue or leave a comment on your PR.
 
-- **GitHub Issues:** [arcb-wider-updater/issues](https://github.com/ahm3t0t/arcb-wider-updater/issues)
+- **GitHub Issues:** [bigfive-updater/issues](https://github.com/ahm3t0t/bigfive-updater/issues)
 - **Email:** ahmet@tanrikulu.net

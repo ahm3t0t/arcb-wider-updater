@@ -1,9 +1,9 @@
-# /etc/arcb-wider-updater.conf
+# /etc/bigfive-updater.conf
 # ARCB Wider Updater Yapılandırma Dosyası / Configuration File
 # v5.4.x "BigFive - Beacon"
 #
-# Bu dosyayı /etc/arcb-wider-updater.conf olarak kopyalayın.
-# Copy this file to /etc/arcb-wider-updater.conf
+# Bu dosyayı /etc/bigfive-updater.conf olarak kopyalayın.
+# Copy this file to /etc/bigfive-updater.conf
 #
 # Komut satırı argümanları bu ayarları override eder.
 # Command line arguments override these settings.

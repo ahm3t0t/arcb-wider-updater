@@ -20,7 +20,7 @@ Bir güvenlik açığı keşfederseniz, lütfen **sorumlu** ve **gizli** bir şe
 ### Tercih Edilen Yöntemler:
 
 1. **Email:** meet@calmkernel.tr
-2. **GitHub Security Advisory:** [Güvenlik açığı bildir](https://github.com/ahm3t0t/arcb-wider-updater/security/advisories/new)
+2. **GitHub Security Advisory:** [Güvenlik açığı bildir](https://github.com/ahm3t0t/bigfive-updater/security/advisories/new)
 3. **GitHub Issue (Herkese Açık):** Düzeltme tartışıldıktan sonra `security` etiketi kullanın
 
 ### Neleri Ekleyin:
@@ -52,7 +52,7 @@ Düzeltme yayınlanmadan önce hassas detayları herkese açık paylaşmaktan ka
 #### Adım 1: Public Key'i İçe Aktar
 ```bash
 # GPG anahtarını repodan içe aktar
-curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/pubkey.asc | gpg --import
+curl -fsSL https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/pubkey.asc | gpg --import
 
 # Anahtar parmak izini doğrula
 gpg --list-keys ahmet@tanrikulu.net
@@ -62,20 +62,20 @@ gpg --list-keys ahmet@tanrikulu.net
 #### Adım 2: Release Dosyalarını İndir
 ```bash
 # Checksum ve imzayı indir
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS -o SHA256SUMS
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/SHA256SUMS.asc -o SHA256SUMS.asc
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS -o SHA256SUMS
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS.asc -o SHA256SUMS.asc
 ```
 
 #### Adım 3: İmzayı Doğrula
 ```bash
 gpg --verify SHA256SUMS.asc SHA256SUMS
-# Arayın: "Good signature from Ahmet T. (arcb-wider-updater signing key)"
+# Arayın: "Good signature from Ahmet T. (bigfive-updater signing key)"
 ```
 
 #### Adım 4: Dosya Hash'ini Doğrula
 ```bash
 # Scripti indir
-curl -fsSL https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/guncel -o guncel
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/guncel -o guncel
 
 # Hash'i doğrula
 sha256sum -c SHA256SUMS --ignore-missing
@@ -88,7 +88,7 @@ sha256sum -c SHA256SUMS --ignore-missing
 |---------|-------|
 | **Key ID** | `E5B757C69EFF27BF` |
 | **Parmak İzi** | `A9B7 CABC 5BC1 9608 7895 8003 E5B7 57C6 9EFF 27BF` |
-| **UID** | `Ahmet T. (arcb-wider-updater signing key) <ahmet@tanrikulu.net>` |
+| **UID** | `Ahmet T. (bigfive-updater signing key) <ahmet@tanrikulu.net>` |
 | **Oluşturma** | 2026-01-28 |
 | **Algoritma** | RSA 4096 |
 
@@ -98,7 +98,7 @@ sha256sum -c SHA256SUMS --ignore-missing
 
 ```bash
 # Tam doğrulamalı kurulum
-curl -fsSL https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/install.sh | sudo bash
 ```
 
 ---

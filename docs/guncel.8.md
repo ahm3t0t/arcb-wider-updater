@@ -97,7 +97,7 @@ systems.
 
 # FILES
 
-*/etc/arcb-wider-updater.conf*
+*/etc/bigfive-updater.conf*
 :   Main configuration file. Set default options here.
 
 */var/log/arcb-updater/*
@@ -171,7 +171,7 @@ Output JSON for monitoring:
 
 # CONFIGURATION
 
-Configuration file format (*/etc/arcb-wider-updater.conf*):
+Configuration file format (*/etc/bigfive-updater.conf*):
 
     # Enable automatic mode by default
     CONFIG_AUTO_MODE=true
@@ -193,7 +193,7 @@ Configuration file format (*/etc/arcb-wider-updater.conf*):
 
 # BUGS
 
-Report bugs at: https://github.com/ahm3t0t/arcb-wider-updater/issues
+Report bugs at: https://github.com/ahm3t0t/bigfive-updater/issues
 
 # COPYRIGHT
 
@@ -203,4 +203,4 @@ Copyright (C) 2026 Ahmet T. Licensed under MIT License.
 
 Written by Ahmet T. with contributions from Claude AI.
 
-Project homepage: https://github.com/ahm3t0t/arcb-wider-updater
+Project homepage: https://github.com/ahm3t0t/bigfive-updater
