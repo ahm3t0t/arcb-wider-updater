@@ -5,6 +5,28 @@ Bu projedeki tüm önemli değişiklikler bu dosyada belgelenecektir.
 Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına,
 versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standardına uygundur.
 
+## [5.4.8] - 2026-01-29 "BigFive Edition - Beacon"
+### Eklenenler
+- **Zsh completion:** Tab tamamlama Zsh kabukları için (`completions/_guncel`)
+  - Tüm seçenekler ve backend'ler için tamamlama
+  - `/usr/share/zsh/site-functions/` dizinine kurulum
+- **Fish completion:** Tab tamamlama Fish kabukları için (`completions/guncel.fish`)
+  - Tüm seçenekler ve backend'ler için tamamlama
+  - `/usr/share/fish/vendor_completions.d/` dizinine kurulum
+- **JSON paket detayları:** `--json-full` modunda güncellenen paketlerin listesi
+  - APT, DNF, Pacman, Zypper, APK, Flatpak, Snap için paket bilgileri
+  - Paket adı, eski versiyon, yeni versiyon bilgileri
+- **Snapshot timeout:** Timeshift/Snapper için zaman aşımı desteği
+  - `CONFIG_SNAPSHOT_TIMEOUT=300` (varsayılan 5 dakika)
+  - Timeout durumunda JSON warning ekleniyor
+- **10 yeni BATS testi:** Zsh ve Fish completion doğrulama testleri
+
+### Değişenler
+- install.sh versiyonu: Night-V1.3.1 → Night-V1.3.2
+- Toplam BATS testleri: 128 → 138
+
+---
+
 ## [5.4.7] - 2026-01-29 "BigFive Edition - Beacon"
 ### Düzeltilenler
 - **DNF5 sayaç parsing:** Transaction Summary'den "Upgrading: X packages" satırını parse ediyor

@@ -88,9 +88,11 @@ Tek komut. Hepsi bir arada. Güvenli ve izlenebilir.
 * **JSON Çıktı (v5.3+):**
     * `--json`: Monitoring sistemleri için hafif JSON (Zabbix, Nagios, Prometheus).
     * `--json-full`: SIEM/audit sistemleri için detaylı JSON (Wazuh, Splunk, ELK).
-* **Bash Tamamlama (v5.4+):**
+* **Shell Tamamlama (v5.4+):**
     * Tab tuşu ile seçenek ve backend tamamlama.
-    * Otomatik kurulum ile `/usr/share/bash-completion/completions/` dizinine yüklenir.
+    * **Bash:** `/usr/share/bash-completion/completions/`
+    * **Zsh:** `/usr/share/zsh/site-functions/` (v5.4.8+)
+    * **Fish:** `/usr/share/fish/vendor_completions.d/` (v5.4.8+)
 * **Man Sayfası (v5.4+):**
     * `man guncel` ile detaylı dokümantasyon.
 * **Config Dosyası Desteği (v3.6.0):**

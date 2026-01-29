@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.4.8] - 2026-01-29 "BigFive Edition - Beacon"
+### Added
+- **Zsh completion:** Tab completion for Zsh shells (`completions/_guncel`)
+  - Completion for all options and backends
+  - Installs to `/usr/share/zsh/site-functions/`
+- **Fish completion:** Tab completion for Fish shells (`completions/guncel.fish`)
+  - Completion for all options and backends
+  - Installs to `/usr/share/fish/vendor_completions.d/`
+- **JSON package details:** List of updated packages in `--json-full` mode
+  - Package info for APT, DNF, Pacman, Zypper, APK, Flatpak, Snap
+  - Package name, old version, new version information
+- **Snapshot timeout:** Timeout support for Timeshift/Snapper
+  - `CONFIG_SNAPSHOT_TIMEOUT=300` (default 5 minutes)
+  - JSON warning added on timeout
+- **10 new BATS tests:** Zsh and Fish completion validation tests
+
+### Changed
+- install.sh version: Night-V1.3.1 → Night-V1.3.2
+- Total BATS tests: 128 → 138
+
+---
+
 ## [5.4.7] - 2026-01-29 "BigFive Edition - Beacon"
 ### Fixed
 - **DNF5 counter parsing:** Parses "Upgrading: X packages" from Transaction Summary

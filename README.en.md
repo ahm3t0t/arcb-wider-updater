@@ -52,9 +52,11 @@ Performs Snapshot (Backup), Repository Updates, Flatpak/Snap and Firmware checks
 * **JSON Output (v5.3+):**
     * `--json`: Lightweight JSON for monitoring systems (Zabbix, Nagios, Prometheus).
     * `--json-full`: Detailed JSON for SIEM/audit systems (Wazuh, Splunk, ELK).
-* **Bash Completion (v5.4+):**
+* **Shell Completion (v5.4+):**
     * Tab completion for all options and backends.
-    * Auto-installed to `/usr/share/bash-completion/completions/`.
+    * **Bash:** `/usr/share/bash-completion/completions/`
+    * **Zsh:** `/usr/share/zsh/site-functions/` (v5.4.8+)
+    * **Fish:** `/usr/share/fish/vendor_completions.d/` (v5.4.8+)
 * **Man Page (v5.4+):**
     * Full documentation via `man guncel`.
 * **Config File Support (v3.6.0):**
