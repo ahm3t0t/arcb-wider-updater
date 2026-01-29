@@ -45,25 +45,42 @@
 
 ## 🔜 Planned Features
 
-### v5.3 - JSON Output
-- [ ] `--json` output format
-- [ ] Monitoring tools integration (Prometheus, Grafana)
-- [ ] Machine-readable output
+### v5.3 "Beacon" - JSON Output ✅ COMPLETED
+- [x] `--json` output format (for monitoring)
+- [x] `--json-full` output format (for SIEM/audit)
+- [x] Monitoring tools integration (Zabbix, Nagios, Prometheus)
+- [x] SIEM integration (Wazuh, Splunk, ELK)
+- [x] Machine-readable output
 
-### v5.4 - User Experience
+### v5.4 - User Experience (Planned)
 - [ ] Graceful error messages
 - [ ] Better error explanations
 - [ ] Solution suggestions
 
-### v5.5 - Advanced Configuration
+### v5.5+ - Advanced Configuration (Planned)
 - [ ] Email notifications (SMTP)
 - [ ] Webhook notifications (Slack, Discord)
 - [ ] Systemd timer template
 
-### v6.0 - Internationalization (i18n)
+### v6.0 "Echo" - Internationalization (i18n) (Planned)
 - [ ] Move strings to separate file
 - [ ] Translation framework
 - [ ] Full English/Turkish support
+
+### v6.x+ "Chrom" - GUI (Planned)
+- [ ] Graphical user interface
+- [ ] Desktop notifications
+
+---
+
+## 🏷️ Codename System (Thematic)
+
+| Version | Edition | Codename | Feature | Metaphor |
+|---------|---------|----------|---------|----------|
+| v5.1-5.2 | BigFive | Alpine | APK support | Mountain/Distro |
+| v5.3 | BigFive | Beacon | JSON output | Signal/Monitoring |
+| v6.x | BigFive | Echo | Multi-language (i18n) | Echo/Voice |
+| v6.x+ | BigFive | Chrom | GUI | Visual/Color |
 
 ---
 
@@ -84,9 +101,9 @@
 
 | Component | Test Count | Status |
 |-----------|------------|--------|
-| guncel.bats | 60 | ✅ |
+| guncel.bats | 70 | ✅ |
 | install.bats | 35 | ✅ |
-| **Total** | **95** | ✅ |
+| **Total** | **105** | ✅ |
 
 ### CI Test Matrix
 

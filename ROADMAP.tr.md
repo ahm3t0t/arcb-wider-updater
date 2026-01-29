@@ -45,25 +45,42 @@
 
 ## 🔜 Planlanan Özellikler
 
-### v5.3 - JSON Output
-- [ ] `--json` çıktı formatı
-- [ ] Monitoring araçları entegrasyonu (Prometheus, Grafana)
-- [ ] Makine tarafından okunabilir çıktı
+### v5.3 "Beacon" - JSON Output ✅ TAMAMLANDI
+- [x] `--json` çıktı formatı (monitoring için)
+- [x] `--json-full` çıktı formatı (SIEM/audit için)
+- [x] Monitoring araçları entegrasyonu (Zabbix, Nagios, Prometheus)
+- [x] SIEM entegrasyonu (Wazuh, Splunk, ELK)
+- [x] Makine tarafından okunabilir çıktı
 
-### v5.4 - Kullanıcı Deneyimi
+### v5.4 "Echo" - Kullanıcı Deneyimi (Planlanan)
 - [ ] Graceful error messages (kullanıcı dostu hata mesajları)
 - [ ] Daha iyi hata açıklamaları
 - [ ] Çözüm önerileri
 
-### v5.5 - Gelişmiş Yapılandırma
+### v5.5+ - Gelişmiş Yapılandırma (Planlanan)
 - [ ] Email bildirimleri (SMTP)
 - [ ] Webhook bildirimleri (Slack, Discord)
 - [ ] Systemd timer şablonu
 
-### v6.0 - Uluslararasılaştırma (i18n)
+### v6.0 "Echo" - Uluslararasılaştırma (i18n) (Planlanan)
 - [ ] String'leri ayrı dosyaya taşı
 - [ ] Çeviri framework'ü
 - [ ] İngilizce/Türkçe tam destek
+
+### v6.x+ "Chrom" - GUI (Planlanan)
+- [ ] Grafiksel kullanıcı arayüzü
+- [ ] Masaüstü bildirimleri
+
+---
+
+## 🏷️ Codename Sistemi (Tematik)
+
+| Versiyon | Edition | Codename | Özellik | Metafor |
+|----------|---------|----------|---------|---------|
+| v5.1-5.2 | BigFive | Alpine | APK desteği | Dağ/Distro |
+| v5.3 | BigFive | Beacon | JSON output | Sinyal/İzleme |
+| v6.x | BigFive | Echo | Çoklu dil (i18n) | Yankı/Ses |
+| v6.x+ | BigFive | Chrom | GUI | Görsel/Renk |
 
 ---
 
@@ -84,9 +101,9 @@
 
 | Bileşen | Test Sayısı | Durum |
 |---------|-------------|-------|
-| guncel.bats | 60 | ✅ |
+| guncel.bats | 70 | ✅ |
 | install.bats | 35 | ✅ |
-| **Toplam** | **95** | ✅ |
+| **Toplam** | **105** | ✅ |
 
 ### CI Test Matrisi
 

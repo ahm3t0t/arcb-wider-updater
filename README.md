@@ -51,7 +51,7 @@ This project uses two separate version systems:
 
 | Component | Format | Current | Update Frequency |
 |-----------|--------|---------|------------------|
-| `guncel` (main script) | SemVer (x.x.x) | v5.2.1 (BigFive Edition - Alpine) | Her özellik/fix'te / Every feature/fix |
+| `guncel` (main script) | SemVer (x.x.x) | v5.3.0 (BigFive Edition - Beacon) | Her özellik/fix'te / Every feature/fix |
 | `install.sh` (installer) | Night-Vx.x.x | Night-V1.2.0 | Sadece kurulum değiştiğinde / Only when install logic changes |
 
 **Neden ayrı? / Why separate?**
@@ -75,6 +75,7 @@ This project uses two separate version systems:
 - ✅ Full Coverage: System packages, Flatpak, Snap, Firmware
 - ✅ Selective Updates: `--skip` and `--only` flags (including `--skip system`)
 - ✅ Dry-Run Mode: Preview without applying
+- ✅ JSON Output: `--json` for monitoring, `--json-full` for SIEM/audit (v5.3.0+)
 - ✅ Config File: `/etc/arcb-wider-updater.conf`
 - ✅ GPG Signature Verification: Cryptographically signed releases (v4.1.0+)
 - ✅ SHA256 Verification: Secure self-updates
@@ -106,9 +107,9 @@ bats --tap tests/*.bats
 
 | Component | Tests | Status |
 |-----------|-------|--------|
-| guncel.bats | 60 | ✅ |
+| guncel.bats | 70 | ✅ |
 | install.bats | 35 | ✅ |
-| **Total** | **95** | ✅ |
+| **Total** | **105** | ✅ |
 
 ---
 

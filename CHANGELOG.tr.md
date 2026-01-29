@@ -5,6 +5,29 @@ Bu projedeki tüm önemli değişiklikler bu dosyada belgelenecektir.
 Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına,
 versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standardına uygundur.
 
+## [5.3.0] - 2026-01-29 "BigFive Edition - Beacon"
+### Eklenenler
+- **JSON Çıktı Modu:** Makine tarafından okunabilir çıktı için `--json` ve `--json-full` bayrakları
+  - `--json`: Monitoring sistemleri için hafif JSON (Zabbix, Nagios, Prometheus)
+  - `--json-full`: SIEM/audit sistemleri için detaylı JSON (Wazuh, Splunk, ELK)
+- **JSON yardımcı fonksiyonları:** `json_escape()`, `add_pkg_manager_status()`, `get_distro_info()`
+- **Paket yöneticisi durum takibi:** Her backend durumunu JSON çıktısına raporlar
+- **Yeni BATS testleri:** 10 yeni JSON ile ilgili test
+
+### JSON Çıktı Alanları
+- Hafif (`--json`): version, status, exit_code, timestamp, hostname, duration_seconds, dry_run, updated_count, reboot_required
+- Detaylı (`--json-full`): Tüm hafif alanlar artı sistem bilgisi, package_managers dizisi, packages dizisi, snapshot bilgisi, warnings, errors
+
+### Değişenler
+- VERSION: 5.2.1 → 5.3.0
+- JSON modu otomatik olarak sessiz modu etkinleştirir (terminal çıktısı yok)
+
+### Dokümantasyon
+- Tüm README dosyaları JSON çıktı dokümantasyonu ile güncellendi
+- Monitoring entegrasyonları için JSON örnekleri eklendi
+
+---
+
 ## [5.2.1] - 2026-01-29 "BigFive Edition - Alpine"
 ### Eklenenler
 - **EDITION değişkeni:** Edition adını Codename'den ayır

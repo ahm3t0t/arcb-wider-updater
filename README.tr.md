@@ -110,7 +110,7 @@ Bu proje **iki ayrı versiyon sistemi** kullanır:
 
 | Bileşen | Format | Güncel | Güncelleme Sıklığı |
 |---------|--------|--------|--------------------|
-| `guncel` (ana script) | SemVer (x.x.x) | v5.2.1 (BigFive Edition - Alpine) | Her özellik/fix'te |
+| `guncel` (ana script) | SemVer (x.x.x) | v5.3.0 (BigFive Edition - Beacon) | Her özellik/fix'te |
 | `install.sh` (kurulum) | Night-Vx.x.x | Night-V1.2.0 | Sadece kurulum mantığı değiştiğinde |
 
 **İsimlendirme Kuralı:**
@@ -255,6 +255,8 @@ guncel --only flatpak,fwupd     # Sadece Flatpak ve Firmware
 | `--verbose` | Detaylı mod - tüm komut çıktılarını gösterir |
 | `--quiet` | Sessiz mod - sadece hata ve özet gösterir |
 | `--dry-run` | Kuru çalıştırma - güncellemeleri listeler, uygulamaz |
+| `--json` | JSON çıktı - monitoring sistemleri için (Zabbix, Nagios) |
+| `--json-full` | Detaylı JSON çıktı - SIEM/audit için (Wazuh, Splunk) |
 | `--skip <backend>` | Belirtilen backend'leri atla (virgülle ayır) |
 | `--only <backend>` | Sadece belirtilen backend'leri çalıştır |
 | `--help` | Yardım mesajını gösterir |
@@ -352,6 +354,81 @@ sudo systemctl enable --now arcb-updater.timer
 
 # Durumu kontrol et
 sudo systemctl status arcb-updater.timer
+```
+
+---
+
+## 📊 JSON Çıktı (v5.3.0+)
+
+Monitoring ve SIEM sistemleriyle entegrasyon için JSON çıktı modları:
+
+### Hafif JSON (--json) - Monitoring için
+
+```bash
+sudo guncel --json
+```
+
+```json
+{
+  "version": "5.3.0",
+  "status": "success",
+  "exit_code": 0,
+  "timestamp": "2026-01-29T13:30:00+03:00",
+  "hostname": "srv-web-01",
+  "duration_seconds": 45,
+  "dry_run": false,
+  "updated_count": 12,
+  "reboot_required": false
+}
+```
+
+### Detaylı JSON (--json-full) - SIEM/Audit için
+
+```bash
+sudo guncel --json-full
+```
+
+```json
+{
+  "version": "5.3.0",
+  "status": "success",
+  "exit_code": 0,
+  "timestamp": "2026-01-29T13:30:00+03:00",
+  "hostname": "srv-web-01",
+  "duration_seconds": 45,
+  "dry_run": false,
+  "reboot_required": false,
+  "system": {
+    "distro": "ubuntu",
+    "distro_version": "24.04",
+    "kernel": "6.8.0-45-generic"
+  },
+  "package_managers": [
+    {"name": "apt", "status": "ran", "updated_count": 10},
+    {"name": "flatpak", "status": "ran", "updated_count": 2}
+  ],
+  "packages": [],
+  "snapshot": {
+    "created": true,
+    "name": "ARCB-Update-2026-01-29",
+    "tool": "timeshift"
+  },
+  "warnings": [],
+  "errors": []
+}
+```
+
+### Kullanım Örnekleri
+
+```bash
+# Zabbix/Nagios ile kullanım
+sudo guncel --json | jq '.status'
+
+# Wazuh/Splunk için log
+sudo guncel --json-full >> /var/log/arcb-updates.json
+
+# Dry-run ile JSON
+sudo guncel --dry-run --json
 ```
 
 ---

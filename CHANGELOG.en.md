@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.3.0] - 2026-01-29 "BigFive Edition - Beacon"
+### Added
+- **JSON Output Mode:** New `--json` and `--json-full` flags for machine-readable output
+  - `--json`: Lightweight JSON for monitoring systems (Zabbix, Nagios, Prometheus)
+  - `--json-full`: Detailed JSON for SIEM/audit systems (Wazuh, Splunk, ELK)
+- **JSON helper functions:** `json_escape()`, `add_pkg_manager_status()`, `get_distro_info()`
+- **Package manager status tracking:** Each backend reports status to JSON output
+- **New BATS tests:** 10 new JSON-related tests
+
+### JSON Output Fields
+- Lightweight (`--json`): version, status, exit_code, timestamp, hostname, duration_seconds, dry_run, updated_count, reboot_required
+- Full (`--json-full`): All lightweight fields plus system info, package_managers array, packages array, snapshot info, warnings, errors
+
+### Changed
+- VERSION: 5.2.1 → 5.3.0
+- JSON mode automatically enables quiet mode (no terminal output)
+
+### Documentation
+- Updated all README files with JSON output documentation
+- Added JSON examples for monitoring integrations
+
+---
+
 ## [5.2.1] - 2026-01-29 "BigFive Edition - Alpine"
 ### Added
 - **EDITION variable:** Separate Edition name from Codename

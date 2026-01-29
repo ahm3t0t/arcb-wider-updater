@@ -74,7 +74,7 @@ This project uses **two separate version systems**:
 
 | Component | Format | Current | Update Frequency |
 |-----------|--------|---------|------------------|
-| `guncel` (main script) | SemVer (x.x.x) | v5.2.1 (BigFive Edition - Alpine) | Every feature/fix |
+| `guncel` (main script) | SemVer (x.x.x) | v5.3.0 (BigFive Edition - Beacon) | Every feature/fix |
 | `install.sh` (installer) | Night-Vx.x.x | Night-V1.2.0 | Only when install logic changes |
 
 **Naming Convention:**
@@ -137,6 +137,8 @@ guncel --only flatpak,fwupd     # Only Flatpak and Firmware
 | `--verbose` | Verbose mode - shows all command outputs |
 | `--quiet` | Quiet mode - shows only errors and final summary |
 | `--dry-run` | Dry run - lists updates without applying |
+| `--json` | JSON output - for monitoring systems (Zabbix, Nagios) |
+| `--json-full` | Detailed JSON output - for SIEM/audit (Wazuh, Splunk) |
 | `--skip <backend>` | Skip specified backends (comma-separated) |
 | `--only <backend>` | Run only specified backends (comma-separated) |
 | `--help` | Display help message |
@@ -175,6 +177,81 @@ CONFIG_SKIP_DNF=false
 ```
 
 **Note:** Command line arguments override config file settings.
+
+---
+
+## 📊 JSON Output (v5.3.0+)
+
+JSON output modes for monitoring and SIEM integration:
+
+### Lightweight JSON (--json) - For Monitoring
+
+```bash
+sudo guncel --json
+```
+
+```json
+{
+  "version": "5.3.0",
+  "status": "success",
+  "exit_code": 0,
+  "timestamp": "2026-01-29T13:30:00+03:00",
+  "hostname": "srv-web-01",
+  "duration_seconds": 45,
+  "dry_run": false,
+  "updated_count": 12,
+  "reboot_required": false
+}
+```
+
+### Detailed JSON (--json-full) - For SIEM/Audit
+
+```bash
+sudo guncel --json-full
+```
+
+```json
+{
+  "version": "5.3.0",
+  "status": "success",
+  "exit_code": 0,
+  "timestamp": "2026-01-29T13:30:00+03:00",
+  "hostname": "srv-web-01",
+  "duration_seconds": 45,
+  "dry_run": false,
+  "reboot_required": false,
+  "system": {
+    "distro": "ubuntu",
+    "distro_version": "24.04",
+    "kernel": "6.8.0-45-generic"
+  },
+  "package_managers": [
+    {"name": "apt", "status": "ran", "updated_count": 10},
+    {"name": "flatpak", "status": "ran", "updated_count": 2}
+  ],
+  "packages": [],
+  "snapshot": {
+    "created": true,
+    "name": "ARCB-Update-2026-01-29",
+    "tool": "timeshift"
+  },
+  "warnings": [],
+  "errors": []
+}
+```
+
+### Usage Examples
+
+```bash
+# Use with Zabbix/Nagios
+sudo guncel --json | jq '.status'
+
+# Log for Wazuh/Splunk
+sudo guncel --json-full >> /var/log/arcb-updates.json
+
+# Dry-run with JSON
+sudo guncel --dry-run --json
+```
 
 ---
 

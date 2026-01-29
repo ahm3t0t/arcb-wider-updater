@@ -340,3 +340,51 @@ get_script_version() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"apk"* ]]
 }
+
+# =============================================================================
+# v5.3 JSON OUTPUT TESTS
+# =============================================================================
+
+@test "--json flag is recognized in help" {
+    run bash "$GUNCEL_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"--json"* ]]
+}
+
+@test "--json-full flag is recognized in help" {
+    run bash "$GUNCEL_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"--json-full"* ]]
+}
+
+@test "JSON_MODE variable exists" {
+    grep -q 'JSON_MODE=' "$GUNCEL_SCRIPT"
+}
+
+@test "output_json function exists" {
+    grep -qE '^output_json\(\)|^function output_json' "$GUNCEL_SCRIPT"
+}
+
+@test "json_escape function exists" {
+    grep -qE '^json_escape\(\)|^function json_escape' "$GUNCEL_SCRIPT"
+}
+
+@test "add_pkg_manager_status function exists" {
+    grep -qE '^add_pkg_manager_status\(\)|^function add_pkg_manager_status' "$GUNCEL_SCRIPT"
+}
+
+@test "get_distro_info function exists" {
+    grep -qE '^get_distro_info\(\)|^function get_distro_info' "$GUNCEL_SCRIPT"
+}
+
+@test "JSON_PACKAGES array is declared" {
+    grep -q 'declare -a JSON_PACKAGES' "$GUNCEL_SCRIPT"
+}
+
+@test "JSON_PKG_MANAGERS array is declared" {
+    grep -q 'declare -a JSON_PKG_MANAGERS' "$GUNCEL_SCRIPT"
+}
+
+@test "START_TIME variable is used" {
+    grep -q 'START_TIME=' "$GUNCEL_SCRIPT"
+}
