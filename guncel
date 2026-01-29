@@ -5,9 +5,9 @@
 #
 
 # --- AYARLAR ---
-VERSION="5.2.1"
+VERSION="5.3.0"
 EDITION="BigFive"
-CODENAME="Alpine"
+CODENAME="Beacon"
 LOG_DIR="/var/log/arcb-updater"
 LOG_FILE="$LOG_DIR/update_$(date +%Y%m%d_%H%M%S).log"
 GITHUB_RAW_URL="https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/guncel"
@@ -55,6 +55,16 @@ FLATPAK_COUNT=0
 SNAP_COUNT=0
 FWUPD_COUNT=0
 SNAPSHOT_NAME=""
+
+# --- JSON OUTPUT MOD (v5.3.0) ---
+JSON_MODE="none"  # none, json, json-full
+
+# --- JSON DATA COLLECTION ---
+declare -a JSON_PACKAGES=()
+declare -a JSON_WARNINGS=()
+declare -a JSON_ERRORS=()
+declare -a JSON_PKG_MANAGERS=()
+START_TIME=""
 
 # v3.6.1 FIX: Orijinal argümanları sakla (check_root için)
 ORIGINAL_ARGS=("$@")
@@ -138,6 +148,58 @@ print_info() {
 print_dry_run() {
     printf '%s[DRY-RUN] %s%s\n' "${YELLOW}" "$1" "${NC}"
     echo "[$(date '+%F %T')] DRY-RUN: $1" >> "$LOG_FILE"
+}
+
+# --- v5.3.0: JSON OUTPUT HELPER FUNCTIONS ---
+
+# JSON escape fonksiyonu - özel karakterleri escape eder
+json_escape() {
+    local str="$1"
+    str="${str//\\/\\\\}"
+    str="${str//\"/\\\"}"
+    str="${str//$'\n'/\\n}"
+    str="${str//$'\r'/\\r}"
+    str="${str//$'\t'/\\t}"
+    printf '%s' "$str"
+}
+
+# Paket bilgisi ekleme (--json-full için)
+add_package_info() {
+    local name="$1" from="$2" to="$3" manager="$4"
+    JSON_PACKAGES+=("{\"name\":\"$(json_escape "$name")\",\"version_from\":\"$(json_escape "$from")\",\"version_to\":\"$(json_escape "$to")\",\"manager\":\"$manager\"}")
+}
+
+# Warning ekleme
+add_json_warning() {
+    [[ "$JSON_MODE" == "none" ]] && return
+    JSON_WARNINGS+=("\"$(json_escape "$1")\"")
+}
+
+# Error ekleme
+add_json_error() {
+    [[ "$JSON_MODE" == "none" ]] && return
+    JSON_ERRORS+=("\"$(json_escape "$1")\"")
+}
+
+# Package manager status ekleme
+add_pkg_manager_status() {
+    [[ "$JSON_MODE" == "none" ]] && return
+    local name="$1" status="$2" count="${3:-0}" reason="${4:-}"
+    if [[ -n "$reason" ]]; then
+        JSON_PKG_MANAGERS+=("{\"name\":\"$name\",\"status\":\"$status\",\"reason\":\"$reason\"}")
+    else
+        JSON_PKG_MANAGERS+=("{\"name\":\"$name\",\"status\":\"$status\",\"updated_count\":$count}")
+    fi
+}
+
+# Distro bilgisi alma
+get_distro_info() {
+    local distro="" version=""
+    if [[ -f /etc/os-release ]]; then
+        distro=$(grep "^ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
+        version=$(grep "^VERSION_ID=" /etc/os-release | cut -d= -f2 | tr -d '"')
+    fi
+    echo "$distro|$version"
 }
 
 # --- SİSTEM BİLGİSİ BAŞLIK KUTUSU ---
@@ -347,11 +409,135 @@ print_final_summary() {
     } >> "$LOG_FILE"
 }
 
+# --- v5.3.0: JSON OUTPUT FUNCTION ---
+output_json() {
+    local exit_code="${1:-0}"
+    local end_time duration_seconds
+    end_time=$(date +%s)
+    duration_seconds=$((end_time - START_TIME))
+
+    local status="success"
+    [[ $exit_code -ne 0 ]] && status="failure"
+
+    local reboot_req="false"
+    [[ "$(check_reboot_required)" == "Gerekli" ]] && reboot_req="true"
+
+    # FIX: Ensure all counters are numeric
+    local apt_c dnf_c pacman_c zypper_c apk_c flatpak_c snap_c fwupd_c
+    apt_c=$(echo "${APT_COUNT:-0}" | tr -cd '0-9')
+    dnf_c=$(echo "${DNF_COUNT:-0}" | tr -cd '0-9')
+    pacman_c=$(echo "${PACMAN_COUNT:-0}" | tr -cd '0-9')
+    zypper_c=$(echo "${ZYPPER_COUNT:-0}" | tr -cd '0-9')
+    apk_c=$(echo "${APK_COUNT:-0}" | tr -cd '0-9')
+    flatpak_c=$(echo "${FLATPAK_COUNT:-0}" | tr -cd '0-9')
+    snap_c=$(echo "${SNAP_COUNT:-0}" | tr -cd '0-9')
+    fwupd_c=$(echo "${FWUPD_COUNT:-0}" | tr -cd '0-9')
+
+    apt_c=${apt_c:-0}
+    dnf_c=${dnf_c:-0}
+    pacman_c=${pacman_c:-0}
+    zypper_c=${zypper_c:-0}
+    apk_c=${apk_c:-0}
+    flatpak_c=${flatpak_c:-0}
+    snap_c=${snap_c:-0}
+    fwupd_c=${fwupd_c:-0}
+
+    local total_count=$((apt_c + dnf_c + pacman_c + zypper_c + apk_c + flatpak_c + snap_c + fwupd_c))
+
+    local timestamp
+    timestamp=$(date -Iseconds)
+
+    local hostname_str
+    hostname_str=$(hostname 2>/dev/null || echo "unknown")
+
+    local dry_run_val="false"
+    [[ "$DRY_RUN" == "true" ]] && dry_run_val="true"
+
+    if [[ "$JSON_MODE" == "json" ]]; then
+        # Lightweight JSON for monitoring
+        cat <<EOF
+{
+  "version": "$VERSION",
+  "status": "$status",
+  "exit_code": $exit_code,
+  "timestamp": "$timestamp",
+  "hostname": "$hostname_str",
+  "duration_seconds": $duration_seconds,
+  "dry_run": $dry_run_val,
+  "updated_count": $total_count,
+  "reboot_required": $reboot_req
+}
+EOF
+    elif [[ "$JSON_MODE" == "json-full" ]]; then
+        # Full JSON for SIEM/Audit
+        local distro distro_ver kernel_str
+        IFS='|' read -r distro distro_ver <<< "$(get_distro_info)"
+        kernel_str=$(uname -r 2>/dev/null || echo "unknown")
+
+        # Build arrays - join with comma
+        local pkg_managers_json="" packages_json="" warnings_json="" errors_json=""
+
+        if [[ ${#JSON_PKG_MANAGERS[@]} -gt 0 ]]; then
+            pkg_managers_json=$(IFS=,; echo "${JSON_PKG_MANAGERS[*]}")
+        fi
+        if [[ ${#JSON_PACKAGES[@]} -gt 0 ]]; then
+            packages_json=$(IFS=,; echo "${JSON_PACKAGES[*]}")
+        fi
+        if [[ ${#JSON_WARNINGS[@]} -gt 0 ]]; then
+            warnings_json=$(IFS=,; echo "${JSON_WARNINGS[*]}")
+        fi
+        if [[ ${#JSON_ERRORS[@]} -gt 0 ]]; then
+            errors_json=$(IFS=,; echo "${JSON_ERRORS[*]}")
+        fi
+
+        # Snapshot info
+        local snapshot_created="false"
+        local snapshot_name_val="null"
+        local snapshot_tool_val="null"
+        if [[ -n "$SNAPSHOT_NAME" ]]; then
+            snapshot_created="true"
+            snapshot_name_val="\"$SNAPSHOT_NAME\""
+            if command -v timeshift &>/dev/null; then
+                snapshot_tool_val="\"timeshift\""
+            elif command -v snapper &>/dev/null; then
+                snapshot_tool_val="\"snapper\""
+            fi
+        fi
+
+        cat <<EOF
+{
+  "version": "$VERSION",
+  "status": "$status",
+  "exit_code": $exit_code,
+  "timestamp": "$timestamp",
+  "hostname": "$hostname_str",
+  "duration_seconds": $duration_seconds,
+  "dry_run": $dry_run_val,
+  "reboot_required": $reboot_req,
+  "system": {
+    "distro": "$distro",
+    "distro_version": "$distro_ver",
+    "kernel": "$kernel_str"
+  },
+  "package_managers": [${pkg_managers_json:-}],
+  "packages": [${packages_json:-}],
+  "snapshot": {
+    "created": $snapshot_created,
+    "name": $snapshot_name_val,
+    "tool": $snapshot_tool_val
+  },
+  "warnings": [${warnings_json:-}],
+  "errors": [${errors_json:-}]
+}
+EOF
+    fi
+}
+
 setup_logging() {
     if [ ! -d "$LOG_DIR" ]; then
         mkdir -p "$LOG_DIR"
     fi
-    
+
     local deleted_count
     # Logrotate handles log cleanup now
     # deleted_count=$(find "$LOG_DIR" -name "update_*.log" -type f -mtime +30 -print -delete | wc -l)
@@ -679,6 +865,7 @@ update_apt() {
     fi
 
     print_info "APT: $APT_COUNT paket güncellendi."
+    add_pkg_manager_status "apt" "ran" "$APT_COUNT"
     return 0
 }
 
@@ -720,6 +907,7 @@ update_dnf() {
     DNF_COUNT=${DNF_COUNT:-0}
 
     print_info "DNF: $DNF_COUNT paket güncellendi."
+    add_pkg_manager_status "dnf" "ran" "$DNF_COUNT"
     return 0
 }
 
@@ -773,6 +961,7 @@ update_pacman() {
     fi
 
     print_info "Pacman: $PACMAN_COUNT paket güncellendi."
+    add_pkg_manager_status "pacman" "ran" "$PACMAN_COUNT"
     return 0
 }
 
@@ -822,6 +1011,7 @@ update_zypper() {
     fi
 
     print_info "Zypper: $ZYPPER_COUNT paket güncellendi."
+    add_pkg_manager_status "zypper" "ran" "$ZYPPER_COUNT"
     return 0
 }
 
@@ -859,6 +1049,7 @@ update_apk() {
     fi
 
     print_info "APK: $APK_COUNT paket güncellendi."
+    add_pkg_manager_status "apk" "ran" "$APK_COUNT"
     return 0
 }
 
@@ -901,6 +1092,7 @@ update_flatpak() {
     rm -f "$flatpak_temp"
 
     print_info "Flatpak: $FLATPAK_COUNT uygulama güncellendi."
+    add_pkg_manager_status "flatpak" "ran" "$FLATPAK_COUNT"
     return 0
 }
 
@@ -924,6 +1116,7 @@ update_snap() {
     fi
 
     print_info "Snap: $SNAP_COUNT paket güncellendi."
+    add_pkg_manager_status "snap" "ran" "$SNAP_COUNT"
     return 0
 }
 
@@ -971,6 +1164,7 @@ update_firmware() {
     fi
 
     print_info "Firmware: $FWUPD_COUNT güncelleme."
+    add_pkg_manager_status "fwupd" "ran" "$FWUPD_COUNT"
     return 0
 }
 
@@ -1228,6 +1422,8 @@ show_help() {
     echo "  --verbose           Detaylı çıktı modu (Tüm komut çıktılarını gösterir)"
     echo "  --quiet             Sessiz mod (Sadece hata ve özet gösterir)"
     echo "  --dry-run           Kuru çalıştırma (Ne yapılacağını göster, yapma)"
+    echo "  --json              JSON çıktı (monitoring sistemleri için)"
+    echo "  --json-full         Detaylı JSON çıktı (SIEM/audit için)"
     echo "  --skip <backend>    Belirtilen backend'leri atla (virgülle ayır)"
     echo "                      Değerler: snapshot, flatpak, snap, fwupd, system"
     echo "                      (system = apt, dnf, pacman, zypper, apk)"
@@ -1243,6 +1439,8 @@ show_help() {
     echo "  guncel --verbose              -> Detaylı çıktı ile güncelleme"
     echo "  guncel --quiet                -> Sessiz güncelleme (sadece özet)"
     echo "  guncel --dry-run              -> Güncellemeleri listele (uygulamadan)"
+    echo "  guncel --json                 -> Monitoring için JSON çıktı (Zabbix/Nagios)"
+    echo "  guncel --json-full            -> SIEM için detaylı JSON (Wazuh/Splunk)"
     echo "  guncel --skip flatpak,snap    -> Flatpak ve Snap atla"
     echo "  guncel --only system          -> Sadece sistem paketleri (APT/DNF/Pacman/Zypper/APK)"
     echo "  guncel --only flatpak,fwupd   -> Sadece Flatpak ve Firmware"
@@ -1264,6 +1462,8 @@ while [[ $# -gt 0 ]]; do
         --verbose) VERBOSE_MODE="true"; shift ;;
         --quiet) QUIET_MODE="true"; shift ;;
         --dry-run) DRY_RUN="true"; shift ;;
+        --json) JSON_MODE="json"; QUIET_MODE="true"; shift ;;
+        --json-full) JSON_MODE="json-full"; QUIET_MODE="true"; shift ;;
         --skip)
             if [[ -n "${2:-}" && ! "$2" =~ ^-- ]]; then
                 IFS=',' read -ra SKIP_ITEMS <<< "$2"
@@ -1330,6 +1530,9 @@ fi
 
 check_self_update
 
+# v5.3.0: JSON output için başlangıç zamanını kaydet
+START_TIME=$(date +%s)
+
 if [[ "$AUTO_MODE" != "true" && "$QUIET_MODE" != "true" ]]; then clear; fi
 
 # Başlangıç özeti
@@ -1349,3 +1552,8 @@ perform_updates
 
 # Bitiş özeti
 print_final_summary
+
+# v5.3.0: JSON output
+if [[ "$JSON_MODE" != "none" ]]; then
+    output_json 0
+fi
