@@ -1,0 +1,217 @@
+# ARCB Wider Updater - Claude Context Notes
+
+> Bu dosya, Claude ile çalışırken proje bağlamını korumak için kullanılır.
+> Her oturum başında bu dosyayı Claude'a vererek devam edebilirsiniz.
+
+---
+
+## Proje Özeti
+
+**ARCB Wider Updater** - Linux sistemleri için tek komutla çoklu paket yöneticisi güncelleme aracı.
+
+- **Slogan:** "One command. One updater. Zero nonsense."
+- **Geliştirici:** ahm3t0t (ahmet@tanrikulu.net)
+- **Repo:** https://github.com/ahm3t0t/arcb-wider-updater
+- **Güncel Sürüm:** v5.2.1 (BigFive Edition - Alpine)
+
+---
+
+## Sürüm Sistemi
+
+### Üçlü İsimlendirme Kuralı
+
+| Kavram | Açıklama | Örnek |
+|--------|----------|-------|
+| **VERSION** | SemVer numarası | 5.2.1 |
+| **EDITION** | Major seri adı (v5.x boyunca sabit) | BigFive |
+| **CODENAME** | Minor sürüm adı (her minor release'de değişir) | Alpine |
+
+**Tam format:** v5.2.1 (BigFive Edition - Alpine)
+
+### Edition İsimleri
+
+| Sürüm | Edition | Anlam |
+|-------|---------|-------|
+| v5.x | BigFive | 5 paket yöneticisi desteği |
+| v6.x | (Planlanıyor) | GUI odaklı olabilir - "Prism Edition" önerisi |
+
+---
+
+## Kullanılabilir Komutlar
+
+Kurulumdan sonra 3 komut kullanılabilir:
+
+  guncel      # Türkçe kullanıcılar için
+  updater     # İngilizce kullanıcılar için
+  bigfive     # Uluslararası/marka ismi
+
+Hepsi aynı script'i çalıştırır (symlink).
+
+---
+
+## Desteklenen Paket Yöneticileri (BigFive)
+
+| Paket Yöneticisi | Dağıtımlar | Fonksiyon |
+|------------------|------------|-----------|
+| APT | Debian, Ubuntu, Zorin, Mint | update_apt() |
+| DNF | Fedora, RHEL, CentOS | update_dnf() |
+| Pacman | Arch, Manjaro, EndeavourOS | update_pacman() |
+| Zypper | openSUSE Leap/Tumbleweed | update_zypper() |
+| APK | Alpine Linux | update_apk() |
+
++ Flatpak, Snap, Firmware (fwupdmgr)
+
+---
+
+## Ana Bileşenler
+
+| Dosya | Açıklama | Versiyon |
+|-------|----------|----------|
+| guncel | Ana script (~1340 satır) | v5.2.1 (BigFive Edition - Alpine) |
+| install.sh | GPG doğrulamalı kurulum | Night-V1.2.0 |
+| release.sh | Release otomasyonu | Dev-V1.1.0 |
+
+---
+
+## GPG İmzalama
+
+- **Key ID:** E5B757C69EFF27BF
+- **UID:** Ahmet T. (arcb-wider-updater signing key) <ahmet@tanrikulu.net>
+- **Parmak İzi:** A9B7 CABC 5BC1 9608 7895 8003 E5B7 57C6 9EFF 27BF
+
+! UYARI: Eski "CalmKernel" anahtarı (393D543D891B6206) kullanılmamalı.
+
+---
+
+## Dokümantasyon Yapısı
+
+Tüm dokümanlar *.en.md / *.tr.md formatında standardize edildi:
+
+  README.md               # Özet (çift dil) + link tablosu
+  README.en.md            # Detaylı İngilizce
+  README.tr.md            # Detaylı Türkçe
+  CHANGELOG.en.md         # İngilizce
+  CHANGELOG.tr.md         # Türkçe
+  CODE_OF_CONDUCT.en.md   # İngilizce
+  CODE_OF_CONDUCT.tr.md   # Türkçe
+  CONTRIBUTING.en.md      # İngilizce
+  CONTRIBUTING.tr.md      # Türkçe
+  SECURITY.en.md          # İngilizce
+  SECURITY.tr.md          # Türkçe
+  ROADMAP.en.md           # İngilizce
+  ROADMAP.tr.md           # Türkçe
+
+---
+
+## Geliştirme Ortamları
+
+### Ofis (ZorinOS 18 Pro)
+- Yol: /media/tahmet/NVM/DOCKERFILES/arcb-test/
+- 5 distro için Dockerfile mevcut
+
+### Ev (Fedora 43 KDE)
+- Yol: /mnt/steam/DOCKERFILES/arcb-test/
+- 5 distro için Dockerfile mevcut
+
+### Docker Test Komutları
+
+  # Ubuntu test
+  docker run --rm -v "$(pwd):/app" ubuntu:24.04 bash -c "apt update && bash /app/install.sh && guncel --help"
+
+  # Fedora test
+  docker run --rm -v "$(pwd):/app" fedora:40 bash -c "dnf install -y curl && bash /app/install.sh && guncel --help"
+
+  # Arch test
+  docker run --rm -v "$(pwd):/app" archlinux:latest bash -c "pacman -Sy --noconfirm curl && bash /app/install.sh && guncel --help"
+
+  # openSUSE test
+  docker run --rm -v "$(pwd):/app" opensuse/tumbleweed:latest bash -c "zypper install -y curl gawk && bash /app/install.sh && guncel --help"
+
+  # Alpine test
+  docker run --rm -v "$(pwd):/app" alpine:3.20 sh -c "apk add bash curl && bash /app/install.sh && guncel --help"
+
+---
+
+## Test Durumu
+
+| Bileşen | Test Sayısı | Durum |
+|---------|-------------|-------|
+| guncel.bats | 60 | PASSED |
+| install.bats | 35 | PASSED |
+| **Toplam** | **95** | PASSED |
+
+### CI Test Matrisi
+
+| Distro | Paket Yöneticisi | Durum |
+|--------|------------------|-------|
+| Ubuntu 24.04 | APT | PASSED |
+| Fedora 40 | DNF | PASSED |
+| Arch Linux | Pacman | PASSED |
+| openSUSE Tumbleweed | Zypper | PASSED |
+| Alpine 3.20 | APK | PASSED |
+
+---
+
+## Yol Haritası
+
+### Tamamlanan (v5.2.1)
+- 5 paket yöneticisi desteği (BigFive)
+- EDITION/CODENAME ayrımı
+- bigfive komut alias'ı
+- Dokümantasyon standardizasyonu
+
+### Planlanan
+- v5.3: JSON output (--json)
+- v5.4: Kullanıcı dostu hata mesajları
+- v5.5: Email/Webhook bildirimleri
+- v6.0: i18n (uluslararasılaştırma) - "Prism Edition" olabilir
+
+---
+
+## Sık Kullanılan Komutlar
+
+  # Testleri çalıştır
+  bats tests/*.bats
+
+  # ShellCheck
+  shellcheck -x guncel install.sh release.sh
+
+  # Release oluştur
+  ./release.sh patch   # 5.2.1 -> 5.2.2
+  ./release.sh minor   # 5.2.1 -> 5.3.0
+  ./release.sh major   # 5.2.1 -> 6.0.0
+
+---
+
+## Aktif Branch'ler
+
+| Branch | Açıklama | Durum |
+|--------|----------|-------|
+| main | Stabil | OK |
+| claude/update-arcb-wider-updater-pcBtx | v5.2.1 değişiklikleri | PR bekliyor |
+
+---
+
+## Session Notları
+
+### Session 5 (2026-01-29)
+Yapılan işler:
+1. Dokümantasyon standardizasyonu (*.en.md / *.tr.md)
+2. EDITION/CODENAME ayrımı (BigFive Edition - Alpine)
+3. bigfive alias eklendi (3 komut: guncel, updater, bigfive)
+4. install.sh Night-V1.2.0'a güncellendi
+5. Tüm dokümanlar güncellendi (EN/TR)
+6. VERSION 5.2.0 -> 5.2.1
+
+Bekleyen:
+- PR oluştur ve merge et
+- Release oluştur (./release.sh patch)
+
+### Session 4 (2026-01-28)
+- Docker testleri tamamlandı (5/5 distro)
+- Alpine Linux desteği eklendi
+- BigFive Edition tamamlandı
+
+---
+
+*Son güncelleme: 2026-01-29*
