@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# ARCB Updater Installer Night-V1.2.0
-# Sync: Night-V1.2.0 | bigfive alias ve EDITION desteği eklendi
+# ARCB Updater Installer Night-V1.2.1
+# Sync: Night-V1.2.1 | Releases URL kullan (CDN cache fix)
 
 # 1. HATA YÖNETİMİ
 set -Eeuo pipefail
@@ -14,7 +14,8 @@ BOLD=$'\033[1m'
 NC=$'\033[0m'
 
 INSTALL_PATH="/usr/local/bin/guncel"
-REPO_URL="https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/guncel"
+# v1.2.1: Releases URL kullan (CDN cache sorunu önlenir)
+REPO_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases/latest/download/guncel"
 LOGROTATE_REPO_URL="https://raw.githubusercontent.com/ahm3t0t/arcb-wider-updater/main/logrotate.d/arcb-wider-updater"
 LOGROTATE_DEST="/etc/logrotate.d/arcb-wider-updater"
 
@@ -165,7 +166,7 @@ verify_gpg_signature() {
     return 0
 }
 
-printf "\n%s>>> ARCB Wider Updater Kurulum (Night-V1.2.0)%s\n" "$BLUE" "$NC"
+printf "\n%s>>> ARCB Wider Updater Kurulum (Night-V1.2.1)%s\n" "$BLUE" "$NC"
 
 # İndirme veya Kopyalama Mantığı
 if [[ -n "$SOURCE_FILE" ]]; then
