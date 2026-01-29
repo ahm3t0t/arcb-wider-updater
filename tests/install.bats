@@ -192,3 +192,23 @@ INSTALL_SCRIPT="${BATS_TEST_DIRNAME}/../install.sh"
 @test "Script validation checks for ARCB signature" {
     grep -q 'ARCB Wider Updater' "$INSTALL_SCRIPT"
 }
+
+# =============================================================================
+# v5.4.7 TEMP FILE CLEANUP TESTS
+# =============================================================================
+
+@test "TEMP_COMPLETION is declared for cleanup" {
+    grep -q 'TEMP_COMPLETION=' "$INSTALL_SCRIPT"
+}
+
+@test "TEMP_MAN is declared for cleanup" {
+    grep -q 'TEMP_MAN=' "$INSTALL_SCRIPT"
+}
+
+@test "Trap includes TEMP_COMPLETION cleanup" {
+    grep -q 'trap.*TEMP_COMPLETION' "$INSTALL_SCRIPT"
+}
+
+@test "Trap includes TEMP_MAN cleanup" {
+    grep -q 'trap.*TEMP_MAN' "$INSTALL_SCRIPT"
+}

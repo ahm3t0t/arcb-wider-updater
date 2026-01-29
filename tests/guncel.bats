@@ -460,3 +460,27 @@ get_script_version() {
     grep -q 'Zypper' "$PROJECT_ROOT/docs/guncel.8" && \
     grep -q 'APK' "$PROJECT_ROOT/docs/guncel.8"
 }
+
+# =============================================================================
+# v5.4.7 COUNTER PARSING TESTS
+# =============================================================================
+
+@test "DNF5 counter parsing uses Transaction Summary pattern" {
+    # v5.4.7: "Upgrading: X packages" from Transaction Summary
+    grep -q 'grep -oP "Upgrading:\\s+\\K\\d+"' "$GUNCEL_SCRIPT"
+}
+
+@test "Zypper counter parsing uses pipe-separated pattern" {
+    # v5.4.7: Count lines with | separator (not "^v")
+    grep -q 'grep -c "|"' "$GUNCEL_SCRIPT"
+}
+
+@test "Self-update uses releases URL not raw.githubusercontent.com" {
+    # v5.4.6: CDN cache fix
+    grep -q 'GITHUB_RAW_URL="https://github.com/ahm3t0t/arcb-wider-updater/releases' "$GUNCEL_SCRIPT"
+}
+
+@test "SHA256 grep pattern matches exact guncel filename" {
+    # v5.4.5: Must use "  guncel$" pattern to avoid matching guncel.bash, guncel.8
+    grep -qE 'grep -E "\s+guncel\$"' "$GUNCEL_SCRIPT"
+}
