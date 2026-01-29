@@ -69,8 +69,8 @@ INSTALL_SCRIPT="${BATS_TEST_DIRNAME}/../install.sh"
     grep -q 'INSTALL_PATH="/usr/local/bin/guncel"' "$INSTALL_SCRIPT"
 }
 
-@test "REPO_URL points to GitHub raw content" {
-    grep -q 'REPO_URL=.*raw.githubusercontent.com.*guncel' "$INSTALL_SCRIPT"
+@test "REPO_URL points to GitHub releases" {
+    grep -q 'REPO_URL=.*releases/latest/download/guncel' "$INSTALL_SCRIPT"
 }
 
 @test "GPG_PUBKEY_URL is defined" {
