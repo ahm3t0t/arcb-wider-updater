@@ -5,6 +5,19 @@ Bu projedeki tüm önemli değişiklikler bu dosyada belgelenecektir.
 Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına,
 versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standardına uygundur.
 
+## [6.0.1] - 2026-01-30 "BigFive Edition - Echo"
+### Düzeltilenler
+- **printf invalid number hatası:** `grep -c` komutu eşleşme olmadığında exit code 1
+  döndürüyordu ve `|| echo "0"` da çalışarak çift çıktı (`0\n0`) üretiyordu.
+  Bu durum `printf %d` için geçersiz sayı hatası oluşturuyordu.
+  - Etkilenen: APT, DNF, Pacman, Zypper, APK, fwupd sayaçları
+  - Çözüm: `COUNT=$(... | grep -c ... 2>/dev/null) || COUNT=0`
+
+### Değişenler
+- VERSION: 6.0.0 → 6.0.1
+
+---
+
 ## [6.0.0] - 2026-01-30 "BigFive Edition - Echo"
 ### Eklenenler
 - **i18n (Çoklu Dil Desteği):** Türkçe ve İngilizce tam destek

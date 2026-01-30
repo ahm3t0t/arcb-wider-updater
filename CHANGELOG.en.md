@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.1] - 2026-01-30 "BigFive Edition - Echo"
+### Fixed
+- **printf invalid number error:** `grep -c` was returning exit code 1 when no match,
+  causing `|| echo "0"` to also run and produce double output (`0\n0`).
+  This resulted in "invalid number" error for `printf %d`.
+  - Affected: APT, DNF, Pacman, Zypper, APK, fwupd count parsing
+  - Solution: `COUNT=$(... | grep -c ... 2>/dev/null) || COUNT=0`
+
+### Changed
+- VERSION: 6.0.0 → 6.0.1
+
+---
+
 ## [6.0.0] - 2026-01-30 "BigFive Edition - Echo"
 ### Added
 - **i18n (Multi-Language Support):** Full Turkish and English support
