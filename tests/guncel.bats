@@ -530,3 +530,73 @@ get_script_version() {
     grep -q '\-l skip' "$PROJECT_ROOT/completions/guncel.fish"
     grep -q 'snapshot' "$PROJECT_ROOT/completions/guncel.fish"
 }
+
+# =============================================================================
+# i18n (MULTI-LANGUAGE) TESTS - v6.0.2
+# =============================================================================
+
+@test "i18n: --lang flag exists in script" {
+    grep -q '\-\-lang' "$GUNCEL_SCRIPT"
+}
+
+@test "i18n: BIGFIVE_LANG variable check exists" {
+    grep -q 'BIGFIVE_LANG' "$GUNCEL_SCRIPT"
+}
+
+@test "i18n: Turkish language file exists" {
+    [ -f "$PROJECT_ROOT/lang/tr.sh" ]
+}
+
+@test "i18n: English language file exists" {
+    [ -f "$PROJECT_ROOT/lang/en.sh" ]
+}
+
+@test "i18n: --lang tr shows Turkish output" {
+    run bash "$GUNCEL_SCRIPT" --lang tr --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Kullanım"* ]]
+}
+
+@test "i18n: --lang en shows English output" {
+    run bash "$GUNCEL_SCRIPT" --lang en --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Usage"* ]]
+}
+
+@test "i18n: BIGFIVE_LANG=en env var works" {
+    BIGFIVE_LANG=en run bash "$GUNCEL_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Usage"* ]]
+}
+
+@test "i18n: BIGFIVE_LANG=tr env var works" {
+    BIGFIVE_LANG=tr run bash "$GUNCEL_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Kullanım"* ]]
+}
+
+@test "i18n: --lang overrides BIGFIVE_LANG env" {
+    BIGFIVE_LANG=tr run bash "$GUNCEL_SCRIPT" --lang en --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Usage"* ]]
+}
+
+@test "i18n: invalid lang code falls back to tr" {
+    run bash "$GUNCEL_SCRIPT" --lang xx --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Kullanım"* ]]
+}
+
+@test "i18n: TR lang file has MSG_HELP_USAGE" {
+    grep -q 'MSG_HELP_USAGE=' "$PROJECT_ROOT/lang/tr.sh"
+}
+
+@test "i18n: EN lang file has MSG_HELP_USAGE" {
+    grep -q 'MSG_HELP_USAGE=' "$PROJECT_ROOT/lang/en.sh"
+}
+
+@test "i18n: TR and EN have same message count" {
+    local tr_count=$(grep -c '^MSG_' "$PROJECT_ROOT/lang/tr.sh")
+    local en_count=$(grep -c '^MSG_' "$PROJECT_ROOT/lang/en.sh")
+    [ "$tr_count" -eq "$en_count" ]
+}

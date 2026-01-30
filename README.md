@@ -111,9 +111,9 @@ bats --tap tests/*.bats
 
 | Component | Tests | Status |
 |-----------|-------|--------|
-| guncel.bats | 99 | ✅ |
+| guncel.bats | 112 | ✅ |
 | install.bats | 39 | ✅ |
-| **Total** | **138** | ✅ |
+| **Total** | **151** | ✅ |
 
 ---
 
