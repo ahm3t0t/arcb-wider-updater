@@ -67,10 +67,16 @@
 - [x] Log/config/lock dosya yolları güncellendi
 - [x] Docker test dosyaları güncellendi
 
-### v5.6+ - Kullanıcı Deneyimi (Planlanan)
-- [ ] Graceful error messages (kullanıcı dostu hata mesajları)
-- [ ] Daha iyi hata açıklamaları
-- [ ] Çözüm önerileri
+### v5.5.1 "Dream" - Error UX ✅ TAMAMLANDI
+- [x] Hata kodları sistemi (E001-E031)
+- [x] Kullanıcı dostu hata mesajları
+- [x] Çözüm önerileri (💡 ile gösteriliyor)
+- [x] Daha iyi hata açıklamaları
+
+### v5.5.2 "Dream" - Bug Fixes ✅ TAMAMLANDI
+- [x] pgrep bağımlılığı düzeltildi (Alpine/minimal container uyumluluğu)
+- [x] Zypper güncelleme sayacı düzeltildi
+- [x] Dökümantasyon tam senkronizasyonu
 
 ### v5.6+ - Gelişmiş Yapılandırma (Planlanan)
 - [ ] Email bildirimleri (SMTP)
@@ -117,7 +123,7 @@
 
 | Bileşen | Test Sayısı | Durum |
 |---------|-------------|-------|
-| guncel.bats | 89 | ✅ |
+| guncel.bats | 99 | ✅ |
 | install.bats | 39 | ✅ |
 | **Toplam** | **138** | ✅ |
 

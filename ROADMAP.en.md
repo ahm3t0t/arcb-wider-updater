@@ -67,10 +67,16 @@
 - [x] Log/config/lock file paths updated
 - [x] Docker test files updated
 
-### v5.6+ - User Experience (Planned)
-- [ ] Graceful error messages
-- [ ] Better error explanations
-- [ ] Solution suggestions
+### v5.5.1 "Dream" - Error UX ✅ COMPLETED
+- [x] Error code system (E001-E031)
+- [x] User-friendly error messages
+- [x] Solution suggestions (shown with 💡)
+- [x] Better error explanations
+
+### v5.5.2 "Dream" - Bug Fixes ✅ COMPLETED
+- [x] Fixed pgrep dependency (Alpine/minimal container compatibility)
+- [x] Fixed Zypper update counter
+- [x] Complete documentation sync
 
 ### v5.6+ - Advanced Configuration (Planned)
 - [ ] Email notifications (SMTP)
@@ -117,7 +123,7 @@
 
 | Component | Test Count | Status |
 |-----------|------------|--------|
-| guncel.bats | 89 | ✅ |
+| guncel.bats | 99 | ✅ |
 | install.bats | 39 | ✅ |
 | **Total** | **138** | ✅ |
 
