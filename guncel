@@ -995,7 +995,7 @@ update_apt() {
     print_header "${MSG_HEADER_APT_UPGRADE:-APT: Dist-Upgrade}"
     local apt_upgradable apt_simulate
     apt_simulate=$(apt-get -s dist-upgrade 2>/dev/null | grep "^Inst " || true)
-    apt_upgradable=$(echo "$apt_simulate" | grep -c "^Inst " || echo "0")
+    apt_upgradable=$(echo "$apt_simulate" | grep -c "^Inst " 2>/dev/null) || apt_upgradable=0
     APT_COUNT=${apt_upgradable:-0}
 
     # --json-full için paket detaylarını topla
@@ -1078,7 +1078,7 @@ update_dnf() {
     fi
     # Son fallback: Upgrading satırlarını say (her paket için bir satır)
     if [[ -z "$DNF_COUNT" || "$DNF_COUNT" == "0" ]]; then
-        DNF_COUNT=$(grep -cE "^\[.*/.*\] Upgrading " "$dnf_temp" 2>/dev/null || echo "0")
+        DNF_COUNT=$(grep -cE "^\[.*/.*\] Upgrading " "$dnf_temp" 2>/dev/null) || DNF_COUNT=0
     fi
 
     rm -f "$dnf_temp"
@@ -1110,7 +1110,7 @@ update_pacman() {
     # Güncellenecek paket sayısını al
     local pacman_updates
     pacman_updates=$(pacman -Qu 2>/dev/null || true)
-    PACMAN_COUNT=$(echo "$pacman_updates" | grep -c . || echo "0")
+    PACMAN_COUNT=$(echo "$pacman_updates" | grep -c . 2>/dev/null) || PACMAN_COUNT=0
     PACMAN_COUNT=${PACMAN_COUNT:-0}
 
     # --json-full için paket detaylarını topla
@@ -1180,7 +1180,7 @@ update_zypper() {
     # Header ve separator satırlarını atla, sadece paket satırlarını say
     local zypper_updates
     zypper_updates=$(zypper -q lu 2>/dev/null | grep -v "^-" | grep -v "^S " | grep "|" || true)
-    ZYPPER_COUNT=$(echo "$zypper_updates" | grep -c "|" || echo "0")
+    ZYPPER_COUNT=$(echo "$zypper_updates" | grep -c "|" 2>/dev/null) || ZYPPER_COUNT=0
     ZYPPER_COUNT=${ZYPPER_COUNT:-0}
 
     # --json-full için paket detaylarını topla
@@ -1251,7 +1251,7 @@ update_apk() {
     # Güncellenecek paket sayısını al
     local apk_updates
     apk_updates=$(apk version -l '<' 2>/dev/null || true)
-    APK_COUNT=$(echo "$apk_updates" | grep -c . || echo "0")
+    APK_COUNT=$(echo "$apk_updates" | grep -c . 2>/dev/null) || APK_COUNT=0
     APK_COUNT=${APK_COUNT:-0}
 
     # --json-full için paket detaylarını topla
@@ -1405,7 +1405,7 @@ update_firmware() {
     fi
 
     local fwupd_upgradable
-    fwupd_upgradable=$(echo "$fwupd_output" | grep -c "New version" | tr -cd '0-9' || echo "0")
+    fwupd_upgradable=$(echo "$fwupd_output" | grep -c "New version" 2>/dev/null) || fwupd_upgradable=0
     fwupd_upgradable=${fwupd_upgradable:-0}
     FWUPD_COUNT=${fwupd_upgradable:-0}
 
@@ -1570,7 +1570,7 @@ perform_dry_run_check() {
         # fwupdmgr returns exit code 2 for "No updatable devices" - this is not an error
         if [[ -n "$fwupd_list" && ! "$fwupd_list" =~ "No upgrades" && ! "$fwupd_list" =~ "No updatable devices" ]]; then
             [[ "$json_quiet" == "false" ]] && echo "$fwupd_list"
-            FWUPD_COUNT=$(echo "$fwupd_list" | grep -c "New version" | tr -cd '0-9' || echo "0")
+            FWUPD_COUNT=$(echo "$fwupd_list" | grep -c "New version" 2>/dev/null) || FWUPD_COUNT=0
         else
             [[ "$json_quiet" == "false" ]] && printf '%s  Firmware güncel.%s\n' "${GREEN}" "${NC}"
             FWUPD_COUNT=0
