@@ -1,0 +1,13 @@
+# BigFive Updater - Arch Linux Test Container
+FROM archlinux:latest
+
+RUN pacman -Syu --noconfirm \
+    curl wget gnupg ca-certificates \
+    && pacman -Scc --noconfirm
+
+WORKDIR /app
+COPY guncel install.sh ./
+COPY completions/ ./completions/
+COPY docs/ ./docs/
+
+CMD ["bash", "-c", "./guncel --help"]

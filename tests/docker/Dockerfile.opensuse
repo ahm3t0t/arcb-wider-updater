@@ -1,0 +1,13 @@
+# BigFive Updater - openSUSE Test Container
+FROM opensuse/tumbleweed:latest
+
+RUN zypper --non-interactive install \
+    curl wget gpg2 ca-certificates \
+    && zypper clean -a
+
+WORKDIR /app
+COPY guncel install.sh ./
+COPY completions/ ./completions/
+COPY docs/ ./docs/
+
+CMD ["bash", "-c", "./guncel --help"]

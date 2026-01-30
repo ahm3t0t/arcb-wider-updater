@@ -1,0 +1,12 @@
+# BigFive Updater - Alpine Linux Test Container
+FROM alpine:3.20
+
+RUN apk add --no-cache \
+    bash curl wget gnupg ca-certificates
+
+WORKDIR /app
+COPY guncel install.sh ./
+COPY completions/ ./completions/
+COPY docs/ ./docs/
+
+CMD ["bash", "-c", "./guncel --help"]

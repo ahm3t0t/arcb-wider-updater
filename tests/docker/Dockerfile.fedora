@@ -1,0 +1,13 @@
+# BigFive Updater - Fedora Test Container
+FROM fedora:40
+
+RUN dnf install -y \
+    curl wget gnupg2 ca-certificates \
+    && dnf clean all
+
+WORKDIR /app
+COPY guncel install.sh ./
+COPY completions/ ./completions/
+COPY docs/ ./docs/
+
+CMD ["bash", "-c", "./guncel --help"]
