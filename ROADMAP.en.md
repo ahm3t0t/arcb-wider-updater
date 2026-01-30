@@ -78,10 +78,15 @@
 - [x] Fixed Zypper update counter
 - [x] Complete documentation sync
 
-### v6.0 "Echo" - Internationalization (i18n) (Planned)
-- [ ] Move strings to separate file
-- [ ] Translation framework
-- [ ] Full English/Turkish support
+### v6.0 "Echo" - Internationalization (i18n) ✅ COMPLETED
+- [x] Move strings to separate file (`lang/tr.sh`, `lang/en.sh`)
+- [x] Translation framework (`--lang` parameter, `BIGFIVE_LANG` env var)
+- [x] Full English/Turkish support (~110 strings)
+- [x] Automatic language detection based on system LANG
+
+### v6.0.1 "Echo" - Bug Fixes ✅ COMPLETED
+- [x] Fixed printf invalid number error (grep -c exit code issue)
+- [x] Fixed all package manager counters
 
 ### v6.x+ "Chrom" - Notifications & GUI (Planned)
 - [ ] Email notifications (SMTP)

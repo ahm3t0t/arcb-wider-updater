@@ -59,6 +59,11 @@ Performs Snapshot (Backup), Repository Updates, Flatpak/Snap and Firmware checks
     * **Fish:** `/usr/share/fish/vendor_completions.d/` (v5.4.8+)
 * **Man Page (v5.4+):**
     * Full documentation via `man guncel`.
+* **Multi-Language Support (v6.0+ Echo):**
+    * Full Turkish and English support.
+    * `--lang tr` or `--lang en` for language selection.
+    * `BIGFIVE_LANG` environment variable support.
+    * Automatic language detection based on system LANG.
 * **Config File Support (v3.6.0):**
     * Define default settings in `/etc/bigfive-updater.conf`.
 * **SHA256 Verification (v3.6.0):**
@@ -84,8 +89,8 @@ This project uses **two separate version systems**:
 
 | Component | Format | Current | Update Frequency |
 |-----------|--------|---------|------------------|
-| `guncel` (main script) | SemVer (x.x.x) | v5.5.2 (BigFive Edition - Dream) | Every feature/fix |
-| `install.sh` (installer) | Night-Vx.x.x | Night-V1.3.2 | Only when install logic changes |
+| `guncel` (main script) | SemVer (x.x.x) | v6.0.1 (BigFive Edition - Echo) | Every feature/fix |
+| `install.sh` (installer) | Night-Vx.x.x | Night-V1.4.0 | Only when install logic changes |
 
 **Naming Convention:**
 - **Edition** = Major series name (e.g., "BigFive" for v5.x = 5 package managers)
@@ -135,6 +140,11 @@ guncel --skip flatpak,snap      # Skip Flatpak and Snap
 guncel --skip snapshot          # Skip snapshot creation
 guncel --only system            # Only system packages (APT/DNF/Pacman/Zypper/APK)
 guncel --only flatpak,fwupd     # Only Flatpak and Firmware
+
+# Language Selection (v6.0+ Echo)
+guncel --lang en                # English output
+guncel --lang tr                # Turkish output
+BIGFIVE_LANG=en guncel          # Via environment variable
 ```
 
 ---
@@ -151,6 +161,7 @@ guncel --only flatpak,fwupd     # Only Flatpak and Firmware
 | `--json-full` | Detailed JSON output - for SIEM/audit (Wazuh, Splunk) |
 | `--skip <backend>` | Skip specified backends (comma-separated) |
 | `--only <backend>` | Run only specified backends (comma-separated) |
+| `--lang <tr\|en>` | Select output language (v6.0+) |
 | `--uninstall` | Remove BigFive Updater (config/logs preserved) |
 | `--uninstall --purge` | Completely remove including config and logs |
 | `--help` | Display help message |

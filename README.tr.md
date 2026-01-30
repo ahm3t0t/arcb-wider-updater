@@ -96,6 +96,11 @@ Tek komut. Hepsi bir arada. Güvenli ve izlenebilir.
     * **Fish:** `/usr/share/fish/vendor_completions.d/` (v5.4.8+)
 * **Man Sayfası (v5.4+):**
     * `man guncel` ile detaylı dokümantasyon.
+* **Çoklu Dil Desteği (v6.0+ Echo):**
+    * Türkçe ve İngilizce tam destek.
+    * `--lang tr` veya `--lang en` ile dil seçimi.
+    * `BIGFIVE_LANG` environment variable desteği.
+    * Sistem LANG ayarına göre otomatik dil tespiti.
 * **Config Dosyası Desteği (v3.6.0):**
     * `/etc/bigfive-updater.conf` ile varsayılan ayarları tanımlayın.
 * **SHA256 Doğrulama (v3.6.0):**
@@ -121,8 +126,8 @@ Bu proje **iki ayrı versiyon sistemi** kullanır:
 
 | Bileşen | Format | Güncel | Güncelleme Sıklığı |
 |---------|--------|--------|--------------------|
-| `guncel` (ana script) | SemVer (x.x.x) | v5.5.2 (BigFive Edition - Dream) | Her özellik/fix'te |
-| `install.sh` (kurulum) | Night-Vx.x.x | Night-V1.3.2 | Sadece kurulum mantığı değiştiğinde |
+| `guncel` (ana script) | SemVer (x.x.x) | v6.0.1 (BigFive Edition - Echo) | Her özellik/fix'te |
+| `install.sh` (kurulum) | Night-Vx.x.x | Night-V1.4.0 | Sadece kurulum mantığı değiştiğinde |
 
 **İsimlendirme Kuralı:**
 - **Edition** = Major seri adı (örn: "BigFive" v5.x için = 5 paket yöneticisi)
@@ -254,6 +259,11 @@ guncel --only pacman            # Sadece Pacman (Arch Linux)
 guncel --only zypper            # Sadece Zypper (openSUSE)
 guncel --only apk               # Sadece APK (Alpine Linux)
 guncel --only flatpak,fwupd     # Sadece Flatpak ve Firmware
+
+# Dil Seçimi (v6.0+ Echo)
+guncel --lang en                # İngilizce çıktı
+guncel --lang tr                # Türkçe çıktı (varsayılan)
+BIGFIVE_LANG=en guncel          # Environment variable ile
 ```
 
 ---
@@ -270,6 +280,7 @@ guncel --only flatpak,fwupd     # Sadece Flatpak ve Firmware
 | `--json-full` | Detaylı JSON çıktı - SIEM/audit için (Wazuh, Splunk) |
 | `--skip <backend>` | Belirtilen backend'leri atla (virgülle ayır) |
 | `--only <backend>` | Sadece belirtilen backend'leri çalıştır |
+| `--lang <tr\|en>` | Çıktı dilini seçer (v6.0+) |
 | `--uninstall` | BigFive Updater'ı kaldır (config/log korunur) |
 | `--uninstall --purge` | Config ve loglar dahil tamamen kaldır |
 | `--help` | Yardım mesajını gösterir |

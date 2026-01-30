@@ -78,10 +78,15 @@
 - [x] Zypper güncelleme sayacı düzeltildi
 - [x] Dökümantasyon tam senkronizasyonu
 
-### v6.0 "Echo" - Uluslararasılaştırma (i18n) (Planlanan)
-- [ ] String'leri ayrı dosyaya taşı
-- [ ] Çeviri framework'ü
-- [ ] İngilizce/Türkçe tam destek
+### v6.0 "Echo" - Uluslararasılaştırma (i18n) ✅ TAMAMLANDI
+- [x] String'leri ayrı dosyaya taşı (`lang/tr.sh`, `lang/en.sh`)
+- [x] Çeviri framework'ü (`--lang` parametresi, `BIGFIVE_LANG` env var)
+- [x] İngilizce/Türkçe tam destek (~110 string)
+- [x] Sistem LANG ayarına göre otomatik dil tespiti
+
+### v6.0.1 "Echo" - Bug Fixes ✅ TAMAMLANDI
+- [x] printf invalid number hatası düzeltildi (grep -c exit code sorunu)
+- [x] Tüm paket yöneticisi sayaçları düzeltildi
 
 ### v6.x+ "Chrom" - Bildirimler & GUI (Planlanan)
 - [ ] Email bildirimleri (SMTP)
