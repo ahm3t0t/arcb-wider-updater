@@ -5,7 +5,7 @@
 #
 
 # --- AYARLAR ---
-VERSION="5.5.0"
+VERSION="5.5.1"
 EDITION="BigFive"
 CODENAME="Dream"
 LOG_DIR="/var/log/bigfive-updater"
@@ -116,6 +116,56 @@ print_header() {
 print_error() {
     printf '%s[X] HATA: %s %s\n' "${RED}${BOLD}" "$1" "${NC}"
     echo "[$(date '+%F %T')] ERROR: $1" >> "$LOG_FILE"
+    # JSON modunda error'ı kaydet
+    add_json_error "$1"
+}
+
+# --- v5.6.0: ENHANCED ERROR UX ---
+# Hata mesajı + çözüm önerisi
+print_error_with_hint() {
+    local error_msg="$1"
+    local hint_msg="$2"
+    local error_code="${3:-}"
+
+    # JSON modunda sessiz
+    if [[ "$JSON_MODE" != "none" ]]; then
+        add_json_error "$error_msg"
+        echo "[$(date '+%F %T')] ERROR: $error_msg | HINT: $hint_msg" >> "$LOG_FILE"
+        return
+    fi
+
+    # Hata kodu varsa göster
+    if [[ -n "$error_code" ]]; then
+        printf '%s[X] HATA [%s]: %s%s\n' "${RED}${BOLD}" "$error_code" "$error_msg" "${NC}"
+    else
+        printf '%s[X] HATA: %s%s\n' "${RED}${BOLD}" "$error_msg" "${NC}"
+    fi
+    printf '%s    💡 Çözüm: %s%s\n' "${YELLOW}" "$hint_msg" "${NC}"
+    echo "[$(date '+%F %T')] ERROR: $error_msg | HINT: $hint_msg" >> "$LOG_FILE"
+    add_json_error "$error_msg"
+}
+
+# Uyarı + öneri
+print_warning_with_hint() {
+    local warn_msg="$1"
+    local hint_msg="$2"
+
+    if [[ "$QUIET_MODE" == "true" ]]; then
+        echo "[$(date '+%F %T')] WARN: $warn_msg | HINT: $hint_msg" >> "$LOG_FILE"
+        return
+    fi
+
+    # JSON modunda sessiz
+    if [[ "$JSON_MODE" != "none" ]]; then
+        add_json_warning "$warn_msg"
+        echo "[$(date '+%F %T')] WARN: $warn_msg | HINT: $hint_msg" >> "$LOG_FILE"
+        return
+    fi
+
+    printf '%s[!] UYARI: %s%s\n' "${YELLOW}" "$warn_msg" "${NC}"
+    printf '%s    💡 Öneri: %s%s\n' "${BLUE}" "$hint_msg" "${NC}"
+    echo "[$(date '+%F %T')] WARN: $warn_msg | HINT: $hint_msg" >> "$LOG_FILE"
+    add_json_warning "$warn_msg"
 }
 
 print_warning() {
@@ -585,7 +635,8 @@ download_file() {
     elif command -v wget &> /dev/null; then
         wget --secure-protocol=TLSv1_2 -qO "$output" "$url"
     else
-        print_error "Sistemde 'curl' veya 'wget' bulunamadı!"
+        print_error_with_hint "Sistemde 'curl' veya 'wget' bulunamadı!" \
+            "apt install curl veya dnf install curl ile kurabilirsiniz." "E001"
         exit 1
     fi
 }
@@ -626,7 +677,8 @@ check_root() {
             # v3.6.1 FIX: Orijinal argümanları kullan
             exec sudo -E "$0" "${ORIGINAL_ARGS[@]}"
         else
-            print_error "Sudo yok ve root değilsin."
+            print_error_with_hint "Sudo yok ve root değilsin." \
+                "sudo kurulu değilse: su -c 'dnf install sudo' veya root olarak çalıştırın." "E002"
             exit 1
         fi
     fi
@@ -664,7 +716,8 @@ check_self_update() {
             # v5.4.4 FIX: Sadece "guncel" dosyasını yakala (guncel.bash, guncel.8 değil)
             EXPECTED=$(grep -E "  guncel$" "$TEMP_SHA256" 2>/dev/null | awk '{print $1}')
             if [[ -n "$EXPECTED" && "$EXPECTED" != "$REMOTE_HASH" ]]; then
-                print_error "SHA256 doğrulama başarısız! Güncelleme iptal edildi."
+                print_error_with_hint "SHA256 doğrulama başarısız! Güncelleme iptal edildi." \
+                    "Dosya bozulmuş olabilir. Daha sonra tekrar deneyin veya manuel kurulum yapın." "E030"
                 echo "[$(date '+%F %T')] ERROR: SHA256 mismatch - Expected: $EXPECTED, Got: $REMOTE_HASH" >> "$LOG_FILE"
                 return 1
             fi
@@ -698,10 +751,12 @@ check_self_update() {
                 print_success "Script güncellendi. Yeniden başlatılıyor..."
                 exec "$0" "${ORIGINAL_ARGS[@]}"
             else
-                print_error "Güncelleme kopyalanamadı!"
+                print_error_with_hint "Güncelleme kopyalanamadı!" \
+                    "Disk dolu olabilir veya yazma izni yok. 'df -h' ve 'ls -la /usr/local/bin/' ile kontrol edin." "E031"
                 # Rollback attempt
                 if [ -f "${0}.bak" ]; then
-                    print_warning "Yedekten geri yükleme deneniyor..."
+                    print_warning_with_hint "Yedekten geri yükleme deneniyor..." \
+                        "Otomatik geri yükleme başarısız olursa: sudo cp ${0}.bak $0"
                     cp "${0}.bak" "$0" && print_success "Geri yükleme başarılı."
                 fi
                 exit 1
@@ -735,7 +790,8 @@ wait_for_lock() {
         if [[ "$locked" == "false" ]]; then break; fi
 
         if [ $count -ge $max_retries ]; then
-            print_error "APT kilitleri kaldırılamadı. Manuel müdahale gerek."
+            print_error_with_hint "APT kilitleri kaldırılamadı." \
+                "Başka bir güncelleme çalışıyor olabilir. 'sudo lsof /var/lib/dpkg/lock-frontend' ile kontrol edin." "E010"
             exit 1
         fi
         
@@ -756,7 +812,8 @@ wait_for_dnf_lock() {
         sleep 10
         ((attempt++))
     done
-    print_error "DNF kilidi zaman aşımı!"
+    print_error_with_hint "DNF kilidi zaman aşımı!" \
+        "'pgrep -a dnf' ile çalışan işlemi bulun veya bekleyin. GNOME Software açıksa kapatın." "E011"
     return 1
 }
 
@@ -1672,13 +1729,15 @@ elif [[ ! -d "/var/lock" ]]; then
 fi
 exec 9>"$LOCK_FILE"
 if ! flock -n 9; then
-    print_error "Başka bir güncelleme işlemi zaten çalışıyor."
+    print_error_with_hint "Başka bir güncelleme işlemi zaten çalışıyor." \
+        "'pgrep -a guncel' ile kontrol edin. Gerekirse 'sudo rm $LOCK_FILE' ile kilidi kaldırın." "E020"
     exit 1
 fi
 setup_logging
 
 if ! check_connectivity; then
-    print_error "İnternet bağlantısı kurulamadı. İşlem iptal."
+    print_error_with_hint "İnternet bağlantısı kurulamadı." \
+        "'ping -c 1 google.com' ile bağlantıyı test edin. DNS veya ağ ayarlarını kontrol edin." "E021"
     exit 1
 fi
 
