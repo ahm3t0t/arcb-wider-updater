@@ -1,0 +1,213 @@
+.\" Man page for guncel - BigFive Updater (Türkçe)
+.\" Generated from guncel.8.md
+.TH GUNCEL 8 "Ocak 2026" "BigFive Updater 6.0.0" "Sistem Yönetimi"
+.SH İSİM
+guncel \- evrensel Linux sistem güncelleyici (BigFive Edition)
+.SH KULLANIM
+.B guncel
+.RI [ SEÇENEKLER ]
+.br
+.B updater
+.RI [ SEÇENEKLER ]
+.br
+.B bigfive
+.RI [ SEÇENEKLER ]
+.SH AÇIKLAMA
+.B BigFive Updater
+Linux sisteminizde bulunan tüm paket yöneticilerini tek bir komutla günceller.
+Beş büyük paket yöneticisini (APT, DNF, Pacman, Zypper, APK) ve ayrıca
+Flatpak, Snap ve firmware güncellemelerini destekler.
+.PP
+Araç, sisteminizde hangi paket yöneticilerinin mevcut olduğunu otomatik olarak
+algılar ve uygun güncelleme komutlarını çalıştırır. Zaman damgalı loglar oluşturur,
+dry-run modunu destekler ve izleme sistemleriyle entegrasyon için JSON çıktısı verebilir.
+.SH SEÇENEKLER
+.TP
+.B \-\-auto
+Cron ve otomatik görevler için etkileşimsiz mod. Güncellemeler kullanıcı
+onayı olmadan devam eder.
+.TP
+.B \-\-verbose
+Tüm paket yöneticisi komutları ve tam çıktıları dahil detaylı çıktı gösterir.
+.TP
+.B \-\-quiet
+Minimal çıktı modu. Sadece hataları ve özeti gösterir.
+.TP
+.B \-\-dry\-run
+Hiçbir değişiklik yapmadan nelerin güncelleneceğini gösterir. Güncellemeleri
+uygulamadan önce önizlemek için kullanışlıdır.
+.TP
+.B \-\-json
+İzleme sistemleri (Zabbix, Nagios, Prometheus) için uygun hafif JSON çıktısı.
+Durum, çıkış kodu, zaman damgası ve güncelleme sayısı içerir.
+.TP
+.B \-\-json\-full
+SIEM ve denetim sistemleri (Wazuh, Splunk, ELK) için detaylı JSON çıktısı.
+Sistem bilgisi, paket detayları, uyarılar ve hatalar içerir.
+.TP
+.BI \-\-skip " backendler"
+Belirtilen backend'leri atla (virgülle ayır). Kullanılabilir değerler:
+snapshot, flatpak, snap, fwupd, system, apt, dnf, pacman, zypper, apk
+.TP
+.BI \-\-only " backendler"
+Sadece belirtilen backend'leri çalıştır (virgülle ayır). Kullanılabilir değerler:
+system, flatpak, snap, fwupd, apt, dnf, pacman, zypper, apk
+.TP
+.B \-\-uninstall
+BigFive Updater'ı sistemden kaldır. Yapılandırma ve loglar korunur.
+.TP
+.B "\-\-uninstall \-\-purge"
+BigFive Updater'ı yapılandırma dosyaları ve loglar dahil tamamen kaldır.
+.TP
+.BI \-\-lang " kod"
+Çıktı dilini ayarla. Kullanılabilir değerler: tr (Türkçe), en (İngilizce).
+Varsayılan olarak sistem LANG'den otomatik algılanır.
+.TP
+.B \-\-help
+Yardım mesajını göster ve çık.
+.SH DESTEKLENEN PAKET YÖNETİCİLERİ
+.TP
+.B APT
+(Debian, Ubuntu, Linux Mint, Pop!_OS, Zorin OS)
+.br
+apt update, apt dist-upgrade, apt autoremove, apt autoclean çalıştırır
+.TP
+.B DNF
+(Fedora, RHEL, CentOS, Rocky Linux, AlmaLinux)
+.br
+dnf upgrade ve otomatik orphan temizliği çalıştırır
+.TP
+.B Pacman
+(Arch Linux, Manjaro, EndeavourOS)
+.br
+pacman -Syu ve orphan paket temizliği ile önbellek yönetimi çalıştırır
+.TP
+.B Zypper
+(openSUSE Leap, openSUSE Tumbleweed)
+.br
+zypper refresh ve zypper update çalıştırır
+.TP
+.B APK
+(Alpine Linux)
+.br
+apk update ve apk upgrade ile önbellek temizliği çalıştırır
+.TP
+.B Flatpak
+Tüm Flatpak uygulamalarını günceller ve kullanılmayan runtime'ları kaldırır
+.TP
+.B Snap
+Tüm Snap paketlerini yeniler
+.TP
+.B Firmware
+(fwupd) Desteklenen donanım için firmware güncellemelerini kontrol eder ve uygular
+.SH DOSYALAR
+.TP
+.I /etc/bigfive-updater.conf
+Ana yapılandırma dosyası. Varsayılan seçenekleri burada ayarlayın.
+.TP
+.I /var/log/bigfive-updater/
+Log dizini. Her güncelleme zaman damgalı bir log dosyası oluşturur.
+.TP
+.I /usr/local/bin/guncel
+Ana çalıştırılabilir script.
+.TP
+.I /usr/local/bin/updater
+guncel'e symlink (İngilizce alias).
+.TP
+.I /usr/local/bin/bigfive
+guncel'e symlink (marka alias).
+.TP
+.I /usr/share/bash-completion/completions/guncel
+Bash tamamlama scripti.
+.TP
+.I /usr/share/zsh/site-functions/_guncel
+Zsh tamamlama scripti.
+.TP
+.I /usr/share/fish/vendor_completions.d/guncel.fish
+Fish tamamlama scripti.
+.TP
+.I /usr/share/bigfive-updater/lang/
+Dil dosyaları dizini (tr.sh, en.sh).
+.SH ÖRNEKLER
+Etkileşimli güncelleme çalıştır (önerilen):
+.PP
+.RS
+sudo guncel
+.RE
+.PP
+Cron için otomatik güncelleme çalıştır:
+.PP
+.RS
+sudo guncel --auto
+.RE
+.PP
+Nelerin güncelleneceğini önizle:
+.PP
+.RS
+sudo guncel --dry-run
+.RE
+.PP
+Sadece sistem paketlerini güncelle (Flatpak/Snap atla):
+.PP
+.RS
+sudo guncel --only system
+.RE
+.PP
+Firmware güncellemelerini atla:
+.PP
+.RS
+sudo guncel --skip fwupd
+.RE
+.PP
+İzleme için JSON çıktısı:
+.PP
+.RS
+sudo guncel --json
+.RE
+.SH ÇIKIŞ DURUMU
+.TP
+.B 0
+Başarılı - tüm güncellemeler hatasız tamamlandı.
+.TP
+.B 1
+Genel hata - bir veya daha fazla güncelleme işlemi başarısız oldu.
+.TP
+.B 130
+Kullanıcı tarafından kesildi (Ctrl+C).
+.SH YAPILANDIRMA
+Yapılandırma dosyası formatı
+.RI ( /etc/bigfive-updater.conf ):
+.PP
+.RS
+.nf
+# Varsayılan olarak otomatik modu etkinleştir
+CONFIG_AUTO_MODE=true
+
+# Belirli backend'leri atla
+CONFIG_SKIP_FLATPAK=true
+CONFIG_SKIP_SNAP=true
+
+# Detaylı çıktıyı etkinleştir
+CONFIG_VERBOSE=true
+
+# Snapshot zaman aşımı (saniye)
+CONFIG_SNAPSHOT_TIMEOUT=300
+.fi
+.RE
+.SH AYRICA BAKINIZ
+.BR apt (8),
+.BR dnf (8),
+.BR pacman (8),
+.BR zypper (8),
+.BR apk (8),
+.BR flatpak (1),
+.BR snap (8),
+.BR fwupdmgr (1)
+.SH HATALAR
+Hataları şu adreste bildirin: https://github.com/ahm3t0t/bigfive-updater/issues
+.SH TELİF HAKKI
+Telif Hakkı (C) 2026 Ahmet T. MIT Lisansı altında lisanslanmıştır.
+.SH YAZAR
+Ahmet T. tarafından Claude AI katkılarıyla yazılmıştır.
+.PP
+Proje ana sayfası: https://github.com/ahm3t0t/bigfive-updater

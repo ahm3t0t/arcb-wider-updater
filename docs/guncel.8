@@ -1,6 +1,6 @@
 .\" Man page for guncel - BigFive Updater
 .\" Generated from guncel.8.md
-.TH GUNCEL 8 "January 2026" "BigFive Updater 5.5.2" "System Administration"
+.TH GUNCEL 8 "January 2026" "BigFive Updater 6.0.0" "System Administration"
 .SH NAME
 guncel \- universal Linux system updater (BigFive Edition)
 .SH SYNOPSIS
@@ -61,6 +61,10 @@ preserved.
 .TP
 .B "\-\-uninstall \-\-purge"
 Completely remove BigFive Updater including configuration files and logs.
+.TP
+.BI \-\-lang " code"
+Set output language. Available values: tr (Turkish), en (English).
+Default is auto-detected from system LANG.
 .TP
 .B \-\-help
 Display help message and exit.
@@ -124,6 +128,9 @@ Zsh completion script.
 .TP
 .I /usr/share/fish/vendor_completions.d/guncel.fish
 Fish completion script.
+.TP
+.I /usr/share/bigfive-updater/lang/
+Language files directory (tr.sh, en.sh).
 .SH EXAMPLES
 Run interactive update (recommended):
 .PP

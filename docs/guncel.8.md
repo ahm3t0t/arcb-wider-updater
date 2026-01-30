@@ -1,4 +1,4 @@
-% GUNCEL(8) BigFive Updater 5.5.2
+% GUNCEL(8) BigFive Updater 6.0.0
 % Ahmet T. <ahmet@tanrikulu.net>
 % January 2026
 
@@ -66,6 +66,10 @@ systems.
 :   Completely remove BigFive Updater including configuration files and
     logs.
 
+**--lang** *code*
+:   Set output language. Available values: tr (Turkish), en (English).
+    Default is auto-detected from system LANG.
+
 **--help**
 :   Display help message and exit.
 
@@ -120,6 +124,9 @@ systems.
 
 */usr/share/fish/vendor_completions.d/guncel.fish*
 :   Fish completion script.
+
+*/usr/share/bigfive-updater/lang/*
+:   Language files directory (tr.sh, en.sh).
 
 # EXAMPLES
 
