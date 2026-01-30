@@ -28,8 +28,11 @@
 ## 🚀 Quick Start / Hızlı Başlangıç
 
 ```bash
-# Installation / Kurulum
+# Installation / Kurulum (Universal)
 curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/install.sh | sudo bash
+
+# Arch Linux / Manjaro / EndeavourOS (AUR)
+yay -S bigfive-updater
 ```
 ```bash
 # Usage / Kullanım (3 alias: guncel, updater, bigfive)
