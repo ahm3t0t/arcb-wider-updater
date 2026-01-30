@@ -121,7 +121,7 @@ Bu proje **iki ayrı versiyon sistemi** kullanır:
 
 | Bileşen | Format | Güncel | Güncelleme Sıklığı |
 |---------|--------|--------|--------------------|
-| `guncel` (ana script) | SemVer (x.x.x) | v5.5.0 (BigFive Edition - Dream) | Her özellik/fix'te |
+| `guncel` (ana script) | SemVer (x.x.x) | v5.5.1 (BigFive Edition - Dream) | Her özellik/fix'te |
 | `install.sh` (kurulum) | Night-Vx.x.x | Night-V1.3.2 | Sadece kurulum mantığı değiştiğinde |
 
 **İsimlendirme Kuralı:**
@@ -270,6 +270,8 @@ guncel --only flatpak,fwupd     # Sadece Flatpak ve Firmware
 | `--json-full` | Detaylı JSON çıktı - SIEM/audit için (Wazuh, Splunk) |
 | `--skip <backend>` | Belirtilen backend'leri atla (virgülle ayır) |
 | `--only <backend>` | Sadece belirtilen backend'leri çalıştır |
+| `--uninstall` | BigFive Updater'ı kaldır (config/log korunur) |
+| `--uninstall --purge` | Config ve loglar dahil tamamen kaldır |
 | `--help` | Yardım mesajını gösterir |
 
 ### Skip/Only Değerleri
@@ -280,7 +282,12 @@ guncel --only flatpak,fwupd     # Sadece Flatpak ve Firmware
 | `flatpak` | Flatpak güncellemeleri |
 | `snap` | Snap güncellemeleri |
 | `fwupd` | Firmware güncellemeleri |
-| `dnf` / `apt` / `system` | Sistem paket yöneticisi |
+| `system` | Tüm sistem paket yöneticileri (APT/DNF/Pacman/Zypper/APK) |
+| `apt` | Sadece APT (Debian/Ubuntu) |
+| `dnf` | Sadece DNF (Fedora/RHEL) |
+| `pacman` | Sadece Pacman (Arch Linux) |
+| `zypper` | Sadece Zypper (openSUSE) |
+| `apk` | Sadece APK (Alpine Linux) |
 
 ---
 
@@ -302,7 +309,7 @@ CONFIG_SKIP_SNAPSHOT=false
 CONFIG_SKIP_FLATPAK=false
 CONFIG_SKIP_SNAP=false
 CONFIG_SKIP_FWUPD=false
-CONFIG_SKIP_DNF=false
+CONFIG_SKIP_PKG_MANAGER=false  # Tüm sistem paket yöneticileri (APT/DNF/Pacman/Zypper/APK)
 ```
 
 **Not:** Komut satırı argümanları config dosyasındaki ayarları override eder.
@@ -476,6 +483,30 @@ curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/S
 curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS.asc -o SHA256SUMS.asc
 gpg --verify SHA256SUMS.asc SHA256SUMS
 ```
+
+---
+
+## 💡 Hata Kodları ve Çözüm Önerileri (v5.5.1+)
+
+v5.5.1'den itibaren hatalar kod numarası ve çözüm önerisi ile gösterilir:
+
+```
+[X] HATA [E010]: APT kilitleri kaldırılamadı.
+    💡 Çözüm: Başka bir güncelleme çalışıyor olabilir. 'sudo lsof /var/lib/dpkg/lock-frontend' ile kontrol edin.
+```
+
+### Hata Kodları Tablosu
+
+| Kod | Anlamı | Çözüm Önerisi |
+|-----|--------|---------------|
+| E001 | curl/wget bulunamadı | `apt install curl` veya `dnf install curl` |
+| E002 | Root yetkisi yok, sudo yok | `su -c 'dnf install sudo'` veya root olarak çalıştırın |
+| E010 | APT kilidi açılamadı | Başka güncelleme işlemi bekleyin veya `lsof` ile kontrol edin |
+| E011 | DNF kilidi zaman aşımı | GNOME Software kapalıysa `pgrep -a dnf` ile kontrol edin |
+| E020 | Başka bigfive çalışıyor | `pgrep -a guncel` veya kilit dosyasını silin |
+| E021 | İnternet bağlantısı yok | `ping google.com` ile test edin |
+| E030 | SHA256 doğrulama başarısız | Dosya bozuk, daha sonra tekrar deneyin |
+| E031 | Güncelleme kopyalanamadı | Disk dolu veya yazma izni yok |
 
 ---
 

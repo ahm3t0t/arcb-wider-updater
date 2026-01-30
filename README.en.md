@@ -84,7 +84,7 @@ This project uses **two separate version systems**:
 
 | Component | Format | Current | Update Frequency |
 |-----------|--------|---------|------------------|
-| `guncel` (main script) | SemVer (x.x.x) | v5.5.0 (BigFive Edition - Dream) | Every feature/fix |
+| `guncel` (main script) | SemVer (x.x.x) | v5.5.1 (BigFive Edition - Dream) | Every feature/fix |
 | `install.sh` (installer) | Night-Vx.x.x | Night-V1.3.2 | Only when install logic changes |
 
 **Naming Convention:**
@@ -151,6 +151,8 @@ guncel --only flatpak,fwupd     # Only Flatpak and Firmware
 | `--json-full` | Detailed JSON output - for SIEM/audit (Wazuh, Splunk) |
 | `--skip <backend>` | Skip specified backends (comma-separated) |
 | `--only <backend>` | Run only specified backends (comma-separated) |
+| `--uninstall` | Remove BigFive Updater (config/logs preserved) |
+| `--uninstall --purge` | Completely remove including config and logs |
 | `--help` | Display help message |
 
 ### Skip/Only Values
@@ -161,7 +163,12 @@ guncel --only flatpak,fwupd     # Only Flatpak and Firmware
 | `flatpak` | Flatpak updates |
 | `snap` | Snap updates |
 | `fwupd` | Firmware updates |
-| `dnf` / `apt` / `system` | System package manager |
+| `system` | All system package managers (APT/DNF/Pacman/Zypper/APK) |
+| `apt` | APT only (Debian/Ubuntu) |
+| `dnf` | DNF only (Fedora/RHEL) |
+| `pacman` | Pacman only (Arch Linux) |
+| `zypper` | Zypper only (openSUSE) |
+| `apk` | APK only (Alpine Linux) |
 
 ---
 
@@ -183,7 +190,7 @@ CONFIG_SKIP_SNAPSHOT=false
 CONFIG_SKIP_FLATPAK=false
 CONFIG_SKIP_SNAP=false
 CONFIG_SKIP_FWUPD=false
-CONFIG_SKIP_DNF=false
+CONFIG_SKIP_PKG_MANAGER=false  # All system package managers (APT/DNF/Pacman/Zypper/APK)
 ```
 
 **Note:** Command line arguments override config file settings.
@@ -297,6 +304,30 @@ curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/S
 curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/SHA256SUMS.asc -o SHA256SUMS.asc
 gpg --verify SHA256SUMS.asc SHA256SUMS
 ```
+
+---
+
+## 💡 Error Codes and Hints (v5.5.1+)
+
+From v5.5.1, errors are displayed with error codes and solution hints:
+
+```
+[X] ERROR [E010]: APT locks could not be released.
+    💡 Solution: Another update may be running. Check with 'sudo lsof /var/lib/dpkg/lock-frontend'.
+```
+
+### Error Codes Table
+
+| Code | Meaning | Solution Hint |
+|------|---------|---------------|
+| E001 | curl/wget not found | `apt install curl` or `dnf install curl` |
+| E002 | Not root, no sudo | `su -c 'dnf install sudo'` or run as root |
+| E010 | APT lock timeout | Wait for other update or check with `lsof` |
+| E011 | DNF lock timeout | Close GNOME Software, check with `pgrep -a dnf` |
+| E020 | Another bigfive running | `pgrep -a guncel` or remove lock file |
+| E021 | No internet connection | Test with `ping google.com` |
+| E030 | SHA256 verification failed | File corrupted, try again later |
+| E031 | Update copy failed | Disk full or no write permission |
 
 ---
 
