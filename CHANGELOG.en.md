@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.2] - 2026-01-30 "BigFive Edition - Echo"
+### Added
+- **Disk Space Check:** Pre-update disk space verification
+  - Added `check_disk_space()` function
+  - Default 500MB minimum requirement
+  - User-friendly message with E040 error code
+- **Turkish Man Page Installation (install.sh):**
+  - `docs/guncel.8.tr` now installs to `/usr/share/man/tr/man8/guncel.8`
+  - Access via `LANG=tr_TR.UTF-8 man guncel`
+
+### Changed
+- **Atomic Self-Update:** Self-update mechanism now uses atomic replace pattern
+  - Old: `install -m 0755 "$REMOTE_FILE" "$0"` (could corrupt on interruption)
+  - New: `install -m 0755 "$REMOTE_FILE" "${0}.tmp" && mv "${0}.tmp" "$0"` (atomic)
+  - `mv` is atomic on same filesystem - original preserved on interruption
+- VERSION: 6.0.1 → 6.0.2
+- install.sh VERSION: Night-V1.4.0 → Night-V1.4.1
+
+---
+
 ## [6.0.1] - 2026-01-30 "BigFive Edition - Echo"
 ### Fixed
 - **printf invalid number error:** `grep -c` was returning exit code 1 when no match,

@@ -7,7 +7,7 @@
 #
 
 # --- AYARLAR ---
-VERSION="6.0.1"
+VERSION="6.0.2"
 EDITION="BigFive"
 CODENAME="Echo"
 
@@ -828,10 +828,14 @@ check_self_update() {
                 fi
             fi
             
-            if install -m 0755 "$REMOTE_FILE" "$0"; then
+            # v6.0.2: Atomic replace pattern - mv aynı filesystem'de atomic işlem
+            # Kesinti olursa .tmp kalır, orijinal bozulmaz
+            if install -m 0755 "$REMOTE_FILE" "${0}.tmp" && mv "${0}.tmp" "$0"; then
                 print_success "${MSG_SUCCESS_SCRIPT_UPDATED:-Script güncellendi. Yeniden başlatılıyor...}"
                 exec "$0" "${ORIGINAL_ARGS[@]}"
             else
+                # Başarısız olursa .tmp dosyasını temizle
+                rm -f "${0}.tmp" 2>/dev/null
                 print_error_with_hint "${MSG_ERR_COPY_FAIL:-Güncelleme kopyalanamadı!}" \
                     "${MSG_HINT_COPY_FAIL:-Disk dolu olabilir veya yazma izni yok. 'df -h' ve 'ls -la /usr/local/bin/' ile kontrol edin.}" "E031"
                 # Rollback attempt

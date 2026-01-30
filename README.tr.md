@@ -126,8 +126,8 @@ Bu proje **iki ayrı versiyon sistemi** kullanır:
 
 | Bileşen | Format | Güncel | Güncelleme Sıklığı |
 |---------|--------|--------|--------------------|
-| `guncel` (ana script) | SemVer (x.x.x) | v6.0.1 (BigFive Edition - Echo) | Her özellik/fix'te |
-| `install.sh` (kurulum) | Night-Vx.x.x | Night-V1.4.0 | Sadece kurulum mantığı değiştiğinde |
+| `guncel` (ana script) | SemVer (x.x.x) | v6.0.2 (BigFive Edition - Echo) | Her özellik/fix'te |
+| `install.sh` (kurulum) | Night-Vx.x.x | Night-V1.4.1 | Sadece kurulum mantığı değiştiğinde |
 
 **İsimlendirme Kuralı:**
 - **Edition** = Major seri adı (örn: "BigFive" v5.x için = 5 paket yöneticisi)

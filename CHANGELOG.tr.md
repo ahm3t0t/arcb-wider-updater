@@ -5,6 +5,26 @@ Bu projedeki tüm önemli değişiklikler bu dosyada belgelenecektir.
 Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına,
 versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standardına uygundur.
 
+## [6.0.2] - 2026-01-30 "BigFive Edition - Echo"
+### Eklenenler
+- **Disk Alanı Kontrolü:** Güncelleme öncesi disk alanı kontrolü
+  - `check_disk_space()` fonksiyonu eklendi
+  - Varsayılan 500MB minimum gereksinim
+  - E040 hata kodu ile kullanıcı dostu mesaj
+- **Türkçe Man Page Kurulumu (install.sh):**
+  - `docs/guncel.8.tr` artık `/usr/share/man/tr/man8/guncel.8` olarak kuruluyor
+  - `LANG=tr_TR.UTF-8 man guncel` ile Türkçe dokümantasyon
+
+### Değişenler
+- **Atomic Self-Update:** Self-update mekanizması atomic replace pattern kullanıyor
+  - Eski: `install -m 0755 "$REMOTE_FILE" "$0"` (kesintide bozulabilir)
+  - Yeni: `install -m 0755 "$REMOTE_FILE" "${0}.tmp" && mv "${0}.tmp" "$0"` (atomic)
+  - `mv` aynı filesystem'de atomic işlem - kesinti olursa orijinal korunur
+- VERSION: 6.0.1 → 6.0.2
+- install.sh VERSION: Night-V1.4.0 → Night-V1.4.1
+
+---
+
 ## [6.0.1] - 2026-01-30 "BigFive Edition - Echo"
 ### Düzeltilenler
 - **printf invalid number hatası:** `grep -c` komutu eşleşme olmadığında exit code 1

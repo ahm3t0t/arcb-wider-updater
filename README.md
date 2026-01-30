@@ -52,8 +52,8 @@ This project uses two separate version systems:
 
 | Component | Format | Current | Update Frequency |
 |-----------|--------|---------|------------------|
-| `guncel` (main script) | SemVer (x.x.x) | v6.0.1 (BigFive Edition - Echo) | Her özellik/fix'te / Every feature/fix |
-| `install.sh` (installer) | Night-Vx.x.x | Night-V1.4.0 | Sadece kurulum değiştiğinde / Only when install logic changes |
+| `guncel` (main script) | SemVer (x.x.x) | v6.0.2 (BigFive Edition - Echo) | Her özellik/fix'te / Every feature/fix |
+| `install.sh` (installer) | Night-Vx.x.x | Night-V1.4.1 | Sadece kurulum değiştiğinde / Only when install logic changes |
 
 **Neden ayrı? / Why separate?**
 - Ana script sık güncellenir, installer nadiren değişir
