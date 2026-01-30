@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# BigFive Updater Installer Night-V1.4.0
-# Sync: Night-V1.4.0 | i18n dil dosyaları desteği (v6.0.0)
+# BigFive Updater Installer Night-V1.4.1
+# Sync: Night-V1.4.1 | Türkçe man page kurulumu eklendi
 
 # 1. HATA YÖNETİMİ
 set -Eeuo pipefail
@@ -171,7 +171,7 @@ verify_gpg_signature() {
     return 0
 }
 
-printf "\n%s>>> BigFive Updater Kurulum (Night-V1.4.0)%s\n" "$BLUE" "$NC"
+printf "\n%s>>> BigFive Updater Kurulum (Night-V1.4.1)%s\n" "$BLUE" "$NC"
 
 # İndirme veya Kopyalama Mantığı
 if [[ -n "$SOURCE_FILE" ]]; then
@@ -388,6 +388,24 @@ if [[ -d "$MAN_DIR" ]]; then
     rm -f "$TEMP_MAN" 2>/dev/null
 else
     printf "%s⚠️  Man dizini bulunamadı (%s).%s\n" "$YELLOW" "$MAN_DIR" "$NC"
+fi
+
+# 7b. TÜRKÇE MAN PAGE KURULUMU (v1.4.1)
+MAN_TR_DIR="/usr/share/man/tr/man8"
+LOCAL_MAN_TR_FILE="$SCRIPT_DIR/docs/guncel.8.tr"
+
+if [[ -f "$LOCAL_MAN_TR_FILE" ]]; then
+    # Türkçe man dizini oluştur
+    if mkdir -p "$MAN_TR_DIR" 2>/dev/null; then
+        if install -m 0644 -o root -g root "$LOCAL_MAN_TR_FILE" "$MAN_TR_DIR/guncel.8"; then
+            # Symlink'ler için de man page
+            ln -sf "$MAN_TR_DIR/guncel.8" "$MAN_TR_DIR/updater.8" 2>/dev/null
+            ln -sf "$MAN_TR_DIR/guncel.8" "$MAN_TR_DIR/bigfive.8" 2>/dev/null
+            printf "%s✅ Türkçe man page kuruldu (LANG=tr_TR man guncel)%s\n" "$GREEN" "$NC"
+        else
+            printf "%s⚠️  Türkçe man page kurulamadı (opsiyonel).%s\n" "$YELLOW" "$NC"
+        fi
+    fi
 fi
 
 # 8. DİL DOSYALARI KURULUMU (v6.0.0 - i18n)
