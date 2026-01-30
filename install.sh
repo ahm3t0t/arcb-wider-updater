@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# BigFive Updater Installer Night-V1.3.2
-# Sync: Night-V1.3.2 | Zsh ve Fish completion desteği
+# BigFive Updater Installer Night-V1.4.0
+# Sync: Night-V1.4.0 | i18n dil dosyaları desteği (v6.0.0)
 
 # 1. HATA YÖNETİMİ
 set -Eeuo pipefail
@@ -51,7 +51,9 @@ TEMP_SHA256SUMS="$(mktemp /tmp/guncel_sha256sums_XXXXXX)"
 TEMP_SHA256SUMS_SIG="$(mktemp /tmp/guncel_sha256sums_sig_XXXXXX)"
 TEMP_COMPLETION=""
 TEMP_MAN=""
-trap 'rm -f "$TEMP_FILE" "$TEMP_LOGROTATE" "$TEMP_PUBKEY" "$TEMP_SHA256SUMS" "$TEMP_SHA256SUMS_SIG" "$TEMP_COMPLETION" "$TEMP_MAN"' EXIT
+TEMP_LANG_TR=""
+TEMP_LANG_EN=""
+trap 'rm -f "$TEMP_FILE" "$TEMP_LOGROTATE" "$TEMP_PUBKEY" "$TEMP_SHA256SUMS" "$TEMP_SHA256SUMS_SIG" "$TEMP_COMPLETION" "$TEMP_MAN" "$TEMP_LANG_TR" "$TEMP_LANG_EN"' EXIT
 
 # --- ROOT VE ORTAM KONTROLÜ ---
 if [[ $EUID -ne 0 ]]; then
@@ -169,7 +171,7 @@ verify_gpg_signature() {
     return 0
 }
 
-printf "\n%s>>> BigFive Updater Kurulum (Night-V1.3.2)%s\n" "$BLUE" "$NC"
+printf "\n%s>>> BigFive Updater Kurulum (Night-V1.4.0)%s\n" "$BLUE" "$NC"
 
 # İndirme veya Kopyalama Mantığı
 if [[ -n "$SOURCE_FILE" ]]; then
@@ -387,6 +389,72 @@ if [[ -d "$MAN_DIR" ]]; then
 else
     printf "%s⚠️  Man dizini bulunamadı (%s).%s\n" "$YELLOW" "$MAN_DIR" "$NC"
 fi
+
+# 8. DİL DOSYALARI KURULUMU (v6.0.0 - i18n)
+printf "\n%s>>> Dil Dosyaları (i18n)%s\n" "$BLUE" "$NC"
+
+LANG_INSTALL_DIR="/usr/share/bigfive-updater/lang"
+LOCAL_LANG_TR="$SCRIPT_DIR/lang/tr.sh"
+LOCAL_LANG_EN="$SCRIPT_DIR/lang/en.sh"
+LANG_TR_URL="https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/tr.sh"
+LANG_EN_URL="https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/en.sh"
+TEMP_LANG_TR="$(mktemp /tmp/guncel_lang_tr_XXXXXX)"
+TEMP_LANG_EN="$(mktemp /tmp/guncel_lang_en_XXXXXX)"
+
+# Dizini oluştur
+if ! mkdir -p "$LANG_INSTALL_DIR" 2>/dev/null; then
+    printf "%s⚠️  Dil dizini oluşturulamadı (%s).%s\n" "$YELLOW" "$LANG_INSTALL_DIR" "$NC"
+else
+    LANG_INSTALLED=0
+
+    # Türkçe dil dosyası
+    if [[ -f "$LOCAL_LANG_TR" ]]; then
+        cp "$LOCAL_LANG_TR" "$TEMP_LANG_TR"
+        printf "📂 Türkçe dil dosyası: %sLocal%s\n" "$YELLOW" "$NC"
+    else
+        if curl --proto '=https' --tlsv1.2 -fsSL "$LANG_TR_URL" -o "$TEMP_LANG_TR" 2>/dev/null || \
+           wget --secure-protocol=TLSv1_2 -qO "$TEMP_LANG_TR" "$LANG_TR_URL" 2>/dev/null; then
+            printf "➡️  İndiriliyor: %s\n" "$LANG_TR_URL"
+        else
+            TEMP_LANG_TR=""
+        fi
+    fi
+
+    if [[ -n "$TEMP_LANG_TR" && -s "$TEMP_LANG_TR" ]]; then
+        if install -m 0644 -o root -g root "$TEMP_LANG_TR" "$LANG_INSTALL_DIR/tr.sh"; then
+            ((LANG_INSTALLED++))
+        fi
+    fi
+
+    # İngilizce dil dosyası
+    if [[ -f "$LOCAL_LANG_EN" ]]; then
+        cp "$LOCAL_LANG_EN" "$TEMP_LANG_EN"
+        printf "📂 İngilizce dil dosyası: %sLocal%s\n" "$YELLOW" "$NC"
+    else
+        if curl --proto '=https' --tlsv1.2 -fsSL "$LANG_EN_URL" -o "$TEMP_LANG_EN" 2>/dev/null || \
+           wget --secure-protocol=TLSv1_2 -qO "$TEMP_LANG_EN" "$LANG_EN_URL" 2>/dev/null; then
+            printf "➡️  İndiriliyor: %s\n" "$LANG_EN_URL"
+        else
+            TEMP_LANG_EN=""
+        fi
+    fi
+
+    if [[ -n "$TEMP_LANG_EN" && -s "$TEMP_LANG_EN" ]]; then
+        if install -m 0644 -o root -g root "$TEMP_LANG_EN" "$LANG_INSTALL_DIR/en.sh"; then
+            ((LANG_INSTALLED++))
+        fi
+    fi
+
+    if [[ $LANG_INSTALLED -eq 2 ]]; then
+        printf "%s✅ Dil dosyaları kuruldu (TR, EN)%s\n" "$GREEN" "$NC"
+        printf "%sℹ️  Dil seçimi: guncel --lang tr|en veya BIGFIVE_LANG=en guncel%s\n" "$BLUE" "$NC"
+    elif [[ $LANG_INSTALLED -gt 0 ]]; then
+        printf "%s⚠️  Bazı dil dosyaları kurulamadı.%s\n" "$YELLOW" "$NC"
+    else
+        printf "%s⚠️  Dil dosyaları kurulamadı (opsiyonel - varsayılan mesajlar kullanılacak).%s\n" "$YELLOW" "$NC"
+    fi
+fi
+rm -f "$TEMP_LANG_TR" "$TEMP_LANG_EN" 2>/dev/null
 
 printf "%s\n" "--------------------------------------------------"
 printf "%sℹ️  Not: flock bağımlılığı util-linux paketi ile gelir (genelde kurulu).%s\n" "$BLUE" "$NC"
