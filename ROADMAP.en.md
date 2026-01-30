@@ -60,7 +60,14 @@
 - [x] Auto-install via `install.sh`
 - [x] 138 BATS tests total
 
-### v5.5+ - User Experience (Planned)
+### v5.5.0 "Dream" - Complete Rebranding ✅ COMPLETED
+- [x] Project rename: `arcb-wider-updater` → `bigfive-updater`
+- [x] GitHub repository renamed
+- [x] All script and config references updated
+- [x] Log/config/lock file paths updated
+- [x] Docker test files updated
+
+### v5.6+ - User Experience (Planned)
 - [ ] Graceful error messages
 - [ ] Better error explanations
 - [ ] Solution suggestions
@@ -86,7 +93,8 @@
 | Version | Edition | Codename | Feature | Metaphor |
 |---------|---------|----------|---------|----------|
 | v5.1-5.2 | BigFive | Alpine | APK support | Mountain/Distro |
-| v5.3 | BigFive | Beacon | JSON output | Signal/Monitoring |
+| v5.3-5.4 | BigFive | Beacon | JSON + Shell integration | Signal/Monitoring |
+| v5.5 | BigFive | Dream | Complete rebranding | Goal/Dream |
 | v6.x | BigFive | Echo | Multi-language (i18n) | Echo/Voice |
 | v6.x+ | BigFive | Chrom | GUI | Visual/Color |
 

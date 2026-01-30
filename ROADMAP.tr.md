@@ -60,7 +60,14 @@
 - [x] `install.sh` ile otomatik kurulum
 - [x] Toplam 138 BATS testi
 
-### v5.5+ - Kullanıcı Deneyimi (Planlanan)
+### v5.5.0 "Dream" - Complete Rebranding ✅ TAMAMLANDI
+- [x] Proje adı değişikliği: `arcb-wider-updater` → `bigfive-updater`
+- [x] GitHub repository rename
+- [x] Tüm script ve config referansları güncellendi
+- [x] Log/config/lock dosya yolları güncellendi
+- [x] Docker test dosyaları güncellendi
+
+### v5.6+ - Kullanıcı Deneyimi (Planlanan)
 - [ ] Graceful error messages (kullanıcı dostu hata mesajları)
 - [ ] Daha iyi hata açıklamaları
 - [ ] Çözüm önerileri
@@ -86,7 +93,8 @@
 | Versiyon | Edition | Codename | Özellik | Metafor |
 |----------|---------|----------|---------|---------|
 | v5.1-5.2 | BigFive | Alpine | APK desteği | Dağ/Distro |
-| v5.3 | BigFive | Beacon | JSON output | Sinyal/İzleme |
+| v5.3-5.4 | BigFive | Beacon | JSON + Shell entegrasyonu | Sinyal/İzleme |
+| v5.5 | BigFive | Dream | Complete rebranding | Hedef/Rüya |
 | v6.x | BigFive | Echo | Çoklu dil (i18n) | Yankı/Ses |
 | v6.x+ | BigFive | Chrom | GUI | Görsel/Renk |
 

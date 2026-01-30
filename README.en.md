@@ -84,7 +84,7 @@ This project uses **two separate version systems**:
 
 | Component | Format | Current | Update Frequency |
 |-----------|--------|---------|------------------|
-| `guncel` (main script) | SemVer (x.x.x) | v5.4.x (BigFive Edition - Beacon) | Every feature/fix |
+| `guncel` (main script) | SemVer (x.x.x) | v5.5.0 (BigFive Edition - Dream) | Every feature/fix |
 | `install.sh` (installer) | Night-Vx.x.x | Night-V1.3.2 | Only when install logic changes |
 
 **Naming Convention:**

@@ -1,4 +1,4 @@
-% GUNCEL(8) BigFive Updater 5.4.8
+% GUNCEL(8) BigFive Updater 5.5.0
 % Ahmet T. <ahmet@tanrikulu.net>
 % January 2026
 

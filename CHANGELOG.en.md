@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.5.0] - 2026-01-30 "BigFive Edition - Dream"
+### Added
+- **Complete Rebranding:** Project renamed from `arcb-wider-updater` → `bigfive-updater`
+  - GitHub repository renamed
+  - All references updated (README, CHANGELOG, scripts, Docker)
+  - Log directory: `/var/log/arcb-updater/` → `/var/log/bigfive-updater/`
+  - Config file: `/etc/arcb-updater.conf` → `/etc/bigfive-updater.conf`
+  - Lock file: `/var/lock/arcb-updater.lock` → `/var/lock/bigfive-updater.lock`
+- **CODENAME:** "Dream" - full brand transition completed
+
+### Changed
+- VERSION: 5.4.8 → 5.5.0
+- CODENAME: "Beacon" → "Dream"
+- Banner: `ARCB-WIDER-UPDATER` → `BIGFIVE-UPDATER`
+- GitHub URLs updated
+
+---
+
 ## [5.4.8] - 2026-01-29 "BigFive Edition - Beacon"
 ### Added
 - **Zsh completion:** Tab completion for Zsh shells (`completions/_guncel`)
