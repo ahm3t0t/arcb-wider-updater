@@ -5,7 +5,7 @@
 #
 
 # --- AYARLAR ---
-VERSION="5.5.1"
+VERSION="5.5.2"
 EDITION="BigFive"
 CODENAME="Dream"
 LOG_DIR="/var/log/bigfive-updater"
@@ -802,6 +802,12 @@ wait_for_lock() {
 }
 
 wait_for_dnf_lock() {
+    # v5.5.2 FIX: pgrep yoksa bu kontrolü atla
+    if ! command -v pgrep &>/dev/null; then
+        print_info "pgrep bulunamadı, DNF kilit kontrolü atlanıyor."
+        return 0
+    fi
+
     local max_attempts=30
     local attempt=0
     while [ $attempt -lt $max_attempts ]; do
@@ -1142,9 +1148,19 @@ update_zypper() {
         zypper --non-interactive update 2>&1 | tee "$zypper_temp" >> "$LOG_FILE"
     fi
 
-    # Zypper çıktısından sayı parse et (alternatif)
-    if [[ "$ZYPPER_COUNT" == "0" ]]; then
-        ZYPPER_COUNT=$(grep -cE "^Installing:|^Upgrading:" "$zypper_temp" 2>/dev/null || echo "0")
+    # v5.5.2 FIX: Zypper çıktısından gerçek güncelleme sayısını parse et
+    # Format: "( 1/11) Installing: paket-adı" veya "( 1/5) Upgrading: paket-adı"
+    # zypper lu bazen yeni bağımlılıkları göstermiyor, bu yüzden her zaman temp dosyasını kontrol et
+    local zypper_actual_count
+    zypper_actual_count=$(grep -c ') Installing:\|) Upgrading:' "$zypper_temp" 2>/dev/null)
+    # grep -c eşleşme bulamazsa exit 1 döner, bu durumda 0 ata
+    [[ -z "$zypper_actual_count" ]] && zypper_actual_count=0
+    zypper_actual_count=$(echo "$zypper_actual_count" | tr -cd '0-9')
+    zypper_actual_count=${zypper_actual_count:-0}
+
+    # Eğer gerçek sayı daha büyükse (veya lu 0 döndüyse), gerçek sayıyı kullan
+    if [[ "$zypper_actual_count" -gt "${ZYPPER_COUNT:-0}" ]] 2>/dev/null || [[ "${ZYPPER_COUNT:-0}" -eq 0 ]] 2>/dev/null; then
+        ZYPPER_COUNT="$zypper_actual_count"
     fi
 
     rm -f "$zypper_temp"
