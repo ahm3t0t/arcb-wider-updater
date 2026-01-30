@@ -8,5 +8,6 @@ WORKDIR /app
 COPY guncel install.sh ./
 COPY completions/ ./completions/
 COPY docs/ ./docs/
+COPY lang/ ./lang/
 
 CMD ["bash", "-c", "./guncel --help"]
