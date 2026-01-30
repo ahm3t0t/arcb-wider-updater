@@ -422,7 +422,7 @@ else
 
     if [[ -n "$TEMP_LANG_TR" && -s "$TEMP_LANG_TR" ]]; then
         if install -m 0644 -o root -g root "$TEMP_LANG_TR" "$LANG_INSTALL_DIR/tr.sh"; then
-            ((LANG_INSTALLED++))
+            LANG_INSTALLED=$((LANG_INSTALLED + 1))
         fi
     fi
 
@@ -441,7 +441,7 @@ else
 
     if [[ -n "$TEMP_LANG_EN" && -s "$TEMP_LANG_EN" ]]; then
         if install -m 0644 -o root -g root "$TEMP_LANG_EN" "$LANG_INSTALL_DIR/en.sh"; then
-            ((LANG_INSTALLED++))
+            LANG_INSTALLED=$((LANG_INSTALLED + 1))
         fi
     fi
 
