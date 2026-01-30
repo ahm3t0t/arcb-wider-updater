@@ -144,11 +144,19 @@ Bu proje **iki ayrı versiyon sistemi** kullanır:
 
 ## ⚡ Hızlı Başlangıç
 
-### Kurulum (30 saniye)
+### Kurulum
 
 ```bash
+# Evrensel Kurulum (Tüm dağıtımlar)
 curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/install.sh | sudo bash
+
+# Arch Linux / Manjaro / EndeavourOS (AUR)
+yay -S bigfive-updater
+# veya
+paru -S bigfive-updater
 ```
+
+> **Not:** AUR paketi resmi olarak yayınlanmıştır: https://aur.archlinux.org/packages/bigfive-updater
 
 ### İlk Çalıştırma
 

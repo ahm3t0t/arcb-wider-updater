@@ -103,13 +103,23 @@ This project uses **two separate version systems**:
 
 ---
 
-## 📦 Installation (One-Liner)
+## 📦 Installation
 
-Paste the following command into your terminal. The script will safely request necessary privileges and complete the installation:
+### Universal (All Distributions)
 
 ```bash
 curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/install.sh | sudo bash
 ```
+
+### Arch Linux / Manjaro / EndeavourOS (AUR)
+
+```bash
+yay -S bigfive-updater
+# or
+paru -S bigfive-updater
+```
+
+> **Note:** Official AUR package: https://aur.archlinux.org/packages/bigfive-updater
 
 ---
 
