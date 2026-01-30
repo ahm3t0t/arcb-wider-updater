@@ -98,7 +98,7 @@ The `install.sh` script performs GPG verification automatically during installat
 
 ```bash
 # Full verified installation
-curl -fsSL https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/install.sh | sudo bash
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/install.sh | sudo bash
 ```
 
 ---

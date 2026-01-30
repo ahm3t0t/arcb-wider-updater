@@ -98,7 +98,7 @@ sha256sum -c SHA256SUMS --ignore-missing
 
 ```bash
 # Tam doğrulamalı kurulum
-curl -fsSL https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/install.sh | sudo bash
+curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/install.sh | sudo bash
 ```
 
 ---

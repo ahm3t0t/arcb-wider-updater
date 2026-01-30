@@ -121,7 +121,7 @@ Bu proje **iki ayrı versiyon sistemi** kullanır:
 
 | Bileşen | Format | Güncel | Güncelleme Sıklığı |
 |---------|--------|--------|--------------------|
-| `guncel` (ana script) | SemVer (x.x.x) | v5.5.1 (BigFive Edition - Dream) | Her özellik/fix'te |
+| `guncel` (ana script) | SemVer (x.x.x) | v5.5.2 (BigFive Edition - Dream) | Her özellik/fix'te |
 | `install.sh` (kurulum) | Night-Vx.x.x | Night-V1.3.2 | Sadece kurulum mantığı değiştiğinde |
 
 **İsimlendirme Kuralı:**
@@ -159,7 +159,7 @@ sudo guncel
 
 ```
 ========================================
-  BIGFIVE-UPDATER v4.1.4
+  BIGFIVE-UPDATER v5.5.2
   Host: my-laptop | User: root
   Kernel: 6.14.0-37-generic
   RAM: 16Gi | Disk: 45% used
@@ -469,7 +469,7 @@ sudo guncel --dry-run --json
    ✓ Public key import edildi
    ✓ GPG imzası doğrulandı
    ✓ SHA256 checksum doğrulandı
-✅ Kurulum Başarılı! (v4.1.4 - Signed)
+✅ Kurulum Başarılı! (v5.5.2 - Signed)
 ```
 
 ### Manuel Doğrulama

@@ -1,4 +1,4 @@
-% GUNCEL(8) BigFive Updater 5.5.0
+% GUNCEL(8) BigFive Updater 5.5.2
 % Ahmet T. <ahmet@tanrikulu.net>
 % January 2026
 
@@ -157,17 +157,6 @@ Output JSON for monitoring:
 
 **130**
 :   Interrupted by user (Ctrl+C).
-
-# ENVIRONMENT
-
-**BIGFIVE_AUTO_MODE**
-:   If set to "true", enables automatic mode (same as --auto).
-
-**BIGFIVE_VERBOSE**
-:   If set to "true", enables verbose output (same as --verbose).
-
-**BIGFIVE_QUIET**
-:   If set to "true", enables quiet mode (same as --quiet).
 
 # CONFIGURATION
 

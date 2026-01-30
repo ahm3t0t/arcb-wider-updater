@@ -5,6 +5,18 @@ Bu projedeki tüm önemli değişiklikler bu dosyada belgelenecektir.
 Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına,
 versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standardına uygundur.
 
+## [5.5.2] - 2026-01-30 "BigFive Edition - Dream"
+### Düzeltilenler
+- **pgrep bağımlılığı:** `wait_for_dnf_lock()` fonksiyonunda pgrep bulunamadığında
+  DNF kilit kontrolünü atlıyor (Alpine ve minimal container'larda sorun çözüldü)
+- **Zypper sayaç parsing:** `update_zypper()` çıktısından gerçek güncelleme sayısı
+  doğru alınıyor (Installing/Upgrading satırları sayılıyor)
+
+### Değişenler
+- VERSION: 5.5.1 → 5.5.2
+
+---
+
 ## [5.5.1] - 2026-01-30 "BigFive Edition - Dream"
 ### Eklenenler
 - **Gelişmiş Hata Mesajları (Error UX):** Kullanıcı dostu hata mesajları

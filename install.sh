@@ -61,7 +61,7 @@ if [[ $EUID -ne 0 ]]; then
     else
         printf "%s❌ Bu script root yetkisi gerektirir.%s\n" "$RED" "$NC"
         printf "%sLütfen komutu başına 'sudo' ekleyerek çalıştırın:%s\n" "$RED" "$NC"
-        printf "%s   curl -fsSL https://raw.githubusercontent.com/ahm3t0t/bigfive-updater/main/install.sh | sudo bash%s\n" "$BLUE" "$NC"
+        printf "%s   curl -fsSL https://github.com/ahm3t0t/bigfive-updater/releases/latest/download/install.sh | sudo bash%s\n" "$BLUE" "$NC"
         exit 1
     fi
 fi

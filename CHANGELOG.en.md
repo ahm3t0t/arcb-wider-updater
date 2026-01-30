@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.5.2] - 2026-01-30 "BigFive Edition - Dream"
+### Fixed
+- **pgrep dependency:** `wait_for_dnf_lock()` now skips DNF lock check when pgrep
+  is not available (fixes issues on Alpine and minimal containers)
+- **Zypper count parsing:** `update_zypper()` now correctly counts actual updates
+  from output (counts Installing/Upgrading lines)
+
+### Changed
+- VERSION: 5.5.1 → 5.5.2
+
+---
+
 ## [5.5.1] - 2026-01-30 "BigFive Edition - Dream"
 ### Added
 - **Enhanced Error Messages (Error UX):** User-friendly error messages

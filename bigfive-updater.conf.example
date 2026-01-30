@@ -1,6 +1,6 @@
 # /etc/bigfive-updater.conf
 # BigFive Updater Yapılandırma Dosyası / Configuration File
-# v5.4.x "BigFive - Beacon"
+# v5.5.x "BigFive - Dream"
 #
 # Bu dosyayı /etc/bigfive-updater.conf olarak kopyalayın.
 # Copy this file to /etc/bigfive-updater.conf
@@ -103,7 +103,7 @@ CONFIG_SKIP_PKG_MANAGER=false
 #   CONFIG_SKIP_FWUPD=true
 
 # ============================================
-# DESTEKLENEN PAKET YÖNETİCİLERİ (v5.4.x BigFive)
+# DESTEKLENEN PAKET YÖNETİCİLERİ (v5.5.x BigFive)
 # SUPPORTED PACKAGE MANAGERS
 # ============================================
 #

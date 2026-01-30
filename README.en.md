@@ -84,7 +84,7 @@ This project uses **two separate version systems**:
 
 | Component | Format | Current | Update Frequency |
 |-----------|--------|---------|------------------|
-| `guncel` (main script) | SemVer (x.x.x) | v5.5.1 (BigFive Edition - Dream) | Every feature/fix |
+| `guncel` (main script) | SemVer (x.x.x) | v5.5.2 (BigFive Edition - Dream) | Every feature/fix |
 | `install.sh` (installer) | Night-Vx.x.x | Night-V1.3.2 | Only when install logic changes |
 
 **Naming Convention:**
@@ -290,7 +290,7 @@ The `install.sh` script automatically:
    ✓ Public key import edildi
    ✓ GPG imzası doğrulandı
    ✓ SHA256 checksum doğrulandı
-✅ Kurulum Başarılı! (v4.1.4 - Signed)
+✅ Kurulum Başarılı! (v5.5.2 - Signed)
 ```
 
 ### Manual Verification
