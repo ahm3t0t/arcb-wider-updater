@@ -5,6 +5,25 @@ Bu projedeki tüm önemli değişiklikler bu dosyada belgelenecektir.
 Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına,
 versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standardına uygundur.
 
+## [6.0.0] - 2026-01-30 "BigFive Edition - Echo"
+### Eklenenler
+- **i18n (Çoklu Dil Desteği):** Türkçe ve İngilizce tam destek
+  - `lang/tr.sh`: Türkçe dil dosyası (~110 string)
+  - `lang/en.sh`: İngilizce dil dosyası (~110 string)
+  - `--lang <code>` parametresi ile dil seçimi (tr, en)
+  - `BIGFIVE_LANG` environment variable desteği
+  - Sistem LANG ayarına göre otomatik dil tespiti
+- **Dil Dosyası Konumları:**
+  - Kurulu: `/usr/share/bigfive-updater/lang/`
+  - Geliştirme: Script'in yanındaki `lang/` dizini
+
+### Değişenler
+- VERSION: 5.5.2 → 6.0.0
+- CODENAME: Dream → Echo
+- Tüm kullanıcı mesajları MSG_* değişkenlerine taşındı
+
+---
+
 ## [5.5.2] - 2026-01-30 "BigFive Edition - Dream"
 ### Düzeltilenler
 - **pgrep bağımlılığı:** `wait_for_dnf_lock()` fonksiyonunda pgrep bulunamadığında

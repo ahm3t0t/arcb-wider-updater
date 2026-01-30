@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+# BigFive Updater - Türkçe Dil Dosyası
+# Language: Turkish (tr)
+# Version: 6.0.0 Echo Edition
+# Encoding: UTF-8
+
+# ============================================
+# HEADERS - Bölüm Başlıkları
+# ============================================
+MSG_HEADER_SELF_UPDATE="Self-Update Başlatılıyor..."
+MSG_HEADER_SNAPSHOT_TIMESHIFT="Sistem Yedekleniyor (Timeshift)"
+MSG_HEADER_SNAPSHOT_SNAPPER="Sistem Yedekleniyor (Snapper)"
+MSG_HEADER_APT_UPDATE="APT: Güncelleme Başlıyor"
+MSG_HEADER_APT_UPGRADE="APT: Dist-Upgrade"
+MSG_HEADER_APT_CLEANUP="APT: Temizlik"
+MSG_HEADER_DNF_UPDATE="DNF: Güncelleme"
+MSG_HEADER_PACMAN_UPDATE="Pacman: Güncelleme"
+MSG_HEADER_PACMAN_ORPHAN="Pacman: Orphan Temizliği"
+MSG_HEADER_ZYPPER_UPDATE="Zypper: Güncelleme"
+MSG_HEADER_ZYPPER_CLEANUP="Zypper: Temizlik"
+MSG_HEADER_APK_UPDATE="APK: Güncelleme"
+MSG_HEADER_FLATPAK="Flatpak: Güncelleme"
+MSG_HEADER_SNAP="Snap: Güncelleme"
+MSG_HEADER_FIRMWARE="Firmware: Kontrol"
+MSG_HEADER_DRYRUN="[DRY-RUN] Mevcut Güncellemeler Kontrol Ediliyor"
+
+# ============================================
+# INFO - Bilgi Mesajları
+# ============================================
+MSG_INFO_SHA256_OK="SHA256 doğrulama başarılı."
+MSG_INFO_BACKUP_CREATED="Eski sürüm yedeklendi: %s"
+MSG_INFO_PGREP_MISSING="pgrep bulunamadı, DNF kilit kontrolü atlanıyor."
+MSG_INFO_SNAPSHOT_SKIPPED="Snapshot atlandı (--skip snapshot)"
+MSG_INFO_APT_COUNT="APT: %d paket güncellendi."
+MSG_INFO_DNF_COUNT="DNF: %d paket güncellendi."
+MSG_INFO_PACMAN_COUNT="Pacman: %d paket güncellendi."
+MSG_INFO_ZYPPER_COUNT="Zypper: %d paket güncellendi."
+MSG_INFO_APK_COUNT="APK: %d paket güncellendi."
+MSG_INFO_FLATPAK_COUNT="Flatpak: %d uygulama güncellendi."
+MSG_INFO_SNAP_COUNT="Snap: %d paket güncellendi."
+MSG_INFO_FIRMWARE_NONE="Firmware: Güncellenebilir cihaz bulunamadı."
+MSG_INFO_FIRMWARE_COUNT="Firmware: %d güncelleme."
+
+# ============================================
+# SUCCESS - Başarı Mesajları
+# ============================================
+MSG_SUCCESS_SCRIPT_UPDATED="Script güncellendi. Yeniden başlatılıyor..."
+MSG_SUCCESS_RESTORE="Geri yükleme başarılı."
+MSG_SUCCESS_TIMESHIFT="Timeshift snapshot oluşturuldu."
+MSG_SUCCESS_SNAPPER="Snapper snapshot oluşturuldu."
+MSG_SUCCESS_UPDATE_DONE="[+] GÜNCELLEME TAMAMLANDI"
+
+# ============================================
+# WARNING - Uyarı Mesajları
+# ============================================
+MSG_WARN_REPO_ACCESS="Repo dosyalarına erişilemiyor. Self-update devre dışı."
+MSG_WARN_SHA256_MISSING="SHA256SUMS dosyası bulunamadı, doğrulama atlanıyor."
+MSG_WARN_BACKUP_FAILED="Yedek oluşturulamadı, devam ediliyor."
+MSG_WARN_DNF_LOCK_WAIT="DNF kilidi bekleniyor... (%d/%d)"
+MSG_WARN_TIMESHIFT_TIMEOUT="Timeshift snapshot zaman aşımına uğradı (%ds)"
+MSG_WARN_TIMESHIFT_FAILED="Timeshift snapshot başarısız oldu (exit: %d)"
+MSG_WARN_SNAPPER_TIMEOUT="Snapper snapshot zaman aşımına uğradı (%ds)"
+MSG_WARN_SNAPPER_FAILED="Snapper snapshot oluşturulamadı."
+MSG_WARN_FLATPAK_ERROR="Flatpak hata verdi."
+MSG_WARN_SNAP_ERROR="Snap hata verdi."
+MSG_WARN_FIRMWARE_FAILED="Firmware kontrolü başarısız (exit code: %d)"
+
+# ============================================
+# ERROR - Hata Mesajları
+# ============================================
+MSG_ERR_NO_CURL="Sistemde 'curl' veya 'wget' bulunamadı!"
+MSG_ERR_NO_SUDO="Sudo yok ve root değilsin."
+MSG_ERR_SHA256_FAIL="SHA256 doğrulama başarısız! Güncelleme iptal edildi."
+MSG_ERR_COPY_FAIL="Güncelleme kopyalanamadı!"
+MSG_ERR_APT_LOCK="APT kilitleri kaldırılamadı."
+MSG_ERR_DNF_LOCK="DNF kilidi zaman aşımı!"
+MSG_ERR_ALREADY_RUNNING="Başka bir güncelleme işlemi zaten çalışıyor."
+MSG_ERR_NO_INTERNET="İnternet bağlantısı kurulamadı."
+
+# ============================================
+# HINTS - Çözüm Önerileri
+# ============================================
+MSG_HINT_INSTALL_CURL="apt install curl veya dnf install curl ile kurabilirsiniz."
+MSG_HINT_NO_SUDO="sudo kurulu değilse: su -c 'dnf install sudo' veya root olarak çalıştırın."
+MSG_HINT_SHA256_FAIL="Dosya bozulmuş olabilir. Daha sonra tekrar deneyin veya manuel kurulum yapın."
+MSG_HINT_COPY_FAIL="Disk dolu olabilir veya yazma izni yok. 'df -h' ve 'ls -la /usr/local/bin/' ile kontrol edin."
+MSG_HINT_APT_LOCK="Başka bir güncelleme çalışıyor olabilir. 'sudo lsof /var/lib/dpkg/lock-frontend' ile kontrol edin."
+MSG_HINT_DNF_LOCK="'pgrep -a dnf' ile çalışan işlemi bulun veya bekleyin. GNOME Software açıksa kapatın."
+MSG_HINT_ALREADY_RUNNING="'pgrep -a guncel' ile kontrol edin. Gerekirse 'sudo rm %s' ile kilidi kaldırın."
+MSG_HINT_NO_INTERNET="'ping -c 1 google.com' ile bağlantıyı test edin. DNS veya ağ ayarlarını kontrol edin."
+
+# ============================================
+# HELP - Yardım Metinleri
+# ============================================
+MSG_HELP_USAGE="Kullanım: guncel | updater | bigfive [SEÇENEK]"
+MSG_HELP_OPTIONS="Seçenekler:"
+MSG_HELP_OPT_AUTO="  --auto              Otomatik mod (Onay sormadan günceller)"
+MSG_HELP_OPT_VERBOSE="  --verbose           Detaylı çıktı modu (Tüm komut çıktılarını gösterir)"
+MSG_HELP_OPT_QUIET="  --quiet             Sessiz mod (Sadece hata ve özet gösterir)"
+MSG_HELP_OPT_DRYRUN="  --dry-run           Kuru çalıştırma (Ne yapılacağını göster, yapma)"
+MSG_HELP_OPT_JSON="  --json              JSON çıktı (monitoring sistemleri için)"
+MSG_HELP_OPT_JSON_FULL="  --json-full         Detaylı JSON çıktı (SIEM/audit için)"
+MSG_HELP_OPT_SKIP="  --skip <backend>    Belirtilen backend'leri atla (virgülle ayır)"
+MSG_HELP_OPT_SKIP_VALUES="                      Değerler: snapshot, flatpak, snap, fwupd, system"
+MSG_HELP_OPT_SKIP_SYSTEM="                      (system = apt, dnf, pacman, zypper, apk)"
+MSG_HELP_OPT_ONLY="  --only <backend>    Sadece belirtilen backend'leri çalıştır (virgülle ayır)"
+MSG_HELP_OPT_ONLY_VALUES="                      Değerler: system, flatpak, snap, fwupd, apt, dnf, pacman, zypper, apk"
+MSG_HELP_OPT_UNINSTALL="  --uninstall         BigFive Updater kaldır"
+MSG_HELP_OPT_PURGE="  --uninstall --purge Config ve logları da sil"
+MSG_HELP_OPT_LANG="  --lang <code>       Dil seçimi (tr, en)"
+MSG_HELP_OPT_HELP="  --help              Bu yardım mesajını gösterir"
+MSG_HELP_EXAMPLES="Örnekler:"
+MSG_HELP_EX_INTERACTIVE="  guncel                        -> İnteraktif (Önerilen)"
+MSG_HELP_EX_AUTO="  guncel --auto                 -> Cron / Zamanlanmış görevler"
+MSG_HELP_EX_VERBOSE="  guncel --verbose              -> Detaylı çıktı ile güncelleme"
+MSG_HELP_EX_QUIET="  guncel --quiet                -> Sessiz güncelleme (sadece özet)"
+MSG_HELP_EX_DRYRUN="  guncel --dry-run              -> Güncellemeleri listele (uygulamadan)"
+MSG_HELP_EX_JSON="  guncel --json                 -> Monitoring için JSON çıktı (Zabbix/Nagios)"
+MSG_HELP_EX_JSON_FULL="  guncel --json-full            -> SIEM için detaylı JSON (Wazuh/Splunk)"
+MSG_HELP_EX_SKIP="  guncel --skip flatpak,snap    -> Flatpak ve Snap atla"
+MSG_HELP_EX_ONLY_SYSTEM="  guncel --only system          -> Sadece sistem paketleri (APT/DNF/Pacman/Zypper/APK)"
+MSG_HELP_EX_ONLY_FLATPAK="  guncel --only flatpak,fwupd   -> Sadece Flatpak ve Firmware"
+MSG_HELP_EX_ONLY_PACMAN="  guncel --only pacman          -> Sadece Pacman (Arch Linux)"
+MSG_HELP_EX_ONLY_APK="  guncel --only apk             -> Sadece APK (Alpine Linux)"
+MSG_HELP_EX_UNINSTALL="  guncel --uninstall            -> Aracı kaldır (config/log korunur)"
+MSG_HELP_EX_PURGE="  guncel --uninstall --purge    -> Aracı tamamen kaldır"
+MSG_HELP_CONFIG="Config Dosyası: %s"
+MSG_HELP_CONFIG_DESC="  Varsayılan ayarları config dosyasında tanımlayabilirsiniz."
+MSG_HELP_CONFIG_EXAMPLE="  Örnek: /etc/bigfive-updater.conf.example"
+
+# ============================================
+# SUMMARY - Özet Mesajları
+# ============================================
+MSG_SUMMARY_PRE="PRE-UPDATE SYSTEM INFO"
+MSG_SUMMARY_POST="POST-UPDATE SUMMARY"
+MSG_SUMMARY_REBOOT_YES="Reboot: [!] Gerekli"
+MSG_SUMMARY_REBOOT_NO="Reboot: Gerekli değil"
+MSG_SUMMARY_REBOOT_REQUIRED="Gerekli"
+MSG_SUMMARY_REBOOT_NOT_REQUIRED="Gerekli değil"
+
+# ============================================
+# MISC - Diğer
+# ============================================
+MSG_CONFIRM_CONTINUE="Devam etmek istiyor musunuz? [E/h]"
+MSG_RESTORE_ATTEMPT="Yedekten geri yükleme deneniyor..."
+MSG_DNF_LOCK_FAILED="DNF kilidi alınamadı, DNF güncellemesi atlanıyor."

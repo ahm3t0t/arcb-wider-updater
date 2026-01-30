@@ -78,17 +78,15 @@
 - [x] Fixed Zypper update counter
 - [x] Complete documentation sync
 
-### v5.6+ - Advanced Configuration (Planned)
-- [ ] Email notifications (SMTP)
-- [ ] Webhook notifications (Slack, Discord)
-- [ ] Systemd timer template
-
 ### v6.0 "Echo" - Internationalization (i18n) (Planned)
 - [ ] Move strings to separate file
 - [ ] Translation framework
 - [ ] Full English/Turkish support
 
-### v6.x+ "Chrom" - GUI (Planned)
+### v6.x+ "Chrom" - Notifications & GUI (Planned)
+- [ ] Email notifications (SMTP)
+- [ ] Webhook notifications (Slack, Discord)
+- [ ] Systemd timer template
 - [ ] Graphical user interface
 - [ ] Desktop notifications
 

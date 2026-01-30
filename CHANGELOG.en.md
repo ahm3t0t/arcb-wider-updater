@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.0] - 2026-01-30 "BigFive Edition - Echo"
+### Added
+- **i18n (Multi-Language Support):** Full Turkish and English support
+  - `lang/tr.sh`: Turkish language file (~110 strings)
+  - `lang/en.sh`: English language file (~110 strings)
+  - `--lang <code>` parameter for language selection (tr, en)
+  - `BIGFIVE_LANG` environment variable support
+  - Automatic language detection based on system LANG
+- **Language File Locations:**
+  - Installed: `/usr/share/bigfive-updater/lang/`
+  - Development: `lang/` directory next to script
+
+### Changed
+- VERSION: 5.5.2 → 6.0.0
+- CODENAME: Dream → Echo
+- All user-facing messages moved to MSG_* variables
+
+---
+
 ## [5.5.2] - 2026-01-30 "BigFive Edition - Dream"
 ### Fixed
 - **pgrep dependency:** `wait_for_dnf_lock()` now skips DNF lock check when pgrep

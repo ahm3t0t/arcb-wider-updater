@@ -78,17 +78,15 @@
 - [x] Zypper güncelleme sayacı düzeltildi
 - [x] Dökümantasyon tam senkronizasyonu
 
-### v5.6+ - Gelişmiş Yapılandırma (Planlanan)
-- [ ] Email bildirimleri (SMTP)
-- [ ] Webhook bildirimleri (Slack, Discord)
-- [ ] Systemd timer şablonu
-
 ### v6.0 "Echo" - Uluslararasılaştırma (i18n) (Planlanan)
 - [ ] String'leri ayrı dosyaya taşı
 - [ ] Çeviri framework'ü
 - [ ] İngilizce/Türkçe tam destek
 
-### v6.x+ "Chrom" - GUI (Planlanan)
+### v6.x+ "Chrom" - Bildirimler & GUI (Planlanan)
+- [ ] Email bildirimleri (SMTP)
+- [ ] Webhook bildirimleri (Slack, Discord)
+- [ ] Systemd timer şablonu
 - [ ] Grafiksel kullanıcı arayüzü
 - [ ] Masaüstü bildirimleri
 
