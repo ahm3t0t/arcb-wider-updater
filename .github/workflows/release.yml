@@ -26,13 +26,16 @@ jobs:
           cp completions/_guncel _guncel
           cp completions/guncel.fish guncel.fish
           cp docs/guncel.8 guncel.8
+          # Language files (v6.0.0+)
+          cp lang/tr.sh tr.sh
+          cp lang/en.sh en.sh
 
       - name: Create signed checksums
         env:
           GPG_TTY: ""
         run: |
-          # SHA256 checksums oluştur (completion ve man page dahil)
-          sha256sum guncel install.sh guncel.bash _guncel guncel.fish guncel.8 > SHA256SUMS
+          # SHA256 checksums oluştur (completion, man page ve lang dahil)
+          sha256sum guncel install.sh guncel.bash _guncel guncel.fish guncel.8 tr.sh en.sh > SHA256SUMS
 
           # GPG ile imzala (batch mode for CI)
           gpg --batch --yes --armor --detach-sign SHA256SUMS
@@ -42,7 +45,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "ARCB Wider Updater ${{ github.ref_name }}"
+          name: "BigFive Updater ${{ github.ref_name }}"
           generate_release_notes: true
           files: |
             guncel
@@ -53,5 +56,7 @@ jobs:
             _guncel
             guncel.fish
             guncel.8
+            tr.sh
+            en.sh
             SHA256SUMS
             SHA256SUMS.asc
