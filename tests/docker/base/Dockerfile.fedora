@@ -1,0 +1,17 @@
+# BigFive Updater - Fedora Base Image
+# Pre-installed dependencies for faster testing
+FROM fedora:40
+
+LABEL maintainer="meet@calmkernel.tr"
+LABEL description="BigFive test base image - Fedora 40"
+
+RUN dnf install -y \
+    bash curl wget sudo gawk gnupg2 ca-certificates hostname procps-ng \
+    && dnf clean all \
+    && useradd -m -s /bin/bash testuser \
+    && echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+WORKDIR /app
+USER testuser
+
+CMD ["bash"]

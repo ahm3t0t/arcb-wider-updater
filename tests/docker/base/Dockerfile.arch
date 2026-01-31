@@ -1,0 +1,17 @@
+# BigFive Updater - Arch Linux Base Image
+# Pre-installed dependencies for faster testing
+FROM archlinux:latest
+
+LABEL maintainer="meet@calmkernel.tr"
+LABEL description="BigFive test base image - Arch Linux"
+
+RUN pacman -Syu --noconfirm \
+    bash curl wget sudo gawk gnupg ca-certificates \
+    && pacman -Scc --noconfirm \
+    && useradd -m -s /bin/bash testuser \
+    && echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+WORKDIR /app
+USER testuser
+
+CMD ["bash"]

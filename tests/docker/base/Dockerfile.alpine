@@ -1,0 +1,16 @@
+# BigFive Updater - Alpine Base Image
+# Pre-installed dependencies for faster testing
+FROM alpine:3.20
+
+LABEL maintainer="meet@calmkernel.tr"
+LABEL description="BigFive test base image - Alpine 3.20"
+
+RUN apk add --no-cache \
+    bash curl wget sudo gawk gnupg ca-certificates \
+    && adduser -D -s /bin/bash testuser \
+    && echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+WORKDIR /app
+USER testuser
+
+CMD ["bash"]

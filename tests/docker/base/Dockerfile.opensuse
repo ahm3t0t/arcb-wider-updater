@@ -1,0 +1,17 @@
+# BigFive Updater - openSUSE Base Image
+# Pre-installed dependencies for faster testing
+FROM opensuse/leap:15.6
+
+LABEL maintainer="meet@calmkernel.tr"
+LABEL description="BigFive test base image - openSUSE Leap 15.6"
+
+RUN zypper --non-interactive install \
+    bash curl wget sudo gawk gpg2 ca-certificates hostname \
+    && zypper clean -a \
+    && useradd -m -s /bin/bash testuser \
+    && echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+WORKDIR /app
+USER testuser
+
+CMD ["bash"]

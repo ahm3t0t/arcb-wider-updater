@@ -1,0 +1,19 @@
+# BigFive Updater - Ubuntu Base Image
+# Pre-installed dependencies for faster testing
+FROM ubuntu:24.04
+
+LABEL maintainer="meet@calmkernel.tr"
+LABEL description="BigFive test base image - Ubuntu 24.04"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    bash curl wget sudo gawk gnupg ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd -m -s /bin/bash testuser \
+    && echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+WORKDIR /app
+USER testuser
+
+CMD ["bash"]
