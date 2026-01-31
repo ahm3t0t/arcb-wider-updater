@@ -42,6 +42,7 @@ run_test() {
     [[ "$distro" == "alpine" ]] && shell="/bin/sh"
 
     if docker run --rm \
+        --user root \
         -v "${PROJECT_DIR}:/app:ro" \
         -w /app \
         "$image" \
@@ -92,7 +93,7 @@ for arg in "$@"; do
 done
 
 # Check if base images exist
-if ! docker images | grep -q "bigfive-base"; then
+if ! docker images --format "{{.Repository}}" 2>/dev/null | grep -q "bigfive-base"; then
     echo -e "${RED}Base images not found!${NC}"
     echo "Run: ./build-base-images.sh all"
     exit 1
