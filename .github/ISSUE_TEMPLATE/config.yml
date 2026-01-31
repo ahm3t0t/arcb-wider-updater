@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security Vulnerability
+    url: mailto:meet@calmkernel.tr
+    about: Report security issues privately via email (do NOT open public issues)
+  - name: Documentation
+    url: https://github.com/ahm3t0t/bigfive-updater#readme
+    about: Check the README for documentation
