@@ -1,6 +1,6 @@
 # BigFive Updater - Yol Haritası
 
-> Shell script olarak geliştirmeye devam ediyoruz.
+> Shell script olarak geliştirmeye devam ediyoruz. CLI-first, her zaman.
 
 ---
 
@@ -41,98 +41,101 @@
 - [x] 3 komut desteği: `guncel`, `updater`, `bigfive`
 - [x] Dokümantasyon standardizasyonu (`*.en.md` / `*.tr.md`)
 
----
-
-## 🔜 Planlanan Özellikler
-
-### v5.3 "Beacon" - JSON Output ✅ TAMAMLANDI
+### v5.3 "Beacon" - JSON Output
 - [x] `--json` çıktı formatı (monitoring için)
 - [x] `--json-full` çıktı formatı (SIEM/audit için)
 - [x] Monitoring araçları entegrasyonu (Zabbix, Nagios, Prometheus)
 - [x] SIEM entegrasyonu (Wazuh, Splunk, ELK)
-- [x] Makine tarafından okunabilir çıktı
 
-### v5.4 "Beacon" - Shell Entegrasyonu ✅ TAMAMLANDI
-- [x] Bash tamamlama (`completions/guncel.bash`)
-- [x] Man sayfası (`docs/guncel.8`)
-- [x] Seçenekler ve backend'ler için Tab tamamlama
-- [x] `man guncel` ile tam dokümantasyon
+### v5.4 "Beacon" - Shell Entegrasyonu
+- [x] Bash/Zsh/Fish tamamlama scriptleri
+- [x] Man sayfası (`man guncel`)
 - [x] `install.sh` ile otomatik kurulum
 - [x] Toplam 138 BATS testi
 
-### v5.5.0 "Dream" - Complete Rebranding ✅ TAMAMLANDI
+### v5.5.0 "Dream" - Complete Rebranding
 - [x] Proje adı değişikliği: `arcb-wider-updater` → `bigfive-updater`
-- [x] GitHub repository rename
-- [x] Tüm script ve config referansları güncellendi
-- [x] Log/config/lock dosya yolları güncellendi
-- [x] Docker test dosyaları güncellendi
+- [x] Tüm referanslar güncellendi
 
-### v5.5.1 "Dream" - Error UX ✅ TAMAMLANDI
-- [x] Hata kodları sistemi (E001-E031)
-- [x] Kullanıcı dostu hata mesajları
-- [x] Çözüm önerileri (💡 ile gösteriliyor)
-- [x] Daha iyi hata açıklamaları
+### v5.5.1 "Dream" - Error UX
+- [x] Hata kodları sistemi (E001-E040)
+- [x] Kullanıcı dostu hata mesajları ve çözüm önerileri
 
-### v5.5.2 "Dream" - Bug Fixes ✅ TAMAMLANDI
-- [x] pgrep bağımlılığı düzeltildi (Alpine/minimal container uyumluluğu)
+### v5.5.2 "Dream" - Bug Fixes
+- [x] pgrep bağımlılığı düzeltildi (Alpine uyumluluğu)
 - [x] Zypper güncelleme sayacı düzeltildi
-- [x] Dökümantasyon tam senkronizasyonu
 
-### v6.0 "Echo" - Uluslararasılaştırma (i18n) ✅ TAMAMLANDI
-- [x] String'leri ayrı dosyaya taşı (`lang/tr.sh`, `lang/en.sh`)
-- [x] Çeviri framework'ü (`--lang` parametresi, `BIGFIVE_LANG` env var)
-- [x] İngilizce/Türkçe tam destek (~110 string)
+### v6.0.x "Echo" - Uluslararasılaştırma (i18n)
+- [x] Dil dosyaları (`lang/tr.sh`, `lang/en.sh` — ~110 string)
+- [x] `--lang` parametresi ve `BIGFIVE_LANG` env var desteği
 - [x] Sistem LANG ayarına göre otomatik dil tespiti
-
-### v6.0.1 "Echo" - Bug Fixes ✅ TAMAMLANDI
-- [x] printf invalid number hatası düzeltildi (grep -c exit code sorunu)
-- [x] Tüm paket yöneticisi sayaçları düzeltildi
-
-### v6.0.2 "Echo" - Paketleme & İyileştirmeler ✅ TAMAMLANDI
-- [x] Disk alanı kontrolü (`check_disk_space()`, E040 hata kodu)
+- [x] printf hata düzeltmeleri (grep -c exit code)
+- [x] Disk alanı kontrolü (`check_disk_space()`, E040)
 - [x] Atomic self-update (install + mv pattern)
 - [x] Türkçe man page kurulumu (install.sh Night-V1.4.1)
-- [x] 13 yeni i18n BATS testi (toplam 151 test)
-- [x] **AUR Paketi:** https://aur.archlinux.org/packages/bigfive-updater
-  - `yay -S bigfive-updater` ile kurulum
-- [x] **Alpine APKBUILD:** `packaging/alpine/APKBUILD`
-  - Subpackages: doc, bash-completion, zsh-completion, fish-completion
-- [x] **GitHub Actions Paket Workflow:** `.github/workflows/packages.yml`
-  - Her release'de otomatik Arch ve Alpine paket build
-
-### v6.x+ "Chrom" - Bildirimler & GUI (Planlanan)
-- [ ] Email bildirimleri (SMTP)
-- [ ] Webhook bildirimleri (Slack, Discord)
-- [ ] Systemd timer şablonu
-- [ ] Grafiksel kullanıcı arayüzü
-- [ ] Masaüstü bildirimleri
+- [x] 151 BATS testi (13 yeni i18n testi)
+- [x] **AUR Paketi:** `yay -S bigfive-updater`
+- [x] **Alpine APKBUILD** ve kişisel Alpine repo
+- [x] **Reboot detection** (kernel update sonrası uyarı)
 
 ---
 
-## 🏷️ Codename Sistemi (Tematik)
+## 🔜 Planlanan Özellikler
 
-| Versiyon | Edition | Codename | Özellik | Metafor |
-|----------|---------|----------|---------|---------|
+### v6.1.0 "Echo" - Diagnostics & CI
+
+Kısa vadeli iyileştirmeler — mevcut altyapının üzerine.
+
+- [ ] `--history [N]` komutu: Log dosyalarını parse edip son N günün güncelleme özetini gösterir
+- [ ] `--doctor` komutu: Config doğrulama, bağımlılık kontrolü, disk alanı, internet bağlantısı tek komutla
+- [ ] GitHub Actions CI matrix build: Her PR'da 5 distro otomatik test (Docker base images hazır)
+- [ ] Hook false positive fix: `block-dangerous-commands.sh` — git commit mesajlarında false positive (#TBD)
+
+### v6.2.0 "Chrom" - Server Automation
+
+Sunucu yöneticileri için otomasyon özellikleri.
+
+- [ ] **Notification sistemi:** `--auto` sonrası bildirim gönderimi
+  - Webhook (Slack, Discord, Teams, generic HTTP)
+  - Email (SMTP)
+  - Config dosyasından ayarlama (`CONFIG_NOTIFY_*`)
+- [ ] `--security-only` flag: Sadece güvenlik güncellemelerini uygula (APT/DNF/Zypper destekli)
+- [ ] **Pre/post update hooks:** `/etc/bigfive-updater/hooks.d/{pre,post}-update.sh` — kullanıcı tanımlı scriptler (backup, servis restart vb.)
+
+### v7.0.0 "Chrom" - Notification Templates & Setup
+
+Tam entegre server automation deneyimi.
+
+- [ ] Notification template sistemi (Slack Block Kit, Discord embed, Teams card formatları)
+- [ ] `guncel --setup` interaktif ilk kurulum wizard'ı (config + notification + cron)
+- [ ] systemd timer generate (`guncel --timer create`)
+- [ ] Notification config doğrulama (`guncel --doctor --notify-test`)
+
+---
+
+## 🏷️ Codename Sistemi
+
+| Versiyon | Edition | Codename | Tema | Metafor |
+|----------|---------|----------|------|---------|
 | v5.1-5.2 | BigFive | Alpine | APK desteği | Dağ/Distro |
-| v5.3-5.4 | BigFive | Beacon | JSON + Shell entegrasyonu | Sinyal/İzleme |
-| v5.5 | BigFive | Dream | Complete rebranding | Hedef/Rüya |
-| v6.x | BigFive | Echo | Çoklu dil (i18n) | Yankı/Ses |
-| v6.x+ | BigFive | Chrom | GUI | Görsel/Renk |
+| v5.3-5.4 | BigFive | Beacon | JSON + Shell | Sinyal/İzleme |
+| v5.5 | BigFive | Dream | Rebranding | Hedef/Rüya |
+| v6.0 | BigFive | Echo | i18n | Yankı/Ses |
+| v6.2-7.0 | BigFive | Chrom | Server Automation | Altyapı/Çekirdek |
 
 ---
 
-## 💡 Değerlendirilen Fikirler
+## ❌ Kapsam Dışı / Reddedilen
 
-| Fikir | Durum | Not |
-|-------|-------|-----|
-| AUR paketi | ✅ Tamamlandı | v6.0.2 - `yay -S bigfive-updater` |
-| Alpine APKBUILD | ✅ Tamamlandı | v6.0.2 - Repo kurulumu devam ediyor |
-| Masaüstü bildirimleri | 🤔 Belirsiz | v6.x için değerlendiriliyor |
-| Paralel güncellemeler | ❌ Ertelendi | Riskli, karmaşık |
-| Rust migration | ❌ Ertelendi | Bash yeterli |
-| Web UI | ❌ Kapsam dışı | CLI odaklı kalıyoruz |
-| Plugin sistemi | ❌ Ertelendi | Karmaşıklık |
-| DEB/RPM paketleme | ❌ Ertelendi | curl-pipe-bash yeterli, maintenance yükü fazla |
+| Fikir | Karar | Gerekçe |
+|-------|-------|---------|
+| GUI / Web UI | ❌ Reddedildi | BigFive CLI aracıdır. JSON output ile harici araçlar entegre olabilir |
+| DEB/RPM paketleme | ❌ Reddedildi | curl + GPG kurulum yeterli, bakım yükü çok yüksek |
+| Masaüstü bildirimleri | ❌ Reddedildi | Server odaklı araç, desktop notification kapsam dışı |
+| Rust migration | ❌ Ertelendi | Bash yeterli, POSIX uyumluluk avantajı |
+| Plugin sistemi | ❌ Ertelendi | Karmaşıklık/fayda oranı düşük |
+| Paralel güncellemeler | ❌ Ertelendi | Race condition riski, karmaşık |
+| Snap/Flatpak paketi | ❌ Reddedildi | Root erişim ve paket yöneticisi gerektirir, sandbox uyumsuz |
 
 ---
 
@@ -146,13 +149,13 @@
 
 ### CI Test Matrisi
 
-| Distro | Paket Yöneticisi | Durum |
-|--------|------------------|-------|
-| Ubuntu 24.04 | APT | ✅ |
-| Fedora 40 | DNF | ✅ |
-| Arch Linux | Pacman | ✅ |
-| openSUSE Tumbleweed | Zypper | ✅ |
-| Alpine 3.20 | APK | ✅ |
+| Distro | Paket Yöneticisi | Docker Quick Test |
+|--------|------------------|-------------------|
+| Ubuntu 24.04 | APT | ✅ 3/3 |
+| Fedora 40 | DNF | ✅ 3/3 |
+| Arch Linux | Pacman | ✅ 3/3 |
+| openSUSE Leap 15.6 | Zypper | ✅ 3/3 |
+| Alpine 3.20 | APK | ✅ 3/3 |
 
 ---
 
