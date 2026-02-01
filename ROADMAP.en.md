@@ -1,23 +1,23 @@
 # BigFive Updater - Roadmap
 
-> Continuing development as a shell script.
+> We continue developing as a shell script. CLI-first, always.
 
 ---
 
-## ✅ Completed Versions
+## ✅ Completed Releases
 
 ### v3.x Series - Stability & Infrastructure
 - [x] Color and character fixes
 - [x] DNF/APT lock mechanism
 - [x] `--dry-run` mode
 - [x] `--skip` and `--only` flags
-- [x] Config file support
+- [x] Configuration file support
 - [x] Logrotate integration
 - [x] Release automation (GitHub Actions)
 - [x] BATS unit test infrastructure
 
 ### v4.x Series - Security & Quality
-- [x] CODENAME in installation message
+- [x] CODENAME in install messages
 - [x] GPG signed releases
 - [x] TLS 1.2+ hardening
 - [x] `--uninstall` and `--purge` options
@@ -35,104 +35,107 @@
 ### v5.2.x BigFive Edition - Alpine Support
 - [x] **APK** - Alpine Linux
 - [x] 5 package manager support
-- [x] Alpine CI testing (alpine:3.20)
-- [x] EDITION/CODENAME separation (Edition = series name, Codename = release name)
+- [x] Alpine CI test (alpine:3.20)
+- [x] EDITION/CODENAME separation (Edition = series, Codename = release)
 - [x] `bigfive` command alias (for international users)
-- [x] 3 command support: `guncel`, `updater`, `bigfive`
+- [x] 3 command aliases: `guncel`, `updater`, `bigfive`
 - [x] Documentation standardization (`*.en.md` / `*.tr.md`)
+
+### v5.3 "Beacon" - JSON Output
+- [x] `--json` output format (for monitoring)
+- [x] `--json-full` output format (for SIEM/audit)
+- [x] Monitoring tools integration (Zabbix, Nagios, Prometheus)
+- [x] SIEM integration (Wazuh, Splunk, ELK)
+
+### v5.4 "Beacon" - Shell Integration
+- [x] Bash/Zsh/Fish completion scripts
+- [x] Man page (`man guncel`)
+- [x] Automatic installation via `install.sh`
+- [x] Total 138 BATS tests
+
+### v5.5.0 "Dream" - Complete Rebranding
+- [x] Project rename: `arcb-wider-updater` → `bigfive-updater`
+- [x] All references updated
+
+### v5.5.1 "Dream" - Error UX
+- [x] Error code system (E001-E040)
+- [x] User-friendly error messages with solution hints
+
+### v5.5.2 "Dream" - Bug Fixes
+- [x] pgrep dependency fix (Alpine compatibility)
+- [x] Zypper update counter fix
+
+### v6.0.x "Echo" - Internationalization (i18n)
+- [x] Language files (`lang/tr.sh`, `lang/en.sh` — ~110 strings)
+- [x] `--lang` parameter and `BIGFIVE_LANG` env var support
+- [x] Automatic language detection from system LANG
+- [x] printf bug fixes (grep -c exit code)
+- [x] Disk space check (`check_disk_space()`, E040)
+- [x] Atomic self-update (install + mv pattern)
+- [x] Turkish man page installation (install.sh Night-V1.4.1)
+- [x] 151 BATS tests (13 new i18n tests)
+- [x] **AUR Package:** `yay -S bigfive-updater`
+- [x] **Alpine APKBUILD** and personal Alpine repository
+- [x] **Reboot detection** (post kernel-update warning)
 
 ---
 
 ## 🔜 Planned Features
 
-### v5.3 "Beacon" - JSON Output ✅ COMPLETED
-- [x] `--json` output format (for monitoring)
-- [x] `--json-full` output format (for SIEM/audit)
-- [x] Monitoring tools integration (Zabbix, Nagios, Prometheus)
-- [x] SIEM integration (Wazuh, Splunk, ELK)
-- [x] Machine-readable output
+### v6.1.0 "Echo" - Diagnostics & CI
 
-### v5.4 "Beacon" - Shell Integration ✅ COMPLETED
-- [x] Bash completion (`completions/guncel.bash`)
-- [x] Man page (`docs/guncel.8`)
-- [x] Tab completion for options and backends
-- [x] Full documentation via `man guncel`
-- [x] Auto-install via `install.sh`
-- [x] Total 138 BATS tests
+Short-term improvements building on existing infrastructure.
 
-### v5.5.0 "Dream" - Complete Rebranding ✅ COMPLETED
-- [x] Project rename: `arcb-wider-updater` → `bigfive-updater`
-- [x] GitHub repository renamed
-- [x] All script and config references updated
-- [x] Log/config/lock file paths updated
-- [x] Docker test files updated
+- [ ] `--history [N]` command: Parse log files and display update summary for the last N days
+- [ ] `--doctor` command: Config validation, dependency check, disk space, internet connectivity in one command
+- [ ] GitHub Actions CI matrix build: Automatic 5-distro testing on every PR (Docker base images ready)
+- [ ] Hook false positive fix: `block-dangerous-commands.sh` — false positive on git commit messages (#TBD)
 
-### v5.5.1 "Dream" - Error UX ✅ COMPLETED
-- [x] Error code system (E001-E031)
-- [x] User-friendly error messages
-- [x] Solution suggestions (shown with 💡)
-- [x] Better error explanations
+### v6.2.0 "Chrom" - Server Automation
 
-### v5.5.2 "Dream" - Bug Fixes ✅ COMPLETED
-- [x] Fixed pgrep dependency (Alpine/minimal container compatibility)
-- [x] Fixed Zypper update counter
-- [x] Complete documentation sync
+Automation features for server administrators.
 
-### v6.0 "Echo" - Internationalization (i18n) ✅ COMPLETED
-- [x] Move strings to separate file (`lang/tr.sh`, `lang/en.sh`)
-- [x] Translation framework (`--lang` parameter, `BIGFIVE_LANG` env var)
-- [x] Full English/Turkish support (~110 strings)
-- [x] Automatic language detection based on system LANG
+- [ ] **Notification system:** Post `--auto` update notifications
+  - Webhook (Slack, Discord, Teams, generic HTTP)
+  - Email (SMTP)
+  - Config file settings (`CONFIG_NOTIFY_*`)
+- [ ] `--security-only` flag: Apply security updates only (APT/DNF/Zypper supported)
+- [ ] **Pre/post update hooks:** `/etc/bigfive-updater/hooks.d/{pre,post}-update.sh` — user-defined scripts (backup, service restart, etc.)
 
-### v6.0.1 "Echo" - Bug Fixes ✅ COMPLETED
-- [x] Fixed printf invalid number error (grep -c exit code issue)
-- [x] Fixed all package manager counters
+### v7.0.0 "Chrom" - Notification Templates & Setup
 
-### v6.0.2 "Echo" - Packaging & Improvements ✅ COMPLETED
-- [x] Disk space check (`check_disk_space()`, E040 error code)
-- [x] Atomic self-update (install + mv pattern)
-- [x] Turkish man page installation (install.sh Night-V1.4.1)
-- [x] 13 new i18n BATS tests (total 151 tests)
-- [x] **AUR Package:** https://aur.archlinux.org/packages/bigfive-updater
-  - Install with `yay -S bigfive-updater`
-- [x] **Alpine APKBUILD:** `packaging/alpine/APKBUILD`
-  - Subpackages: doc, bash-completion, zsh-completion, fish-completion
-- [x] **GitHub Actions Package Workflow:** `.github/workflows/packages.yml`
-  - Automatic Arch and Alpine package build on each release
+Fully integrated server automation experience.
 
-### v6.x+ "Chrom" - Notifications & GUI (Planned)
-- [ ] Email notifications (SMTP)
-- [ ] Webhook notifications (Slack, Discord)
-- [ ] Systemd timer template
-- [ ] Graphical user interface
-- [ ] Desktop notifications
+- [ ] Notification template system (Slack Block Kit, Discord embed, Teams card formats)
+- [ ] `guncel --setup` interactive first-run wizard (config + notification + cron)
+- [ ] systemd timer generation (`guncel --timer create`)
+- [ ] Notification config validation (`guncel --doctor --notify-test`)
 
 ---
 
-## 🏷️ Codename System (Thematic)
+## 🏷️ Codename System
 
-| Version | Edition | Codename | Feature | Metaphor |
-|---------|---------|----------|---------|----------|
+| Version | Edition | Codename | Theme | Metaphor |
+|---------|---------|----------|-------|----------|
 | v5.1-5.2 | BigFive | Alpine | APK support | Mountain/Distro |
-| v5.3-5.4 | BigFive | Beacon | JSON + Shell integration | Signal/Monitoring |
-| v5.5 | BigFive | Dream | Complete rebranding | Goal/Dream |
-| v6.x | BigFive | Echo | Multi-language (i18n) | Echo/Voice |
-| v6.x+ | BigFive | Chrom | GUI | Visual/Color |
+| v5.3-5.4 | BigFive | Beacon | JSON + Shell | Signal/Monitoring |
+| v5.5 | BigFive | Dream | Rebranding | Goal/Vision |
+| v6.0 | BigFive | Echo | i18n | Echo/Voice |
+| v6.2-7.0 | BigFive | Chrom | Server Automation | Infrastructure/Core |
 
 ---
 
-## 💡 Ideas Under Consideration
+## ❌ Out of Scope / Rejected
 
-| Idea | Status | Note |
-|------|--------|------|
-| AUR package | ✅ Completed | v6.0.2 - `yay -S bigfive-updater` |
-| Alpine APKBUILD | ✅ Completed | v6.0.2 - Repo setup in progress |
-| Desktop notifications | 🤔 Uncertain | Evaluating for v6.x |
-| Parallel updates | ❌ Deferred | Risky, complex |
-| Rust migration | ❌ Deferred | Bash is sufficient |
-| Web UI | ❌ Out of scope | Staying CLI-focused |
-| Plugin system | ❌ Deferred | Complexity |
-| DEB/RPM packaging | ❌ Deferred | curl-pipe-bash is sufficient, high maintenance burden |
+| Idea | Decision | Rationale |
+|------|----------|-----------|
+| GUI / Web UI | ❌ Rejected | BigFive is a CLI tool. External tools can integrate via JSON output |
+| DEB/RPM packaging | ❌ Rejected | curl + GPG installation is sufficient, maintenance burden too high |
+| Desktop notifications | ❌ Rejected | Server-focused tool, desktop notification is out of scope |
+| Rust migration | ❌ Deferred | Bash is sufficient, POSIX compatibility is an advantage |
+| Plugin system | ❌ Deferred | Low complexity/benefit ratio |
+| Parallel updates | ❌ Deferred | Race condition risk, too complex |
+| Snap/Flatpak package | ❌ Rejected | Requires root access and package manager, incompatible with sandbox |
 
 ---
 
@@ -146,18 +149,18 @@
 
 ### CI Test Matrix
 
-| Distro | Package Manager | Status |
-|--------|-----------------|--------|
-| Ubuntu 24.04 | APT | ✅ |
-| Fedora 40 | DNF | ✅ |
-| Arch Linux | Pacman | ✅ |
-| openSUSE Tumbleweed | Zypper | ✅ |
-| Alpine 3.20 | APK | ✅ |
+| Distro | Package Manager | Docker Quick Test |
+|--------|-----------------|-------------------|
+| Ubuntu 24.04 | APT | ✅ 3/3 |
+| Fedora 40 | DNF | ✅ 3/3 |
+| Arch Linux | Pacman | ✅ 3/3 |
+| openSUSE Leap 15.6 | Zypper | ✅ 3/3 |
+| Alpine 3.20 | APK | ✅ 3/3 |
 
 ---
 
 ## 🤝 Contributing
 
-Feel free to open an [Issue](https://github.com/CalmKernelTR/bigfive-updater/issues) for suggestions.
+Feel free to open an [Issue](https://github.com/CalmKernelTR/bigfive-updater/issues) with your suggestions.
 
 Detailed contribution guide: [CONTRIBUTING.en.md](CONTRIBUTING.en.md)
