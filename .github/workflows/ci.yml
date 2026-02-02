@@ -51,23 +51,23 @@ jobs:
         include:
           - distro: ubuntu
             pkg_manager: APT
-            image: ghcr.io/calmkerneltr/bigfive-base-ubuntu:latest
+            image: ghcr.io/ahm3t0t/bigfive-base-ubuntu:latest
             shell: bash
           - distro: fedora
             pkg_manager: DNF
-            image: ghcr.io/calmkerneltr/bigfive-base-fedora:latest
+            image: ghcr.io/ahm3t0t/bigfive-base-fedora:latest
             shell: bash
           - distro: arch
             pkg_manager: Pacman
-            image: ghcr.io/calmkerneltr/bigfive-base-arch:latest
+            image: ghcr.io/ahm3t0t/bigfive-base-arch:latest
             shell: bash
           - distro: opensuse
             pkg_manager: Zypper
-            image: ghcr.io/calmkerneltr/bigfive-base-opensuse:latest
+            image: ghcr.io/ahm3t0t/bigfive-base-opensuse:latest
             shell: bash
           - distro: alpine
             pkg_manager: APK
-            image: ghcr.io/calmkerneltr/bigfive-base-alpine:latest
+            image: ghcr.io/ahm3t0t/bigfive-base-alpine:latest
             shell: sh
 
     container:
