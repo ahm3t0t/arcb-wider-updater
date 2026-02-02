@@ -839,7 +839,6 @@ do_history() {
                 # Log içeriğini analiz et
                 local status="?"
                 local detail=""
-                local pkg_count=0
 
                 # Başarı/hata durumu
                 if grep -q "ERROR:" "$log_file" 2>/dev/null; then
