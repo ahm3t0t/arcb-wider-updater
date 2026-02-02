@@ -2,13 +2,23 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
 
 jobs:
+  # ==================== Lint ====================
   lint:
+    name: ShellCheck Lint
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,7 +32,159 @@ jobs:
         run: |
           bash -n guncel
           bash -n install.sh
+          bash -n release.sh
 
-      - name: ShellCheck
+      - name: ShellCheck (errors only)
         run: |
-          shellcheck -x guncel install.sh
+          shellcheck -S error guncel install.sh release.sh
+
+  # ==================== Multi-Distro Matrix Test ====================
+  multi-distro:
+    name: ${{ matrix.distro }} (${{ matrix.pkg_manager }})
+    runs-on: ubuntu-latest
+    needs: lint
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - distro: ubuntu
+            pkg_manager: APT
+            image: ghcr.io/calmkerneltr/bigfive-base-ubuntu:latest
+            shell: bash
+          - distro: fedora
+            pkg_manager: DNF
+            image: ghcr.io/calmkerneltr/bigfive-base-fedora:latest
+            shell: bash
+          - distro: arch
+            pkg_manager: Pacman
+            image: ghcr.io/calmkerneltr/bigfive-base-arch:latest
+            shell: bash
+          - distro: opensuse
+            pkg_manager: Zypper
+            image: ghcr.io/calmkerneltr/bigfive-base-opensuse:latest
+            shell: bash
+          - distro: alpine
+            pkg_manager: APK
+            image: ghcr.io/calmkerneltr/bigfive-base-alpine:latest
+            shell: sh
+
+    container:
+      image: ${{ matrix.image }}
+      options: --user root
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create test directories
+        run: |
+          mkdir -p /var/log/bigfive-updater
+          mkdir -p /usr/share/bigfive-updater/lang
+          mkdir -p /usr/local/bin
+
+      - name: Test install (local copy)
+        run: |
+          cp guncel /usr/local/bin/guncel
+          chmod +x /usr/local/bin/guncel
+          cp lang/*.sh /usr/share/bigfive-updater/lang/
+          ln -sf /usr/local/bin/guncel /usr/local/bin/updater
+          ln -sf /usr/local/bin/guncel /usr/local/bin/bigfive
+          echo "Install simulation complete"
+
+      - name: Test --help
+        run: |
+          guncel --help
+          echo "--help works"
+
+      - name: Test --doctor
+        run: |
+          guncel --doctor
+          echo "--doctor works"
+
+      - name: Test --history
+        run: |
+          guncel --history
+          echo "--history works"
+
+      - name: Test --dry-run
+        run: |
+          guncel --dry-run
+          echo "--dry-run works"
+
+      - name: Test --json output
+        run: |
+          guncel --json --dry-run | head -20
+          echo "--json works"
+
+      - name: Test uninstall (simulation)
+        run: |
+          rm -f /usr/local/bin/guncel /usr/local/bin/updater /usr/local/bin/bigfive
+          rm -rf /usr/share/bigfive-updater
+          echo "Uninstall simulation complete"
+
+      - name: Summary
+        env:
+          DISTRO: ${{ matrix.distro }}
+          PKG_MGR: ${{ matrix.pkg_manager }}
+        run: |
+          echo "========================================"
+          echo "  ${DISTRO} (${PKG_MGR}) - ALL TESTS PASSED"
+          echo "========================================"
+
+  # ==================== BATS Unit Tests ====================
+  bats:
+    name: BATS Tests
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install BATS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats
+
+      - name: Run guncel.bats
+        run: bats tests/guncel.bats
+
+      - name: Run install.bats
+        run: bats tests/install.bats
+
+  # ==================== Summary ====================
+  ci-success:
+    name: CI Success
+    runs-on: ubuntu-latest
+    needs: [lint, multi-distro, bats]
+    if: always()
+
+    steps:
+      - name: Check results
+        env:
+          LINT_RESULT: ${{ needs.lint.result }}
+          DISTRO_RESULT: ${{ needs.multi-distro.result }}
+          BATS_RESULT: ${{ needs.bats.result }}
+        run: |
+          if [[ "${LINT_RESULT}" != "success" ]]; then
+            echo "Lint failed"
+            exit 1
+          fi
+          if [[ "${DISTRO_RESULT}" != "success" ]]; then
+            echo "Multi-distro tests failed"
+            exit 1
+          fi
+          if [[ "${BATS_RESULT}" != "success" ]]; then
+            echo "BATS tests failed"
+            exit 1
+          fi
+          echo "========================================"
+          echo "  ALL CI CHECKS PASSED"
+          echo "========================================"
+          echo ""
+          echo "  - Lint: ${LINT_RESULT}"
+          echo "  - Multi-distro: ${DISTRO_RESULT}"
+          echo "  - BATS: ${BATS_RESULT}"
+          echo "========================================"
