@@ -1,11 +1,11 @@
 #!/bin/bash
 # BigFive Updater - Release Script
-# Versiyon: Dev-V1.1.0
+# Versiyon: Dev-V1.2.0
 # Kullanım: ./release.sh [patch|minor|major] [-y] veya ./release.sh 4.2.0 -y
 
 set -euo pipefail
 
-RELEASE_SCRIPT_VERSION="Dev-V1.1.0"
+RELEASE_SCRIPT_VERSION="Dev-V1.2.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GUNCEL_FILE="$SCRIPT_DIR/guncel"
 
@@ -19,9 +19,92 @@ NC='\033[0m'
 # Varsayılan: onay iste
 AUTO_CONFIRM=false
 
-# Mevcut versiyonu al
+# Cleanup state for rollback
+CLEANUP_COMMIT=false
+CLEANUP_TAG=""
+ORIGINAL_VERSION=""
+
+# Rollback function for partial failures
+cleanup_on_error() {
+    local exit_code=$?
+    if [[ $exit_code -ne 0 ]]; then
+        printf '%s\n' "" >&2
+        printf '%b%s%b\n' "${RED}" "HATA: Release işlemi başarısız oldu, geri alınıyor..." "${NC}" >&2
+
+        # Revert commit if made
+        if [[ "$CLEANUP_COMMIT" == "true" ]]; then
+            printf '%s\n' "Commit geri alınıyor..." >&2
+            git reset --soft HEAD~1 2>/dev/null || true
+        fi
+
+        # Delete tag if created
+        if [[ -n "$CLEANUP_TAG" ]]; then
+            printf '%s\n' "Tag siliniyor: $CLEANUP_TAG" >&2
+            git tag -d "$CLEANUP_TAG" 2>/dev/null || true
+        fi
+
+        # Restore original version in file
+        if [[ -n "$ORIGINAL_VERSION" && -f "$GUNCEL_FILE" ]]; then
+            printf '%s\n' "Versiyon geri yükleniyor: $ORIGINAL_VERSION" >&2
+            sed -i "s/^VERSION=\"[^\"]*\"/VERSION=\"$ORIGINAL_VERSION\"/" "$GUNCEL_FILE" 2>/dev/null || true
+        fi
+
+        printf '%b%s%b\n' "${YELLOW}" "Rollback tamamlandı. Lütfen durumu kontrol edin: git status" "${NC}" >&2
+    fi
+}
+
+# Validate semantic version format (X.Y.Z)
+validate_version() {
+    local version="$1"
+    if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        printf '%b%s%b\n' "${RED}" "HATA: Geçersiz versiyon formatı: $version (beklenen: X.Y.Z)" "${NC}" >&2
+        return 1
+    fi
+    return 0
+}
+
+# Check guncel file exists and is readable
+check_guncel_file() {
+    if [[ ! -f "$GUNCEL_FILE" ]]; then
+        printf '%b%s%b\n' "${RED}" "HATA: guncel dosyası bulunamadı: $GUNCEL_FILE" "${NC}" >&2
+        exit 1
+    fi
+    if [[ ! -r "$GUNCEL_FILE" ]]; then
+        printf '%b%s%b\n' "${RED}" "HATA: guncel dosyası okunamıyor: $GUNCEL_FILE" "${NC}" >&2
+        exit 1
+    fi
+    if [[ ! -w "$GUNCEL_FILE" ]]; then
+        printf '%b%s%b\n' "${RED}" "HATA: guncel dosyası yazılamıyor: $GUNCEL_FILE" "${NC}" >&2
+        exit 1
+    fi
+}
+
+# Check for clean git state
+check_git_state() {
+    if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+        printf '%b%s%b\n' "${RED}" "HATA: Commit edilmemiş değişiklikler var. Önce commit/stash yapın." "${NC}" >&2
+        git status --short >&2
+        exit 1
+    fi
+}
+
+# Check if tag already exists
+check_tag_exists() {
+    local tag="$1"
+    if git rev-parse "$tag" >/dev/null 2>&1; then
+        printf '%b%s%b\n' "${RED}" "HATA: Tag zaten mevcut: $tag" "${NC}" >&2
+        exit 1
+    fi
+}
+
+# Mevcut versiyonu al (POSIX-compatible, grep -oP yerine)
 get_current_version() {
-    grep -oP '^VERSION="\K[^"]+' "$GUNCEL_FILE"
+    grep '^VERSION=' "$GUNCEL_FILE" | cut -d'"' -f2
+}
+
+# Escape special characters for sed
+escape_for_sed() {
+    printf '%s\n' "$1" | sed 's/[&/\]/\\&/g'
 }
 
 # Versiyon bump
@@ -33,38 +116,38 @@ bump_version() {
 
     case "$bump_type" in
         major)
-            echo "$((major + 1)).0.0"
+            printf '%s\n' "$((major + 1)).0.0"
             ;;
         minor)
-            echo "${major}.$((minor + 1)).0"
+            printf '%s\n' "${major}.$((minor + 1)).0"
             ;;
         patch)
-            echo "${major}.${minor}.$((patch + 1))"
+            printf '%s\n' "${major}.${minor}.$((patch + 1))"
             ;;
         *)
             # Direkt versiyon numarası verilmiş
-            echo "$bump_type"
+            printf '%s\n' "$bump_type"
             ;;
     esac
 }
 
 # Kullanım bilgisi
 usage() {
-    echo -e "${BLUE}BigFive Release Script${NC} ($RELEASE_SCRIPT_VERSION)"
-    echo ""
-    echo "Kullanım: $0 [patch|minor|major|X.Y.Z] [-y]"
-    echo ""
-    echo "Seçenekler:"
-    echo "  -y, --yes    Onay sormadan devam et (otomasyon için)"
-    echo "  -v, --version  Script versiyonunu göster"
-    echo "  -h, --help     Bu yardım mesajını göster"
-    echo ""
-    echo "Örnekler:"
-    echo "  $0 patch       # 4.1.3 -> 4.1.4"
-    echo "  $0 minor       # 4.1.3 -> 4.2.0"
-    echo "  $0 major       # 4.1.3 -> 5.0.0"
-    echo "  $0 4.2.0       # 4.1.3 -> 4.2.0"
-    echo "  $0 patch -y    # Onay sormadan patch release"
+    printf '%b%s%b (%s)\n' "${BLUE}" "BigFive Release Script" "${NC}" "$RELEASE_SCRIPT_VERSION"
+    printf '\n'
+    printf 'Kullanım: %s [patch|minor|major|X.Y.Z] [-y]\n' "$0"
+    printf '\n'
+    printf 'Seçenekler:\n'
+    printf '  -y, --yes      Onay sormadan devam et (otomasyon için)\n'
+    printf '  -v, --version  Script versiyonunu göster\n'
+    printf '  -h, --help     Bu yardım mesajını göster\n'
+    printf '\n'
+    printf 'Örnekler:\n'
+    printf '  %s patch       # 4.1.3 -> 4.1.4\n' "$0"
+    printf '  %s minor       # 4.1.3 -> 4.2.0\n' "$0"
+    printf '  %s major       # 4.1.3 -> 5.0.0\n' "$0"
+    printf '  %s 4.2.0       # 4.1.3 -> 4.2.0\n' "$0"
+    printf '  %s patch -y    # Onay sormadan patch release\n' "$0"
     exit 1
 }
 
@@ -80,21 +163,21 @@ main() {
                 shift
                 ;;
             -v|--version)
-                echo "release.sh $RELEASE_SCRIPT_VERSION"
+                printf 'release.sh %s\n' "$RELEASE_SCRIPT_VERSION"
                 exit 0
                 ;;
             -h|--help)
                 usage
                 ;;
             -*)
-                echo -e "${RED}Bilinmeyen seçenek: $1${NC}"
+                printf '%bBilinmeyen seçenek: %s%b\n' "${RED}" "$1" "${NC}"
                 usage
                 ;;
             *)
                 if [[ -z "$bump_type" ]]; then
                     bump_type="$1"
                 else
-                    echo -e "${RED}Fazla argüman: $1${NC}"
+                    printf '%bFazla argüman: %s%b\n' "${RED}" "$1" "${NC}"
                     usage
                 fi
                 shift
@@ -106,49 +189,82 @@ main() {
         usage
     fi
 
+    # Pre-flight checks
+    check_guncel_file
+    check_git_state
+
     local current_version
     current_version=$(get_current_version)
+
+    # Validate current version
+    if ! validate_version "$current_version"; then
+        printf '%b%s%b\n' "${RED}" "HATA: Mevcut versiyon geçersiz format" "${NC}" >&2
+        exit 1
+    fi
 
     local new_version
     new_version=$(bump_version "$current_version" "$bump_type")
 
-    echo -e "${YELLOW}Mevcut versiyon:${NC} $current_version"
-    echo -e "${GREEN}Yeni versiyon:${NC}    $new_version"
-    echo ""
+    # Validate new version
+    if ! validate_version "$new_version"; then
+        exit 1
+    fi
+
+    # Check tag doesn't already exist
+    check_tag_exists "v$new_version"
+
+    printf '%bMevcut versiyon:%b %s\n' "${YELLOW}" "${NC}" "$current_version"
+    printf '%bYeni versiyon:%b    %s\n' "${GREEN}" "${NC}" "$new_version"
+    printf '\n'
 
     # Onay iste (AUTO_CONFIRM değilse)
     if [[ "$AUTO_CONFIRM" != "true" ]]; then
         read -p "Devam edilsin mi? [y/N] " -n 1 -r
-        echo
+        printf '\n'
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            echo -e "${RED}İptal edildi.${NC}"
+            printf '%bİptal edildi.%b\n' "${RED}" "${NC}"
             exit 1
         fi
     else
-        echo -e "${BLUE}Otomatik onay (-y) aktif, devam ediliyor...${NC}"
+        printf '%bOtomatik onay (-y) aktif, devam ediliyor...%b\n' "${BLUE}" "${NC}"
     fi
 
-    # Versiyonu güncelle
-    sed -i "s/^VERSION=\"$current_version\"/VERSION=\"$new_version\"/" "$GUNCEL_FILE"
-    echo -e "${GREEN}✓${NC} guncel dosyası güncellendi"
+    # Set up rollback trap
+    ORIGINAL_VERSION="$current_version"
+    trap cleanup_on_error EXIT
 
-    # Git işlemleri
+    # Versiyonu güncelle (escaped for sed safety)
+    local escaped_current escaped_new
+    escaped_current=$(escape_for_sed "$current_version")
+    escaped_new=$(escape_for_sed "$new_version")
+    sed -i "s/^VERSION=\"${escaped_current}\"/VERSION=\"${escaped_new}\"/" "$GUNCEL_FILE"
+    printf '%b✓%b guncel dosyası güncellendi\n' "${GREEN}" "${NC}"
+
+    # Git işlemleri - GPG signed
     git add "$GUNCEL_FILE"
-    git commit -m "Bump version to $new_version"
-    echo -e "${GREEN}✓${NC} Commit oluşturuldu"
+    git commit -S -m "Bump version to $new_version"
+    CLEANUP_COMMIT=true
+    printf '%b✓%b Commit oluşturuldu (GPG signed)\n' "${GREEN}" "${NC}"
 
-    git tag -a "v$new_version" -m "v$new_version"
-    echo -e "${GREEN}✓${NC} Tag oluşturuldu: v$new_version"
+    git tag -s "v$new_version" -m "v$new_version"
+    CLEANUP_TAG="v$new_version"
+    printf '%b✓%b Tag oluşturuldu: v%s (GPG signed)\n' "${GREEN}" "${NC}" "$new_version"
 
     git push
     git push origin "v$new_version"
-    echo -e "${GREEN}✓${NC} Push tamamlandı"
+    printf '%b✓%b Push tamamlandı\n' "${GREEN}" "${NC}"
 
-    echo ""
-    echo -e "${GREEN}Release v$new_version başarıyla oluşturuldu!${NC}"
-    echo "GitHub Actions workflow çalışıyor, birkaç saniye içinde release hazır olacak."
-    echo ""
-    echo "Release sayfası: https://github.com/CalmKernelTR/bigfive-updater/releases/tag/v$new_version"
+    # Clear rollback state on success
+    trap - EXIT
+    CLEANUP_COMMIT=false
+    CLEANUP_TAG=""
+    ORIGINAL_VERSION=""
+
+    printf '\n'
+    printf '%bRelease v%s başarıyla oluşturuldu!%b\n' "${GREEN}" "$new_version" "${NC}"
+    printf 'GitHub Actions workflow çalışıyor, birkaç saniye içinde release hazır olacak.\n'
+    printf '\n'
+    printf 'Release sayfası: https://github.com/CalmKernelTR/bigfive-updater/releases/tag/v%s\n' "$new_version"
 }
 
 main "$@"
