@@ -10,6 +10,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  # Note: Image owner must be lowercase for Docker registry
+  IMAGE_OWNER: ahm3t0t
 
 jobs:
   build-and-push:
@@ -40,5 +42,5 @@ jobs:
           file: tests/docker/base/Dockerfile.${{ matrix.distro }}
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/bigfive-base-${{ matrix.distro }}:latest
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/bigfive-base-${{ matrix.distro }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/bigfive-base-${{ matrix.distro }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/bigfive-base-${{ matrix.distro }}:${{ github.sha }}
