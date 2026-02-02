@@ -6,7 +6,7 @@ LABEL maintainer="meet@calmkernel.tr"
 LABEL description="BigFive test base image - openSUSE Leap 15.6"
 
 RUN zypper --non-interactive install \
-    bash curl wget sudo gawk gpg2 ca-certificates hostname \
+    bash curl wget sudo gawk gpg2 ca-certificates hostname tar gzip \
     && zypper clean -a \
     && useradd -m -s /bin/bash testuser \
     && echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
