@@ -1,11 +1,11 @@
 #!/bin/bash
 # BigFive Updater - Release Script
-# Versiyon: Dev-V1.2.0
+# Versiyon: Dev-V1.3.0
 # Kullanım: ./release.sh [patch|minor|major] [-y] veya ./release.sh 4.2.0 -y
 
 set -euo pipefail
 
-RELEASE_SCRIPT_VERSION="Dev-V1.2.0"
+RELEASE_SCRIPT_VERSION="Dev-V1.3.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GUNCEL_FILE="$SCRIPT_DIR/guncel"
 
@@ -18,6 +18,7 @@ NC='\033[0m'
 
 # Varsayılan: onay iste
 AUTO_CONFIRM=false
+CHECK_COMMITS=false
 
 # Cleanup state for rollback
 CLEANUP_COMMIT=false
@@ -97,6 +98,63 @@ check_tag_exists() {
     fi
 }
 
+# Check commit messages for conventional commits format
+# Returns: 0 if all OK, 1 if issues found (report only, non-blocking)
+check_commit_messages() {
+    local last_tag bad_commits bad_count=0
+
+    # Find last tag
+    last_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+    if [[ -z "$last_tag" ]]; then
+        printf '%bUyarı: Önceki tag bulunamadı, tüm commit geçmişi kontrol edilemiyor%b\n' "${YELLOW}" "${NC}"
+        return 0
+    fi
+
+    printf '%bCommit Hygiene Check%b (since %s)\n' "${BLUE}" "${NC}" "$last_tag"
+    printf '%s\n' "─────────────────────────────────────────"
+
+    # Conventional commits regex: type(scope): description OR type: description
+    # Valid types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+    local conventional_pattern="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .+"
+
+    # Get commits since last tag
+    while IFS= read -r line; do
+        local hash msg
+        hash=$(printf '%s' "$line" | cut -d' ' -f1)
+        msg=$(printf '%s' "$line" | cut -d' ' -f2-)
+
+        # Skip merge commits
+        if [[ "$msg" =~ ^Merge ]]; then
+            continue
+        fi
+
+        # Check against conventional commits pattern
+        if [[ ! "$msg" =~ $conventional_pattern ]]; then
+            if [[ $bad_count -eq 0 ]]; then
+                printf '%bUyumsuz commit mesajları:%b\n' "${YELLOW}" "${NC}"
+            fi
+            printf '  %s %s\n' "$hash" "$msg"
+            ((bad_count++)) || true
+        fi
+    done < <(git log "$last_tag"..HEAD --oneline 2>/dev/null)
+
+    printf '%s\n' "─────────────────────────────────────────"
+
+    if [[ $bad_count -eq 0 ]]; then
+        printf '%b✓%b Tüm commit mesajları conventional formata uygun\n' "${GREEN}" "${NC}"
+        return 0
+    else
+        printf '%b!%b %d commit mesajı conventional formata uymuyor\n' "${YELLOW}" "${NC}" "$bad_count"
+        printf '%s\n' ""
+        printf '%s\n' "Önerilen format: type(scope): description"
+        printf '%s\n' "Tipler: feat, fix, docs, style, refactor, perf, test, build, ci, chore"
+        printf '%s\n' ""
+        printf '%s\n' "Düzeltmek için: git rebase -i $last_tag (dikkat: force push gerektirir)"
+        return 1
+    fi
+}
+
 # Mevcut versiyonu al (POSIX-compatible, grep -oP yerine)
 get_current_version() {
     grep '^VERSION=' "$GUNCEL_FILE" | cut -d'"' -f2
@@ -138,16 +196,18 @@ usage() {
     printf 'Kullanım: %s [patch|minor|major|X.Y.Z] [-y]\n' "$0"
     printf '\n'
     printf 'Seçenekler:\n'
-    printf '  -y, --yes      Onay sormadan devam et (otomasyon için)\n'
-    printf '  -v, --version  Script versiyonunu göster\n'
-    printf '  -h, --help     Bu yardım mesajını göster\n'
+    printf '  -y, --yes           Onay sormadan devam et (otomasyon için)\n'
+    printf '  -c, --check-commits Commit mesajlarını kontrol et (conventional commits)\n'
+    printf '  -v, --version       Script versiyonunu göster\n'
+    printf '  -h, --help          Bu yardım mesajını göster\n'
     printf '\n'
     printf 'Örnekler:\n'
-    printf '  %s patch       # 4.1.3 -> 4.1.4\n' "$0"
-    printf '  %s minor       # 4.1.3 -> 4.2.0\n' "$0"
-    printf '  %s major       # 4.1.3 -> 5.0.0\n' "$0"
-    printf '  %s 4.2.0       # 4.1.3 -> 4.2.0\n' "$0"
-    printf '  %s patch -y    # Onay sormadan patch release\n' "$0"
+    printf '  %s patch            # 4.1.3 -> 4.1.4\n' "$0"
+    printf '  %s minor            # 4.1.3 -> 4.2.0\n' "$0"
+    printf '  %s major            # 4.1.3 -> 5.0.0\n' "$0"
+    printf '  %s 4.2.0            # 4.1.3 -> 4.2.0\n' "$0"
+    printf '  %s patch -y         # Onay sormadan patch release\n' "$0"
+    printf '  %s --check-commits  # Release öncesi commit hygiene check\n' "$0"
     exit 1
 }
 
@@ -160,6 +220,10 @@ main() {
         case "$1" in
             -y|--yes)
                 AUTO_CONFIRM=true
+                shift
+                ;;
+            -c|--check-commits)
+                CHECK_COMMITS=true
                 shift
                 ;;
             -v|--version)
@@ -185,6 +249,12 @@ main() {
         esac
     done
 
+    # Handle --check-commits only mode
+    if [[ "$CHECK_COMMITS" == "true" && -z "$bump_type" ]]; then
+        check_commit_messages
+        exit $?
+    fi
+
     if [[ -z "$bump_type" ]]; then
         usage
     fi
@@ -192,6 +262,12 @@ main() {
     # Pre-flight checks
     check_guncel_file
     check_git_state
+
+    # Run commit check if requested (non-blocking, informational)
+    if [[ "$CHECK_COMMITS" == "true" ]]; then
+        check_commit_messages || true
+        printf '\n'
+    fi
 
     local current_version
     current_version=$(get_current_version)
