@@ -11,6 +11,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_OWNER: ahm3t0t
+
 jobs:
   # ==================== Lint ====================
   lint:
@@ -41,6 +45,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
     timeout-minutes: 15
+    environment: production
+
+    permissions:
+      contents: read
+      packages: read
 
     strategy:
       fail-fast: false
@@ -49,22 +58,27 @@ jobs:
           - distro: ubuntu
             pkg_manager: APT
             image: ubuntu:24.04
+            ghcr_image: ghcr.io/ahm3t0t/bigfive-base-ubuntu:latest
             setup: apt-get update && apt-get install -y curl wget sudo gawk ca-certificates
           - distro: fedora
             pkg_manager: DNF
             image: fedora:40
+            ghcr_image: ghcr.io/ahm3t0t/bigfive-base-fedora:latest
             setup: dnf install -y curl wget sudo gawk ca-certificates hostname
           - distro: arch
             pkg_manager: Pacman
             image: archlinux:latest
+            ghcr_image: ghcr.io/ahm3t0t/bigfive-base-arch:latest
             setup: pacman -Sy --noconfirm curl wget sudo gawk ca-certificates
           - distro: opensuse
             pkg_manager: Zypper
             image: opensuse/leap:15.6
+            ghcr_image: ghcr.io/ahm3t0t/bigfive-base-opensuse:latest
             setup: zypper --non-interactive install curl wget sudo gawk ca-certificates hostname tar gzip
           - distro: alpine
             pkg_manager: APK
             image: alpine:3.20
+            ghcr_image: ghcr.io/ahm3t0t/bigfive-base-alpine:latest
             setup: apk add --no-cache curl wget sudo gawk ca-certificates bash
 
     container:
