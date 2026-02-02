@@ -30,6 +30,46 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
 # GÜVENLİK: Log ve temp dosyalar sadece root okusun
 umask 0077
 
+# GÜVENLİK: Dosya sourcing güvenlik kontrolü
+# Root-owned ve world-writable olmayan dosyaları source et
+safe_source() {
+    local file="$1"
+    local file_owner file_perms
+
+    if [[ ! -f "$file" ]]; then
+        return 1
+    fi
+
+    # Dosya sahibini kontrol et (root = 0)
+    file_owner=$(stat -c '%u' "$file" 2>/dev/null) || return 1
+    if [[ "$file_owner" != "0" ]]; then
+        printf '%s[!] Güvenlik: %s root tarafından sahiplenilmemiş, atlanıyor%s\n' "${YELLOW:-}" "$file" "${NC:-}" >&2
+        return 1
+    fi
+
+    # World-writable kontrolü (others write bit = 2)
+    file_perms=$(stat -c '%a' "$file" 2>/dev/null) || return 1
+    if [[ "${file_perms: -1}" =~ [2367] ]]; then
+        printf '%s[!] Güvenlik: %s world-writable, atlanıyor%s\n' "${YELLOW:-}" "$file" "${NC:-}" >&2
+        return 1
+    fi
+
+    # shellcheck source=/dev/null
+    source "$file"
+}
+
+# GÜVENLİK: Güvenli temp dosya oluşturma
+# TMPDIR manipülasyonuna karşı koruma
+safe_mktemp() {
+    local prefix="${1:-bigfive}"
+    local tmpfile
+    tmpfile=$(mktemp "/tmp/${prefix}_XXXXXX") || {
+        printf '%s[!] Temp dosya oluşturulamadı%s\n' "${RED:-}" "${NC:-}" >&2
+        return 1
+    }
+    printf '%s' "$tmpfile"
+}
+
 # Renkler (ANSI-C quoting ile)
 RED=$'\033[0;31m'
 GREEN=$'\033[0;32m'
@@ -78,9 +118,7 @@ ORIGINAL_ARGS=("$@")
 
 # --- YENİ v3.6.0: CONFIG DOSYASI YÜKLEME ---
 load_config() {
-    if [ -f "$CONFIG_FILE" ]; then
-        # shellcheck source=/dev/null
-        source "$CONFIG_FILE"
+    if [ -f "$CONFIG_FILE" ] && safe_source "$CONFIG_FILE"; then
         # Config'den gelen değerleri uygula
         VERBOSE_MODE="${CONFIG_VERBOSE:-$VERBOSE_MODE}"
         QUIET_MODE="${CONFIG_QUIET:-$QUIET_MODE}"
@@ -142,9 +180,8 @@ load_language() {
         return 0
     fi
 
-    # Dil dosyasını yükle
-    # shellcheck source=/dev/null
-    source "$lang_file"
+    # Dil dosyasını yükle (güvenlik kontrolü ile)
+    safe_source "$lang_file" || true
 }
 
 # Dili yükle (argüman parse'dan önce varsayılan ile)
@@ -770,8 +807,8 @@ check_self_update() {
     if [[ "${SELF_UPDATE_DISABLED:-false}" == "true" ]]; then return; fi
     if [[ "$DRY_RUN" == "true" ]]; then return; fi
 
-    local REMOTE_FILE; REMOTE_FILE="$(mktemp /tmp/guncel_remote_XXXXXX)"
-    local TEMP_SHA256; TEMP_SHA256="$(mktemp /tmp/guncel_sha256_XXXXXX)"
+    local REMOTE_FILE; REMOTE_FILE="$(safe_mktemp guncel_remote)" || return
+    local TEMP_SHA256; TEMP_SHA256="$(safe_mktemp guncel_sha256)" || return
     local REMOTE_HASH
     local LOCAL_HASH
     
@@ -1092,7 +1129,7 @@ update_dnf() {
     fi
 
     local dnf_temp
-    dnf_temp=$(mktemp)
+    dnf_temp=$(safe_mktemp dnf_update) || return 1
 
     if [[ "$VERBOSE_MODE" == "true" ]]; then
         dnf upgrade --refresh -y 2>&1 | tee -a "$LOG_FILE" | tee "$dnf_temp"
@@ -1129,7 +1166,7 @@ update_pacman() {
     print_header "${MSG_HEADER_PACMAN_UPDATE:-Pacman: Güncelleme}"
 
     local pacman_temp
-    pacman_temp=$(mktemp)
+    pacman_temp=$(safe_mktemp pacman_update) || return 1
 
     # Önce veritabanını güncelle
     if [[ "$VERBOSE_MODE" == "true" ]]; then
@@ -1197,7 +1234,7 @@ update_zypper() {
     print_header "${MSG_HEADER_ZYPPER_UPDATE:-Zypper: Güncelleme}"
 
     local zypper_temp
-    zypper_temp=$(mktemp)
+    zypper_temp=$(safe_mktemp zypper_update) || return 1
 
     # Repo'ları yenile
     if [[ "$VERBOSE_MODE" == "true" ]]; then
@@ -1344,7 +1381,7 @@ update_flatpak() {
     fi
 
     local flatpak_temp
-    flatpak_temp=$(mktemp)
+    flatpak_temp=$(safe_mktemp flatpak_update) || return 1
 
     if [[ "$VERBOSE_MODE" == "true" ]]; then
         flatpak update -y 2>&1 | tee -a "$LOG_FILE" | tee "$flatpak_temp" || print_warning "${MSG_WARN_FLATPAK_ERROR:-Flatpak hata verdi.}"
