@@ -600,3 +600,58 @@ get_script_version() {
     local en_count=$(grep -c '^MSG_' "$PROJECT_ROOT/lang/en.sh")
     [ "$tr_count" -eq "$en_count" ]
 }
+
+# ==================== v6.1.0 --doctor Tests ====================
+
+@test "doctor: --doctor flag exists in argument parsing" {
+    grep -q '\-\-doctor)' "$GUNCEL_SCRIPT"
+}
+
+@test "doctor: do_doctor function exists" {
+    grep -q '^do_doctor()' "$GUNCEL_SCRIPT"
+}
+
+@test "doctor: --doctor in help output" {
+    run bash "$GUNCEL_SCRIPT" --help
+    echo "$output" | grep -q '\-\-doctor'
+}
+
+@test "doctor: --doctor shows config check (1/6)" {
+    run bash "$GUNCEL_SCRIPT" --doctor
+    echo "$output" | grep -q '\[1/6\].*Config'
+}
+
+@test "doctor: --doctor shows required commands check (2/6)" {
+    run bash "$GUNCEL_SCRIPT" --doctor
+    echo "$output" | grep -q '\[2/6\].*Gerekli komutlar'
+}
+
+@test "doctor: --doctor shows optional commands check (3/6)" {
+    run bash "$GUNCEL_SCRIPT" --doctor
+    echo "$output" | grep -q '\[3/6\].*Opsiyonel'
+}
+
+@test "doctor: --doctor shows disk space check (4/6)" {
+    run bash "$GUNCEL_SCRIPT" --doctor
+    echo "$output" | grep -q '\[4/6\].*Disk'
+}
+
+@test "doctor: --doctor shows internet check (5/6)" {
+    run bash "$GUNCEL_SCRIPT" --doctor
+    echo "$output" | grep -q '\[5/6\].*İnternet'
+}
+
+@test "doctor: --doctor shows language files check (6/6)" {
+    run bash "$GUNCEL_SCRIPT" --doctor
+    echo "$output" | grep -q '\[6/6\].*Dil'
+}
+
+@test "doctor: --doctor returns 0 when healthy" {
+    run bash "$GUNCEL_SCRIPT" --doctor
+    [ "$status" -eq 0 ]
+}
+
+@test "doctor: --doctor shows summary line" {
+    run bash "$GUNCEL_SCRIPT" --doctor
+    echo "$output" | grep -qE '(sağlıklı|uyarı|hata)'
+}

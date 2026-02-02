@@ -791,6 +791,129 @@ check_connectivity() {
     fi
 }
 
+# v6.1.0: Doctor - sistem sağlık kontrolü
+do_doctor() {
+    local errors=0
+    local warnings=0
+
+    printf '%b%s%b\n' "${BLUE}${BOLD}" "BigFive Doctor - Sistem Sağlık Kontrolü" "${NC}"
+    printf '%s\n' "══════════════════════════════════════════════════════"
+    printf '\n'
+
+    # 1. Config dosyası kontrolü
+    printf '%b[1/6]%b Config dosyası... ' "${BLUE}" "${NC}"
+    if [[ -f "$CONFIG_FILE" ]]; then
+        # Syntax check - source edip hata var mı?
+        if bash -n "$CONFIG_FILE" 2>/dev/null; then
+            printf '%b✓%b %s\n' "${GREEN}" "${NC}" "$CONFIG_FILE"
+        else
+            printf '%b✗%b Syntax hatası: %s\n' "${RED}" "${NC}" "$CONFIG_FILE"
+            ((errors++)) || true
+        fi
+    else
+        printf '%b-%b Yok (varsayılan ayarlar kullanılacak)\n' "${YELLOW}" "${NC}"
+    fi
+
+    # 2. Gerekli komutlar
+    printf '%b[2/6]%b Gerekli komutlar... ' "${BLUE}" "${NC}"
+    local missing_cmds=()
+
+    # curl veya wget
+    if ! command -v curl &>/dev/null && ! command -v wget &>/dev/null; then
+        missing_cmds+=("curl/wget")
+    fi
+
+    # Paket yöneticisi
+    local pm_found=false
+    for pm in apt-get dnf pacman zypper apk; do
+        if command -v "$pm" &>/dev/null; then
+            pm_found=true
+            break
+        fi
+    done
+    if [[ "$pm_found" == "false" ]]; then
+        missing_cmds+=("paket-yöneticisi")
+    fi
+
+    if [[ ${#missing_cmds[@]} -eq 0 ]]; then
+        printf '%b✓%b Tümü mevcut\n' "${GREEN}" "${NC}"
+    else
+        printf '%b✗%b Eksik: %s\n' "${RED}" "${NC}" "${missing_cmds[*]}"
+        ((errors++)) || true
+    fi
+
+    # 3. Opsiyonel komutlar
+    printf '%b[3/6]%b Opsiyonel komutlar... ' "${BLUE}" "${NC}"
+    local optional_status=()
+    command -v jq &>/dev/null && optional_status+=("jq:✓") || optional_status+=("jq:✗")
+    command -v fwupdmgr &>/dev/null && optional_status+=("fwupd:✓") || optional_status+=("fwupd:✗")
+    command -v flatpak &>/dev/null && optional_status+=("flatpak:✓") || optional_status+=("flatpak:✗")
+    command -v snap &>/dev/null && optional_status+=("snap:✓") || optional_status+=("snap:✗")
+    printf '%b-%b %s\n' "${YELLOW}" "${NC}" "${optional_status[*]}"
+
+    # 4. Disk alanı
+    printf '%b[4/6]%b Disk alanı... ' "${BLUE}" "${NC}"
+    local available_mb
+    available_mb=$(df -m / 2>/dev/null | awk 'NR==2 {print $4}')
+    if [[ -n "$available_mb" ]]; then
+        if [[ "$available_mb" -ge 500 ]]; then
+            printf '%b✓%b %sMB mevcut (min: 500MB)\n' "${GREEN}" "${NC}" "$available_mb"
+        else
+            printf '%b✗%b %sMB mevcut (min: 500MB gerekli)\n' "${RED}" "${NC}" "$available_mb"
+            ((errors++)) || true
+        fi
+    else
+        printf '%b?%b Kontrol edilemedi\n' "${YELLOW}" "${NC}"
+        ((warnings++)) || true
+    fi
+
+    # 5. İnternet bağlantısı
+    printf '%b[5/6]%b İnternet bağlantısı... ' "${BLUE}" "${NC}"
+    local net_ok=false
+    if command -v curl &>/dev/null; then
+        curl --proto '=https' --tlsv1.2 -s -f -m 5 "https://raw.githubusercontent.com" >/dev/null 2>&1 && net_ok=true
+    elif command -v wget &>/dev/null; then
+        wget --secure-protocol=TLSv1_2 -q --spider --timeout=5 "https://raw.githubusercontent.com" 2>/dev/null && net_ok=true
+    fi
+    if [[ "$net_ok" == "true" ]]; then
+        printf '%b✓%b GitHub erişilebilir\n' "${GREEN}" "${NC}"
+    else
+        printf '%b✗%b GitHub erişilemiyor\n' "${RED}" "${NC}"
+        ((errors++)) || true
+    fi
+
+    # 6. Dil dosyaları
+    printf '%b[6/6]%b Dil dosyaları... ' "${BLUE}" "${NC}"
+    local lang_ok=0 lang_missing=0
+    for lang in tr en; do
+        if [[ -f "/usr/share/bigfive-updater/lang/${lang}.sh" ]] || [[ -f "$(dirname "$0")/lang/${lang}.sh" ]]; then
+            ((lang_ok++)) || true
+        else
+            ((lang_missing++)) || true
+        fi
+    done
+    if [[ $lang_missing -eq 0 ]]; then
+        printf '%b✓%b %d dil dosyası mevcut\n' "${GREEN}" "${NC}" "$lang_ok"
+    else
+        printf '%b-%b %d mevcut, %d eksik\n' "${YELLOW}" "${NC}" "$lang_ok" "$lang_missing"
+        ((warnings++)) || true
+    fi
+
+    # Özet
+    printf '\n'
+    printf '%s\n' "══════════════════════════════════════════════════════"
+    if [[ $errors -eq 0 && $warnings -eq 0 ]]; then
+        printf '%b✓ Sistem sağlıklı - BigFive kullanıma hazır%b\n' "${GREEN}" "${NC}"
+        return 0
+    elif [[ $errors -eq 0 ]]; then
+        printf '%b! %d uyarı - BigFive çalışabilir%b\n' "${YELLOW}" "$warnings" "${NC}"
+        return 0
+    else
+        printf '%b✗ %d hata, %d uyarı - Sorunları düzeltin%b\n' "${RED}" "$errors" "$warnings" "${NC}"
+        return 1
+    fi
+}
+
 check_root() {
     if [[ $EUID -ne 0 ]]; then
         printf '%s[*] Root yetkisi gerekiyor...%s\n' "${YELLOW}" "${NC}"
@@ -1776,6 +1899,7 @@ show_help() {
     echo "${MSG_HELP_OPT_UNINSTALL:-  --uninstall         BigFive Updater kaldır}"
     echo "${MSG_HELP_OPT_PURGE:-  --uninstall --purge Config ve logları da sil}"
     echo "${MSG_HELP_OPT_LANG:-  --lang <code>       Dil seçimi (tr, en)}"
+    echo "${MSG_HELP_OPT_DOCTOR:-  --doctor            Sistem sağlık kontrolü (config, bağımlılıklar, disk, ağ)}"
     echo "${MSG_HELP_OPT_HELP:-  --help              Bu yardım mesajını gösterir}"
     echo ""
     echo "${MSG_HELP_EXAMPLES:-Örnekler:}"
@@ -1856,6 +1980,7 @@ while [[ $# -gt 0 ]]; do
             fi
             ;;
         --help) show_help ;;
+        --doctor) do_doctor; exit $? ;;
         *) printf '%sUyarı: Bilinmeyen argüman: %s%s\n' "${YELLOW}" "$1" "${NC}"; shift ;;
     esac
 done
