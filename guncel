@@ -31,7 +31,8 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
 umask 0077
 
 # GÜVENLİK: Dosya sourcing güvenlik kontrolü
-# Root-owned ve world-writable olmayan dosyaları source et
+# Root olarak çalışırken: root-owned ve world-writable olmayan dosyaları source et
+# Non-root olarak çalışırken: sadece world-writable kontrolü (test/dev ortamı)
 safe_source() {
     local file="$1"
     local file_owner file_perms
@@ -40,18 +41,20 @@ safe_source() {
         return 1
     fi
 
-    # Dosya sahibini kontrol et (root = 0)
-    file_owner=$(stat -c '%u' "$file" 2>/dev/null) || return 1
-    if [[ "$file_owner" != "0" ]]; then
-        printf '%s[!] Güvenlik: %s root tarafından sahiplenilmemiş, atlanıyor%s\n' "${YELLOW:-}" "$file" "${NC:-}" >&2
-        return 1
-    fi
-
-    # World-writable kontrolü (others write bit = 2)
+    # World-writable kontrolü (others write bit = 2) - her zaman kontrol et
     file_perms=$(stat -c '%a' "$file" 2>/dev/null) || return 1
     if [[ "${file_perms: -1}" =~ [2367] ]]; then
         printf '%s[!] Güvenlik: %s world-writable, atlanıyor%s\n' "${YELLOW:-}" "$file" "${NC:-}" >&2
         return 1
+    fi
+
+    # Root olarak çalışırken ownership kontrolü yap
+    if [[ $EUID -eq 0 ]]; then
+        file_owner=$(stat -c '%u' "$file" 2>/dev/null) || return 1
+        if [[ "$file_owner" != "0" ]]; then
+            printf '%s[!] Güvenlik: %s root tarafından sahiplenilmemiş, atlanıyor%s\n' "${YELLOW:-}" "$file" "${NC:-}" >&2
+            return 1
+        fi
     fi
 
     # shellcheck source=/dev/null
