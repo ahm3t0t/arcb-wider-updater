@@ -205,10 +205,12 @@ INSTALL_SCRIPT="${BATS_TEST_DIRNAME}/../install.sh"
     grep -q 'TEMP_MAN=' "$INSTALL_SCRIPT"
 }
 
-@test "Trap includes TEMP_COMPLETION cleanup" {
-    grep -q 'trap.*TEMP_COMPLETION' "$INSTALL_SCRIPT"
+@test "Cleanup function includes TEMP_COMPLETION" {
+    # v1.4.3: Check cleanup function handles TEMP_COMPLETION
+    grep -A5 'cleanup_temp_files()' "$INSTALL_SCRIPT" | grep -q 'TEMP_COMPLETION'
 }
 
-@test "Trap includes TEMP_MAN cleanup" {
-    grep -q 'trap.*TEMP_MAN' "$INSTALL_SCRIPT"
+@test "Cleanup function includes TEMP_MAN" {
+    # v1.4.3: Check cleanup function handles TEMP_MAN
+    grep -A5 'cleanup_temp_files()' "$INSTALL_SCRIPT" | grep -q 'TEMP_MAN'
 }
