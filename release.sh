@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-RELEASE_SCRIPT_VERSION="Dev-V1.3.0"
+RELEASE_SCRIPT_VERSION="Dev-V1.3.1"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GUNCEL_FILE="$SCRIPT_DIR/guncel"
 
@@ -157,7 +157,13 @@ check_commit_messages() {
 
 # Mevcut versiyonu al (POSIX-compatible, grep -oP yerine)
 get_current_version() {
-    grep '^VERSION=' "$GUNCEL_FILE" | cut -d'"' -f2
+    local version
+    version=$(grep '^VERSION=' "$GUNCEL_FILE" | cut -d'"' -f2)
+    if [[ -z "$version" ]]; then
+        printf '%b%s%b\n' "${RED}" "HATA: VERSION değişkeni guncel dosyasında bulunamadı" "${NC}" >&2
+        return 1
+    fi
+    printf '%s\n' "$version"
 }
 
 # Escape special characters for sed
