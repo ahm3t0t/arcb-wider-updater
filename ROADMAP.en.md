@@ -101,7 +101,7 @@ Short-term improvements building on existing infrastructure.
 - [ ] install.sh improvements: wget TLS flag modernize, grep portability, message clarity, variable cleanup
 - [x] ~~Hook false positive fix~~ (completed in claude-code-skills repo, Fase 5)
 
-### v6.2.0 "Chrom" - Server Automation
+### v6.2.0 "Fluent Edition - Chrom" - Server Automation
 
 Automation features for server administrators.
 
@@ -112,7 +112,7 @@ Automation features for server administrators.
 - [ ] `--security-only` flag: Apply security updates only (APT/DNF/Zypper supported)
 - [ ] **Pre/post update hooks:** `/etc/bigfive-updater/hooks.d/{pre,post}-update.sh` — user-defined scripts (backup, service restart, etc.)
 
-### v7.0.0 "Chrom" - Notification Templates & Setup
+### v7.0.0 "Zenith Edition" - Notification Templates & Setup
 
 Fully integrated server automation experience.
 
