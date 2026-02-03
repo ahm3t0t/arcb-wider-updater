@@ -5,6 +5,16 @@ Bu projedeki tüm önemli değişiklikler bu dosyada belgelenecektir.
 Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına,
 versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standardına uygundur.
 
+## [6.2.2] - 2026-02-03 "Fluent Edition - Foxtrot"
+### Düzeltilenler
+- **wget timeout iyileştirmesi:** Detaylı timeout parametreleri eklendi
+  - `--dns-timeout=10`: DNS çözümleme için 10 saniye
+  - `--connect-timeout=10`: Bağlantı kurma için 10 saniye
+  - `--read-timeout=30`: Her okuma işlemi için 30 saniye
+  - Büyük dosya indirmelerinde asılı kalma riski azaltıldı
+
+---
+
 ## [6.2.1] - 2026-02-03 "Fluent Edition - Foxtrot"
 ### Düzeltilenler
 - **GPG keyring izolasyonu:** `GNUPGHOME` ile izole temp keyring kullanımı
