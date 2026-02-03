@@ -5,7 +5,7 @@ Bu projedeki tüm önemli değişiklikler bu dosyada belgelenecektir.
 Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına,
 versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standardına uygundur.
 
-## [6.1.0] - 2026-02-02 "BigFive Edition - Echo"
+## [6.1.0] - 2026-02-02 "Fluent Edition - Echo"
 ### Eklenenler
 - **--doctor komutu:** 6 diagnostik test ile sistem sağlık kontrolü
   - Config dosyası syntax doğrulama
@@ -52,7 +52,7 @@ versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ---
 
-## [6.0.2] - 2026-01-30 "BigFive Edition - Echo"
+## [6.0.2] - 2026-01-30 "Fluent Edition - Echo"
 ### Eklenenler
 - **Disk Alanı Kontrolü:** Güncelleme öncesi disk alanı kontrolü
   - `check_disk_space()` fonksiyonu eklendi
@@ -85,7 +85,7 @@ versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ---
 
-## [6.0.1] - 2026-01-30 "BigFive Edition - Echo"
+## [6.0.1] - 2026-01-30 "Fluent Edition - Echo"
 ### Düzeltilenler
 - **printf invalid number hatası:** `grep -c` komutu eşleşme olmadığında exit code 1
   döndürüyordu ve `|| echo "0"` da çalışarak çift çıktı (`0\n0`) üretiyordu.
@@ -98,7 +98,7 @@ versiyon numaraları ise [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ---
 
-## [6.0.0] - 2026-01-30 "BigFive Edition - Echo"
+## [6.0.0] - 2026-01-30 "Fluent Edition - Echo"
 ### Eklenenler
 - **i18n (Çoklu Dil Desteği):** Türkçe ve İngilizce tam destek
   - `lang/tr.sh`: Türkçe dil dosyası (~110 string)

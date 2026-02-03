@@ -125,13 +125,30 @@ Tam entegre server automation deneyimi.
 
 ## 🏷️ Codename Sistemi
 
-| Versiyon | Edition | Codename | Tema | Metafor |
-|----------|---------|----------|------|---------|
-| v5.1-5.2 | BigFive | Alpine | APK desteği | Dağ/Distro |
-| v5.3-5.4 | BigFive | Beacon | JSON + Shell | Sinyal/İzleme |
-| v5.5 | BigFive | Dream | Rebranding | Hedef/Rüya |
-| v6.0 | BigFive | Echo | i18n | Yankı/Ses |
-| v6.2-7.0 | BigFive | Chrom | Server Automation | Altyapı/Çekirdek |
+**Metodoloji:**
+- **Edition** = Major seri adı (v5.x, v6.x, v7.x)
+- **Codename** = Minor sürüm adı (x.Y.z)
+- **Repo adı** = bigfive-updater (sabit)
+
+### Edition Tablosu
+
+| Major | Edition | Tema |
+|-------|---------|------|
+| v5.x | BigFive | 5 distro desteği |
+| v6.x | Fluent | Akıcı deneyim |
+| v7.x | Zenith | Zirve |
+
+### Codename Tablosu
+
+| Versiyon | Edition | Codename | Tema |
+|----------|---------|----------|------|
+| v5.0 | BigFive | ~~BigFour~~ | 4 distro (geçiş) |
+| v5.1-5.2 | BigFive | Alpine | APK desteği |
+| v5.3-5.4 | BigFive | Beacon | JSON + Shell |
+| v5.5 | BigFive | Dream | Rebranding |
+| v6.0-6.1 | Fluent | Echo | i18n, diagnostics |
+| v6.2+ | Fluent | Chrom | Server automation |
+| v7.0+ | Zenith | TBD | - |
 
 ---
 

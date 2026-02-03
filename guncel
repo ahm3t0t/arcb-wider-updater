@@ -8,7 +8,7 @@
 
 # --- AYARLAR ---
 VERSION="6.1.0"
-EDITION="BigFive"
+EDITION="Fluent"
 CODENAME="Echo"
 
 # --- i18n (v6.0.0) ---
