@@ -7,7 +7,7 @@
 #
 
 # --- AYARLAR ---
-VERSION="6.2.1"
+VERSION="6.2.2"
 EDITION="Fluent"
 CODENAME="Foxtrot"
 
@@ -731,10 +731,15 @@ download_file() {
 
     # TLS 1.2+ zorunlu (güvenlik için)
     # v6.1.1: Timeout parametreleri eklendi (asılı kalma önleme)
+    # v6.2.2: wget için dns/connect/read timeout ayrıştırıldı
     if command -v curl &> /dev/null; then
         curl --proto '=https' --tlsv1.2 -fsSL --connect-timeout 10 --max-time 300 "$url" -o "$output"
     elif command -v wget &> /dev/null; then
-        wget --secure-protocol=TLSv1_2 --timeout=30 --tries=2 -qO "$output" "$url"
+        # --dns-timeout: DNS çözümleme için 10s
+        # --connect-timeout: Bağlantı kurma için 10s
+        # --read-timeout: Her okuma işlemi için 30s
+        # --tries=2: Hata durumunda 1 kez daha dene
+        wget --secure-protocol=TLSv1_2 --dns-timeout=10 --connect-timeout=10 --read-timeout=30 --tries=2 -qO "$output" "$url"
     else
         print_error_with_hint "${MSG_ERR_NO_CURL:-Sistemde 'curl' veya 'wget' bulunamadı!}" \
             "${MSG_HINT_INSTALL_CURL:-apt install curl veya dnf install curl ile kurabilirsiniz.}" "E001"

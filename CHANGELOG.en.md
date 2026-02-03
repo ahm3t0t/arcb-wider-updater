@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.2.2] - 2026-02-03 "Fluent Edition - Foxtrot"
+### Fixed
+- **wget timeout improvement:** Added detailed timeout parameters
+  - `--dns-timeout=10`: 10 seconds for DNS resolution
+  - `--connect-timeout=10`: 10 seconds for connection establishment
+  - `--read-timeout=30`: 30 seconds for each read operation
+  - Reduced risk of hanging during large file downloads
+
+---
+
 ## [6.2.1] - 2026-02-03 "Fluent Edition - Foxtrot"
 ### Fixed
 - **GPG keyring isolation:** Added `GNUPGHOME` isolated temp keyring
