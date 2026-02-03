@@ -101,7 +101,7 @@ Short-term improvements building on existing infrastructure.
 - [ ] install.sh improvements: wget TLS flag modernize, grep portability, message clarity, variable cleanup
 - [x] ~~Hook false positive fix~~ (completed in claude-code-skills repo, Fase 5)
 
-### v6.2.0 "Chrom" - Server Automation
+### v6.2.0 "Fluent Edition - Chrom" - Server Automation
 
 Automation features for server administrators.
 
@@ -112,7 +112,7 @@ Automation features for server administrators.
 - [ ] `--security-only` flag: Apply security updates only (APT/DNF/Zypper supported)
 - [ ] **Pre/post update hooks:** `/etc/bigfive-updater/hooks.d/{pre,post}-update.sh` — user-defined scripts (backup, service restart, etc.)
 
-### v7.0.0 "Chrom" - Notification Templates & Setup
+### v7.0.0 "Zenith Edition" - Notification Templates & Setup
 
 Fully integrated server automation experience.
 
@@ -125,13 +125,30 @@ Fully integrated server automation experience.
 
 ## 🏷️ Codename System
 
-| Version | Edition | Codename | Theme | Metaphor |
-|---------|---------|----------|-------|----------|
-| v5.1-5.2 | BigFive | Alpine | APK support | Mountain/Distro |
-| v5.3-5.4 | BigFive | Beacon | JSON + Shell | Signal/Monitoring |
-| v5.5 | BigFive | Dream | Rebranding | Goal/Vision |
-| v6.0 | BigFive | Echo | i18n | Echo/Voice |
-| v6.2-7.0 | BigFive | Chrom | Server Automation | Infrastructure/Core |
+**Methodology:**
+- **Edition** = Major series name (v5.x, v6.x, v7.x)
+- **Codename** = Minor version name (x.Y.z)
+- **Repo name** = bigfive-updater (fixed)
+
+### Edition Table
+
+| Major | Edition | Theme |
+|-------|---------|-------|
+| v5.x | BigFive | 5 distro support |
+| v6.x | Fluent | Smooth experience |
+| v7.x | Zenith | Peak |
+
+### Codename Table
+
+| Version | Edition | Codename | Theme |
+|---------|---------|----------|-------|
+| v5.0 | BigFive | ~~BigFour~~ | 4 distro (transition) |
+| v5.1-5.2 | BigFive | Alpine | APK support |
+| v5.3-5.4 | BigFive | Beacon | JSON + Shell |
+| v5.5 | BigFive | Dream | Rebranding |
+| v6.0-6.1 | Fluent | Echo | i18n, diagnostics |
+| v6.2+ | Fluent | Chrom | Server automation |
+| v7.0+ | Zenith | TBD | - |
 
 ---
 

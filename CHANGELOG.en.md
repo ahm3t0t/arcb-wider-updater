@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [6.1.0] - 2026-02-02 "BigFive Edition - Echo"
+## [6.1.0] - 2026-02-02 "Fluent Edition - Echo"
 ### Added
 - **--doctor command:** System health check with 6 diagnostic tests
   - Config file syntax validation
@@ -52,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [6.0.2] - 2026-01-30 "BigFive Edition - Echo"
+## [6.0.2] - 2026-01-30 "Fluent Edition - Echo"
 ### Added
 - **Disk Space Check:** Pre-update disk space verification
   - Added `check_disk_space()` function
@@ -85,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [6.0.1] - 2026-01-30 "BigFive Edition - Echo"
+## [6.0.1] - 2026-01-30 "Fluent Edition - Echo"
 ### Fixed
 - **printf invalid number error:** `grep -c` was returning exit code 1 when no match,
   causing `|| echo "0"` to also run and produce double output (`0\n0`).
@@ -98,7 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [6.0.0] - 2026-01-30 "BigFive Edition - Echo"
+## [6.0.0] - 2026-01-30 "Fluent Edition - Echo"
 ### Added
 - **i18n (Multi-Language Support):** Full Turkish and English support
   - `lang/tr.sh`: Turkish language file (~110 strings)
