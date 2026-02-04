@@ -31,7 +31,7 @@ jobs:
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Update PKGBUILD version
         run: |
@@ -73,7 +73,7 @@ jobs:
           chmod 777 /var/cache/distfiles
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Update APKBUILD version
         run: |
