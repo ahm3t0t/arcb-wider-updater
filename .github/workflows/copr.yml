@@ -63,15 +63,22 @@ jobs:
           name: srpm
           path: ~/rpmbuild/SRPMS/*.src.rpm
 
-      # COPR upload (requires COPR_API_TOKEN secret)
+      # COPR upload (requires COPR_LOGIN and COPR_TOKEN secrets)
       - name: Upload to COPR
         env:
-          COPR_API_TOKEN: ${{ secrets.COPR_API_TOKEN }}
+          COPR_LOGIN: ${{ secrets.COPR_LOGIN }}
+          COPR_TOKEN: ${{ secrets.COPR_TOKEN }}
         run: |
-          if [ -n "$COPR_API_TOKEN" ]; then
+          if [ -n "$COPR_LOGIN" ] && [ -n "$COPR_TOKEN" ]; then
             mkdir -p ~/.config
-            echo "$COPR_API_TOKEN" > ~/.config/copr
+            cat > ~/.config/copr << EOF
+          [copr-cli]
+          login = $COPR_LOGIN
+          username = tahmet
+          token = $COPR_TOKEN
+          copr_url = https://copr.fedorainfracloud.org
+          EOF
             copr-cli build tahmet/bigfive-updater ~/rpmbuild/SRPMS/*.src.rpm
           else
-            echo "COPR_API_TOKEN not set, skipping upload"
+            echo "COPR credentials not set, skipping upload"
           fi
