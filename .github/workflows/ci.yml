@@ -146,7 +146,7 @@ jobs:
           echo "  ${DISTRO} (${PKG_MGR}) - ALL TESTS PASSED"
           echo "========================================"
 
-  # ==================== BATS Unit Tests ====================
+  # ==================== BATS Unit Tests with Coverage ====================
   bats:
     name: BATS Tests
     runs-on: ubuntu-latest
@@ -161,11 +161,34 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y bats
 
-      - name: Run guncel.bats
-        run: bats tests/guncel.bats
+      - name: Build kcov from source
+        run: |
+          # Install build dependencies
+          sudo apt-get install -y cmake libcurl4-openssl-dev libdw-dev binutils-dev zlib1g-dev
+          # Clone and build kcov
+          git clone --depth 1 https://github.com/SimonKagstrom/kcov.git /tmp/kcov
+          cd /tmp/kcov
+          mkdir build && cd build
+          cmake ..
+          make -j$(nproc)
+          sudo make install
+          kcov --version
 
-      - name: Run install.bats
-        run: bats tests/install.bats
+      - name: Run guncel.bats with coverage
+        run: |
+          kcov --include-pattern=guncel ./coverage bats tests/guncel.bats
+
+      - name: Run install.bats with coverage
+        run: |
+          kcov --include-pattern=install.sh ./coverage bats tests/install.bats
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage
+          fail_ci_if_error: false
+          verbose: true
 
   # ==================== Summary ====================
   ci-success:
