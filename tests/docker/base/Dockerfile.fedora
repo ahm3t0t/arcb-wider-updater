@@ -1,6 +1,6 @@
 # BigFive Updater - Fedora Base Image
 # Pre-installed dependencies for faster testing
-FROM fedora:40
+FROM fedora:43
 
 LABEL maintainer="meet@calmkernel.tr"
 LABEL description="BigFive test base image - Fedora 40"
