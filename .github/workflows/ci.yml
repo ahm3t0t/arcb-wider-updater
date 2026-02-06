@@ -176,11 +176,18 @@ jobs:
 
       - name: Run guncel.bats with coverage
         run: |
-          kcov --include-pattern=guncel ./coverage bats tests/guncel.bats
+          kcov --bash-handle-sh-invocation --include-path=$(pwd) ./coverage bats tests/guncel.bats
 
       - name: Run install.bats with coverage
         run: |
-          kcov --include-pattern=install.sh ./coverage bats tests/install.bats
+          kcov --bash-handle-sh-invocation --include-path=$(pwd) ./coverage bats tests/install.bats
+
+      - name: Debug coverage output
+        run: |
+          echo "=== Coverage directory contents ==="
+          find ./coverage -type f -name "*.xml" | head -5
+          echo "=== Cobertura content sample ==="
+          cat ./coverage/bats*/cobertura.xml 2>/dev/null | head -50 || echo "No cobertura.xml found"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
