@@ -725,7 +725,7 @@ get_script_version() {
 }
 
 @test "flag: --jitter requires numeric argument" {
-    grep -qA5 -- '--jitter)' "$GUNCEL_SCRIPT" | grep -q 'shift'
+    grep -A5 -- '--jitter)' "$GUNCEL_SCRIPT" | grep -q 'shift'
 }
 
 @test "flag: --help includes --jitter option" {
@@ -763,7 +763,7 @@ get_script_version() {
 }
 
 @test "function: run_hooks skips world-writable scripts" {
-    grep -qA20 '^run_hooks\(\)' "$GUNCEL_SCRIPT" | grep -q 'world-writable'
+    grep -A20 '^run_hooks()' "$GUNCEL_SCRIPT" | grep -q 'world-writable'
 }
 
 @test "function: safe_source exists" {
@@ -803,7 +803,7 @@ get_script_version() {
 }
 
 @test "self-update: check_self_update skips on BIGFIVE_REEXEC" {
-    grep -qA5 '^check_self_update\(\)' "$GUNCEL_SCRIPT" | grep -q 'BIGFIVE_REEXEC'
+    grep -A5 '^check_self_update()' "$GUNCEL_SCRIPT" | grep -q 'BIGFIVE_REEXEC'
 }
 
 # ============================================
