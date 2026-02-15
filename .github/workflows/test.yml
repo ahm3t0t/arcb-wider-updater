@@ -32,6 +32,9 @@ on:
 # Note: ShellCheck is run in ci.yml (ShellCheck Lint job)
 # This workflow focuses on syntax and install tests
 
+permissions:
+  contents: read
+
 jobs:
   syntax-check:
     name: Bash Syntax
