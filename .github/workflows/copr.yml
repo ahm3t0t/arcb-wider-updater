@@ -58,7 +58,7 @@ jobs:
           rpmbuild -bs ~/rpmbuild/SPECS/bigfive-updater.spec
 
       - name: Upload SRPM artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: srpm
           path: ~/rpmbuild/SRPMS/*.src.rpm
