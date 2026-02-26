@@ -474,14 +474,14 @@ print_final_summary() {
   # FIX: Ensure all counters are numeric via sanitize_count()
   # v5.1: BigFive - apt, dnf, pacman, zypper, apk
   local apt_c dnf_c pacman_c zypper_c apk_c flatpak_c snap_c fwupd_c
-  apt_c=$(sanitize_count "$APT_COUNT")
-  dnf_c=$(sanitize_count "$DNF_COUNT")
-  pacman_c=$(sanitize_count "$PACMAN_COUNT")
-  zypper_c=$(sanitize_count "$ZYPPER_COUNT")
-  apk_c=$(sanitize_count "$APK_COUNT")
-  flatpak_c=$(sanitize_count "$FLATPAK_COUNT")
-  snap_c=$(sanitize_count "$SNAP_COUNT")
-  fwupd_c=$(sanitize_count "$FWUPD_COUNT")
+  apt_c=$(sanitize_count "${APT_COUNT:-0}")
+  dnf_c=$(sanitize_count "${DNF_COUNT:-0}")
+  pacman_c=$(sanitize_count "${PACMAN_COUNT:-0}")
+  zypper_c=$(sanitize_count "${ZYPPER_COUNT:-0}")
+  apk_c=$(sanitize_count "${APK_COUNT:-0}")
+  flatpak_c=$(sanitize_count "${FLATPAK_COUNT:-0}")
+  snap_c=$(sanitize_count "${SNAP_COUNT:-0}")
+  fwupd_c=$(sanitize_count "${FWUPD_COUNT:-0}")
 
   local total_updates=$((apt_c + dnf_c + pacman_c + zypper_c + apk_c + flatpak_c + snap_c + fwupd_c))
 
@@ -623,14 +623,14 @@ output_json() {
 
   # FIX: Ensure all counters are numeric via sanitize_count()
   local apt_c dnf_c pacman_c zypper_c apk_c flatpak_c snap_c fwupd_c
-  apt_c=$(sanitize_count "$APT_COUNT")
-  dnf_c=$(sanitize_count "$DNF_COUNT")
-  pacman_c=$(sanitize_count "$PACMAN_COUNT")
-  zypper_c=$(sanitize_count "$ZYPPER_COUNT")
-  apk_c=$(sanitize_count "$APK_COUNT")
-  flatpak_c=$(sanitize_count "$FLATPAK_COUNT")
-  snap_c=$(sanitize_count "$SNAP_COUNT")
-  fwupd_c=$(sanitize_count "$FWUPD_COUNT")
+  apt_c=$(sanitize_count "${APT_COUNT:-0}")
+  dnf_c=$(sanitize_count "${DNF_COUNT:-0}")
+  pacman_c=$(sanitize_count "${PACMAN_COUNT:-0}")
+  zypper_c=$(sanitize_count "${ZYPPER_COUNT:-0}")
+  apk_c=$(sanitize_count "${APK_COUNT:-0}")
+  flatpak_c=$(sanitize_count "${FLATPAK_COUNT:-0}")
+  snap_c=$(sanitize_count "${SNAP_COUNT:-0}")
+  fwupd_c=$(sanitize_count "${FWUPD_COUNT:-0}")
 
   local total_count=$((apt_c + dnf_c + pacman_c + zypper_c + apk_c + flatpak_c + snap_c + fwupd_c))
 
