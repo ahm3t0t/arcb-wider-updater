@@ -345,9 +345,9 @@ docker run --rm -v "$(pwd):/app" alpine:3.20 sh -c "apk add bash curl && bash /a
 
 | Component | Tests | Status |
 |-----------|-------|--------|
-| guncel.bats | 134 | ✅ |
+| guncel.bats | 153 | ✅ |
 | install.bats | 39 | ✅ |
-| **Total** | **193** | ✅ |
+| **Total** | **192** | ✅ |
 
 ### Code Coverage
 

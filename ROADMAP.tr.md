@@ -189,9 +189,9 @@ Tam entegre server automation deneyimi.
 
 | Bileşen | Test Sayısı | Durum |
 |---------|-------------|-------|
-| guncel.bats | 134 | ✅ |
+| guncel.bats | 153 | ✅ |
 | install.bats | 39 | ✅ |
-| **Toplam** | **193** | ✅ |
+| **Toplam** | **192** | ✅ |
 
 ### CI Test Matrisi
 
