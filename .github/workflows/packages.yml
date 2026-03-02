@@ -113,13 +113,13 @@ jobs:
     if: github.event_name == 'release'
     steps:
       - name: Download Arch package
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: arch-package
           path: packages/
 
       - name: Download Alpine packages
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: alpine-packages
           path: packages/
